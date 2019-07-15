@@ -11,18 +11,35 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import { MatButtonModule } from '@angular/material';
+import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatListModule } from '@angular/material';
+import { NavbarTwoComponent } from './navbar-two/navbar-two.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { NavbarFourComponent } from './navbar-four/navbar-four.component';
+import { HomeComponent } from './home/home.component';
+import { UserComponent } from './user/user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent
+    NavbarComponent,
+    NavbarTwoComponent,
+    NavbarFourComponent,
+    HomeComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FlexLayoutModule,
     BrowserAnimationsModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatIconModule,
+    LayoutModule,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
     MatButtonModule
   ],
   providers: [],
