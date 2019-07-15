@@ -19,6 +19,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
 import { HomeComponent } from './home/home.component';
 import { UserComponent } from './user/user.component';
+import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pages-switcher.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { UserComponent } from './user/user.component';
     NavbarTwoComponent,
     NavbarFourComponent,
     HomeComponent,
-    UserComponent
+    UserComponent,
+    RouterPagesSwitcherComponent
   ],
   imports: [
     BrowserModule,

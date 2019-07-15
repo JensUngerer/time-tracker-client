@@ -1,0 +1,8 @@
+.theInnerFlexContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.theInnerFlexItem {
+  flex: 1 1 100%,
+}
