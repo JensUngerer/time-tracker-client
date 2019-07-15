@@ -11,6 +11,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatListModule } from '@angular/material';
 import { NavbarTwoComponent } from './navbar-two/navbar-two.component';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -40,7 +42,8 @@ import { UserComponent } from './user/user.component';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

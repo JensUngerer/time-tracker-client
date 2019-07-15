@@ -1,1 +1,27 @@
-<p>user works!</p>
+<div class="container">
+  <div class="flexItem">
+    <form [formGroup]="nameForm" (ngSubmit)="onSubmit(nameForm.value)">
+      <div class="formFlexContainer">
+        <div class="formFlexItem">
+          <div class="innerFormFlexContainer">
+            <div class="innerFormFlexItemOne"><label>Surname:</label></div>
+            <div class="innerFormFlexItemTwo"><input type="text" [formControlName]="formControlSurname"></div>
+          </div>
+        </div>
+        <div class="formFlexItem">
+          <div class="innerFormFlexContainer">
+            <div class="innerFormFlexItemOne"><label>Name:</label></div>
+            <div class="innerFormFlexItemTwo"><input type="text" [formControlName]="formControlName"></div>
+          </div>
+        </div>
+        <div class="formFlexItem">
+          <div class="innerFormFlexContainer">
+            <div class="innerFormFlexItemThree">
+              <button mat-stroke-button type="submit">Add User</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
