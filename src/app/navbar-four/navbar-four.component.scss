@@ -16,3 +16,17 @@
   margin: 10px;
 }
 
+.oneHundredPercent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.headerFlexItem {
+  flex: 0 1 12%;
+}
+
+.contentPlusFooterFlexItem {
+  flex: 0 1 88%;
+}
+
