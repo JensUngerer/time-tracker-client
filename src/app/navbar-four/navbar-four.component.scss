@@ -23,10 +23,12 @@
 }
 
 .headerFlexItem {
-  flex: 0 1 12%;
+  // flex: 0 1 12%;
+  flex: 0 1 auto;
 }
 
 .contentPlusFooterFlexItem {
-  flex: 0 1 88%;
+  // flex: 0 1 88%;
+  flex: 0 1 auto;
 }
 
