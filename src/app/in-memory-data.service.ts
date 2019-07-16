@@ -1,3 +1,4 @@
+import { WindowService } from './window.service';
 import { Injectable } from '@angular/core';
 import { IStorageData } from './../../../common/typescript/iStorageData';
 
@@ -6,12 +7,23 @@ import { IStorageData } from './../../../common/typescript/iStorageData';
 })
 export class InMemoryDataService {
 
+  private readonly sessionStorageKey = 'meanTimeTrackerInMemoryDataStorage';
+
   private storage: IStorageData;
 
-  constructor() {
-    this.storage = {
-      users: null
-    };
+  constructor(private windowService: WindowService) {
+    const containedDataStr: string = windowService.nativeWindow().sessionStorage.getItem(this.sessionStorageKey);
+    if (containedDataStr) {
+      this.storage = JSON.parse(containedDataStr);
+    } else {
+      this.storage = {
+        users: null
+      };
+    }
+
+    windowService.nativeWindow().addEventListener('beforeunload', () => {
+      window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(this.storage));
+    });
   }
 
   public set(key: keyof IStorageData, value: any) {
