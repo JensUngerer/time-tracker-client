@@ -18,7 +18,7 @@ export class ProjectComponent implements OnInit {
 
   public isAddButtonDisabled = false;
 
-  public onAddProjectButtonClicked(values: any) {
+  public onSubmit(values: any) {
     const projectName = values[this.formControlNameProjectName];
     this.projectService.addProject(projectName);
     this.isAddButtonDisabled = true;
