@@ -1,9 +1,11 @@
+import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ProjectService } from '../project.service';
+import { ITask } from '../../../../common/typescript/iTask';
 
 export interface IUserOption {
   value: IUser;
@@ -25,6 +27,19 @@ export interface IProjectOption {
 
 export class ProjectOption implements IProjectOption {
   constructor(public value: IProject) { }
+
+  public get viewValue(): string {
+    return this.value.name;
+  }
+}
+
+export interface ITaskOption {
+  value: ITask;
+  viewValue: string;
+}
+
+export class TaskOption implements ITaskOption {
+  constructor(public value: ITask) { }
 
   public get viewValue(): string {
     return this.value.name;
@@ -59,7 +74,13 @@ export class TimeTrackingComponent implements OnInit {
 
   public timeTrackingProjectSelectionFormControl: FormControl = null;
 
-  public projectOptions: ProjectOption[] = [];
+  public projectOptions: IProjectOption[] = [];
+
+  public formControlNameTaskSelectionDropDown = 'taskSelectionDropDown';
+
+  public timeTrackingTaskSelectionFromControl: FormControl = null;
+
+  public taskOptions: ITaskOption[] = [];
 
   public onStartStopButtonClicked() {
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
@@ -82,6 +103,7 @@ export class TimeTrackingComponent implements OnInit {
 
   constructor(private userManagementService: UserManagementService,
               private projectManagementService: ProjectService,
+              private taskManagementService: TaskService,
               private formBuilder: FormBuilder) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
@@ -91,6 +113,9 @@ export class TimeTrackingComponent implements OnInit {
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
     controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
+
+    this.timeTrackingTaskSelectionFromControl = new FormControl('');
+    controlsConfigObj[this.formControlNameTaskSelectionDropDown] = this.timeTrackingTaskSelectionFromControl;
 
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
 
@@ -108,9 +133,15 @@ export class TimeTrackingComponent implements OnInit {
         this.projectOptions.push(new ProjectOption(project));
       });
     }
+    // init taskSelectionDropDrown data
+    const allTasks: ITask[] = this.taskManagementService.getTasks();
+    if (allTasks && allTasks.length > 0 && this.taskOptions.length === 0) {
+      allTasks.forEach((task: ITask) => {
+        this.taskOptions.push(new TaskOption(task));
+      });
+    }
   }
 
   ngOnInit() {
   }
-
 }
