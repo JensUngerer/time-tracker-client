@@ -1,7 +1,6 @@
 <div class="container">
   <div class="flexItem">
     <form [formGroup]="timeTrackingUserSelectionForm">
-      <!-- <mat-label>User:</mat-label> -->
       <mat-select placeholder="User" matInput [formControl]="timeTrackingUserSelectionFormControl" [required]="true">
         <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
         </mat-option>
@@ -12,7 +11,6 @@
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}}
           </button>
         </div>
-        <!-- <div class="emptyFlexItem"></div> -->
         <div class="buttonFlexItem">
           <button class="buttonFlexItem" type="button" (click)="onPauseResumeButtonClicked()" mat-stroke-button
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isPauseResumeButtonDisabled)">{{pauseResumeButtonLabel}}</button>
