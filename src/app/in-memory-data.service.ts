@@ -1,5 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { IStorageData } from './../../../common/typescript/iStorageData';
+import { IProject } from '../../../common/typescript/iProject';
+import { IUser } from '../../../common/typescript/iUser';
+import { ITask } from '../../../common/typescript/iTask';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -22,11 +25,13 @@ export class InMemoryDataService implements OnDestroy {
     if (containedDataStr) {
       this.storage = JSON.parse(containedDataStr);
     }
-    // else {
-    //   this.storage = {
-    //     users: null
-    //   };
-    // }
+    else {
+      this.storage = {
+        users: null,
+        projects: null,
+        tasks: null
+      };
+    }
 
     window.addEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
