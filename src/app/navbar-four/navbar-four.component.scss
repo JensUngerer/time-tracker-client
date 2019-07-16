@@ -5,13 +5,13 @@
 }
 
 .routerOutletFlexItem {
-  flex: 0 1 auot;
+  flex: 1 1 100%;
   // border: 1px solid black;
   margin: 10px;
 }
 
 .footerFlexItem {
-  flex: 0 1 auto;
+  flex: 1 1 100%;
   // border: 1px solid black;
   margin: 10px;
 }
@@ -24,11 +24,11 @@
 
 .headerFlexItem {
   // flex: 0 1 12%;
-  flex: 0 1 auto;
+  flex: 1 1 100%;
 }
 
 .contentPlusFooterFlexItem {
   // flex: 0 1 88%;
-  flex: 0 1 auto;
+  flex: 1 1 100%;
 }
 

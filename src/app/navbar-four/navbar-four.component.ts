@@ -1,4 +1,6 @@
+import { RoutingRoutes } from './../routing-routes';
 import { Component, OnInit, Output } from '@angular/core';
+import { Route } from '@angular/router';
 
 export interface INavbarItem {
   label: string;
@@ -12,19 +14,22 @@ export interface INavbarItem {
 })
 export class NavbarFourComponent implements OnInit {
 
-  constructor() { }
-
   @Output()
-  public navItems: INavbarItem[] = [
-    {
-      label: 'Home',
-      path: 'home'
-    },
-    {
-      label: 'User-Management',
-      path: 'user'
-    }
-  ];
+  public navItems: INavbarItem[] = [];
+
+  constructor() {
+    RoutingRoutes.routes.forEach((route: Route, index: number) => {
+      if (index === RoutingRoutes.routes.length - 1) {
+        return;
+      }
+      this.navItems.push({
+        label: route.data.label,
+        path: route.path
+      })
+    });
+  }
+
+
   ngOnInit() {
   }
 
