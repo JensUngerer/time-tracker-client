@@ -22,6 +22,7 @@ import { UserComponent } from './user/user.component';
 import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pages-switcher.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
+import { TaskComponent } from './task/task.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { ProjectComponent } from './project/project.component';
     UserComponent,
     RouterPagesSwitcherComponent,
     TimeTrackingComponent,
-    ProjectComponent
+    ProjectComponent,
+    TaskComponent
   ],
   imports: [
     BrowserModule,

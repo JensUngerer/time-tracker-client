@@ -21,11 +21,12 @@ export class InMemoryDataService implements OnDestroy {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = JSON.parse(containedDataStr);
-    } else {
-      this.storage = {
-        users: null
-      };
     }
+    // else {
+    //   this.storage = {
+    //     users: null
+    //   };
+    // }
 
     window.addEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }

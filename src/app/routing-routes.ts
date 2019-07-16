@@ -3,6 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { UserComponent } from './user/user.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
+import { TaskComponent } from './task/task.component';
 
 export class RoutingRoutes {
 
@@ -25,6 +26,13 @@ export class RoutingRoutes {
     component: ProjectComponent,
     data: {
       label: 'Project-Management'
+    }
+  },
+  {
+    path: 'task',
+    component: TaskComponent,
+    data: {
+      label: 'Task-Management'
     }
   },
   {

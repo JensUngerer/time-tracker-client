@@ -1,0 +1,8 @@
+<div class="container">
+  <div class="flexItem">
+    <form [formGroup]="taskFormGroup" (submit)="onSubmit(taskFormGroup.value)">
+      <input type="text" [formControlName]="formControlNameTaskName" [required]="true">
+      <button type="submit">Add Task</button>
+    </form>
+  </div>
+</div>
