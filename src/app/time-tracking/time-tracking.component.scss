@@ -3,6 +3,8 @@
   flex-direction: column;
 }
 .buttonFlexItem {
+  margin-top: 15px;
+  margin-bottom: 15px;
   flex: 0 1 auto;
 }
 // https://stackoverflow.com/questions/46766597/styling-mat-select-in-angular-material
@@ -11,4 +13,14 @@
   // background-color: red;
   // font-size: 10px;
   // border: 1 px solid red !important;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.emptyFlexItem  {
+  height: 25px;
+  flex: 0 1 25px;
+}
+button {
+  width: 175px;
 }
