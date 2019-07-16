@@ -1,18 +1,24 @@
-import { WindowService } from './window.service';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { IStorageData } from './../../../common/typescript/iStorageData';
 
+// https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
   providedIn: 'root'
 })
-export class InMemoryDataService {
+export class InMemoryDataService implements OnDestroy {
 
   private readonly sessionStorageKey = 'meanTimeTrackerInMemoryDataStorage';
 
+  private readonly beforeUnloadEventName = 'beforeunload';
+
   private storage: IStorageData;
 
-  constructor(private windowService: WindowService) {
-    const containedDataStr: string = windowService.nativeWindow().sessionStorage.getItem(this.sessionStorageKey);
+  private saveStorageListener() {
+    window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(this.storage));
+  }
+
+  constructor() {
+    const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = JSON.parse(containedDataStr);
     } else {
@@ -21,10 +27,13 @@ export class InMemoryDataService {
       };
     }
 
-    windowService.nativeWindow().addEventListener('beforeunload', () => {
-      window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(this.storage));
-    });
+    window.addEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
+
+  public ngOnDestroy(): void {
+    window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+  }
+
 
   public set(key: keyof IStorageData, value: any) {
     this.storage[key] = value;
