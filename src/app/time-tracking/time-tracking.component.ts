@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
@@ -17,6 +17,7 @@ export class UserOption implements IUserOption {
 }
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'mtt-time-tracking',
   templateUrl: './time-tracking.component.html',
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']
