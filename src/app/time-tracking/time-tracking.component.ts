@@ -12,7 +12,7 @@ export class UserOption implements IUserOption {
   constructor(public value: IUser) { }
 
   public get viewValue(): string {
-    return this.value.name + ', ' + this.value.surname;
+    return this.value.name + ' ' + this.value.surname;
   }
 }
 
