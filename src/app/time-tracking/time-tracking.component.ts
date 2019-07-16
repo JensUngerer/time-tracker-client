@@ -2,6 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
+import { IProject } from '../../../../common/typescript/iProject';
+import { ProjectService } from '../project.service';
 
 export interface IUserOption {
   value: IUser;
@@ -13,6 +15,19 @@ export class UserOption implements IUserOption {
 
   public get viewValue(): string {
     return this.value.name + ' ' + this.value.surname;
+  }
+}
+
+export interface IProjectOption {
+  value: IProject;
+  viewValue: string;
+}
+
+export class ProjectOption implements IProjectOption {
+  constructor(public value: IProject) { }
+
+  public get viewValue(): string {
+    return this.value.name;
   }
 }
 
@@ -40,6 +55,12 @@ export class TimeTrackingComponent implements OnInit {
 
   public isPauseResumeButtonDisabled = true;
 
+  public formControlNameProjectSelectionDropDown = 'projectSelectionDropDown';
+
+  public timeTrackingProjectSelectionFormControl: FormControl = null;
+
+  public projectOptions: ProjectOption[] = [];
+
   public onStartStopButtonClicked() {
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
@@ -59,12 +80,17 @@ export class TimeTrackingComponent implements OnInit {
   }
 
 
-  constructor(private userManagementService: UserManagementService, private formBuilder: FormBuilder) {
+  constructor(private userManagementService: UserManagementService,
+              private projectManagementService: ProjectService,
+              private formBuilder: FormBuilder) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
     this.timeTrackingUserSelectionFormControl = new FormControl(''/*, [Validators.pattern(/^(?=.*[a-zA-Z0-9])/)]*/);
     controlsConfigObj[this.formControlNameUserSelectionDropDown] = this.timeTrackingUserSelectionFormControl;
+
+    this.timeTrackingProjectSelectionFormControl = new FormControl('');
+    controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
 
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
 
@@ -73,6 +99,13 @@ export class TimeTrackingComponent implements OnInit {
     if (allUsers && allUsers.length > 0 && this.userOptions.length === 0) {
       allUsers.forEach((user: IUser) => {
         this.userOptions.push(new UserOption(user));
+      });
+    }
+    // init projectSectionDropDown data
+    const allProjects: IProject[] = this.projectManagementService.getProjects();
+    if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
+      allProjects.forEach((project: IProject) => {
+        this.projectOptions.push(new ProjectOption(project));
       });
     }
   }

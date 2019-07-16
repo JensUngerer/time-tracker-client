@@ -5,6 +5,12 @@
         <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
         </mat-option>
       </mat-select>
+      <mat-select placeholder="Project" matInput [formControl]="timeTrackingProjectSelectionFormControl"
+        [required]="true">
+        <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
+          {{projectOption.viewValue}}
+        </mat-option>
+      </mat-select>
       <div class="buttonFlexContainer">
         <div class="buttonFlexItem">
           <button type="button" (click)="onStartStopButtonClicked()" mat-stroke-button
