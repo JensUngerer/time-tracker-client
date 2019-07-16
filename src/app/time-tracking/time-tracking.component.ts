@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
+import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
 
@@ -31,10 +31,38 @@ export class TimeTrackingComponent implements OnInit {
 
   public timeTrackingUserSelectionFormControl: AbstractControl = null;
 
+  public startStopButtonLabel = 'Start';
+
+  public isStartStopButtonDisabled = false;
+
+  public pauseResumeButtonLabel = 'Pause';
+
+  public isPauseResumeButtonDisabled = true;
+
+  public onStartStopButtonClicked() {
+    this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
+    if (this.startStopButtonLabel === 'Stop') {
+      this.isPauseResumeButtonDisabled = false;
+    } else {
+      this.isPauseResumeButtonDisabled = true;
+    }
+  }
+
+  public onPauseResumeButtonClicked() {
+    this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
+    if (this.pauseResumeButtonLabel === 'Resume') {
+      this.isStartStopButtonDisabled = true;
+    } else {
+      this.isStartStopButtonDisabled = false;
+    }
+  }
+
+
   constructor(private userManagementService: UserManagementService, private formBuilder: FormBuilder) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
-    this.timeTrackingUserSelectionFormControl = new FormControl('');
+    // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
+    this.timeTrackingUserSelectionFormControl = new FormControl(''/*, [Validators.pattern(/^(?=.*[a-zA-Z0-9])/)]*/);
     controlsConfigObj[this.formControlNameUserSelectionDropDown] = this.timeTrackingUserSelectionFormControl;
 
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);

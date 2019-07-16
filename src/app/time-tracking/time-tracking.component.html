@@ -1,13 +1,19 @@
 <div class="container">
   <div class="flexItem">
     <form [formGroup]="timeTrackingUserSelectionForm">
-      <mat-form-field>
+      <!-- <mat-form-field> -->
         <mat-label>User:</mat-label>
-        <mat-select matInput [formControl]="timeTrackingUserSelectionFormControl">
+        <mat-select matInput [formControl]="timeTrackingUserSelectionFormControl" [required]="true">
           <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
           </mat-option>
         </mat-select>
-      </mat-form-field>
+      <!-- </mat-form-field> -->
+      <!-- <div>{{timeTrackingUserSelectionFormControl.value | json }}</div>
+      <div>invalid: {{ timeTrackingUserSelectionForm.invalid }}</div>
+      <div>startStopButtonDisabled: {{ isStartStopButtonDisabled }}</div>
+      <div>pauseResumeButtonDisabled: {{ isPauseResumeButtonDisabled }}</div> -->
+      <button type="button" (click)="onStartStopButtonClicked()" mat-button [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}} </button>
+      <button type="button" (click)="onPauseResumeButtonClicked()" mat-button [disabled]="!(timeTrackingUserSelectionForm.valid && !isPauseResumeButtonDisabled)">{{pauseResumeButtonLabel}}</button>
     </form>
   </div>
 </div>
