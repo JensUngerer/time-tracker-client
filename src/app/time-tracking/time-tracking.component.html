@@ -1,5 +1,13 @@
 <div class="container">
   <div class="flexItem">
-      <p>time-tracking works!</p>
+    <form [formGroup]="timeTrackingUserSelectionForm">
+      <mat-form-field>
+        <mat-label>User:</mat-label>
+        <mat-select matInput [formControl]="timeTrackingUserSelectionFormControl">
+          <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
   </div>
 </div>
