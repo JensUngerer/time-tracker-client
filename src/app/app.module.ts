@@ -20,6 +20,7 @@ import { NavbarFourComponent } from './navbar-four/navbar-four.component';
 import { HomeComponent } from './home/home.component';
 import { UserComponent } from './user/user.component';
 import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pages-switcher.component';
+import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pag
     NavbarFourComponent,
     HomeComponent,
     UserComponent,
-    RouterPagesSwitcherComponent
+    RouterPagesSwitcherComponent,
+    TimeTrackingComponent
   ],
   imports: [
     BrowserModule,
