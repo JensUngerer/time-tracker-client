@@ -13,10 +13,14 @@ export class TaskComponent implements OnInit {
 
   public formControlNameTaskName = 'theTaskName';
 
+  public isButtonDisabled = false;
+
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
 
     this.taskService.addTask(newNewTaskName);
+
+    this.isButtonDisabled = true;
   }
 
   constructor(private taskService: TaskService) {

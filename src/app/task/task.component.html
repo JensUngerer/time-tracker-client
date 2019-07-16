@@ -2,7 +2,7 @@
   <div class="flexItem">
     <form [formGroup]="taskFormGroup" (submit)="onSubmit(taskFormGroup.value)">
       <input type="text" [formControlName]="formControlNameTaskName" [required]="true">
-      <button type="submit">Add Task</button>
+      <button type="submit" [disabled]="isButtonDisabled || taskFormGroup.invalid">Add Task</button>
     </form>
   </div>
 </div>
