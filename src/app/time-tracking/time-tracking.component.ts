@@ -1,3 +1,4 @@
+import { Router, ActivatedRoute } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
@@ -55,6 +56,7 @@ export class TaskOption implements ITaskOption {
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']
 })
 export class TimeTrackingComponent implements OnInit {
+  public static timeEntryIdProperty = 'timeEntryId';
 
   public timeTrackingUserSelectionForm: FormGroup = null;
 
@@ -97,14 +99,16 @@ export class TimeTrackingComponent implements OnInit {
     }
   }
 
-  private DEBUGGING_TIME_ENTRY_ID: string = null;
 
   private getTimeEntryIdFromUrl(): string {
-    return this.DEBUGGING_TIME_ENTRY_ID;
+    const retrievedTimeEntryId = this.activatedRoute.snapshot.params[TimeTrackingComponent.timeEntryIdProperty];
+    return retrievedTimeEntryId;
   }
 
   private setTimeEntryIdInUrl(timeEntryId: string) {
-    this.DEBUGGING_TIME_ENTRY_ID = timeEntryId;
+    const queryParams = {};
+    queryParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
+    this.router.navigate([this.router.url, queryParams]);
   }
 
   public onPauseResumeButtonClicked() {
@@ -121,7 +125,9 @@ export class TimeTrackingComponent implements OnInit {
               private projectManagementService: ProjectService,
               private taskManagementService: TaskService,
               private timeTrackingService: TimeTrackingService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private router: Router,
+              private activatedRoute: ActivatedRoute) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
