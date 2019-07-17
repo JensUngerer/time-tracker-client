@@ -2,7 +2,7 @@ import { InMemoryDataService } from './../in-memory-data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
@@ -10,6 +10,7 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { ProjectService } from '../project.service';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
+import { Subscription } from 'rxjs';
 
 export interface IUserOption {
   value: IUser;
@@ -56,10 +57,13 @@ export class TaskOption implements ITaskOption {
   templateUrl: './time-tracking.component.html',
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']
 })
-export class TimeTrackingComponent implements OnInit {
+export class TimeTrackingComponent implements OnInit, OnDestroy {
+
   public static timeEntryIdProperty = 'timeEntryId';
 
   private cancelIntervalId: NodeJS.Timer = null;
+
+  private activatedRouteSubscription: Subscription = null;
 
   public currentTimeEntryDuration: string;
 
@@ -172,7 +176,7 @@ export class TimeTrackingComponent implements OnInit {
       });
     }
 
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
+    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
       const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
 
@@ -204,5 +208,14 @@ export class TimeTrackingComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    if (this.cancelIntervalId) {
+      clearInterval(this.cancelIntervalId);
+    }
+    if (this.activatedRouteSubscription) {
+      this.activatedRouteSubscription.unsubscribe();
+    }
   }
 }
