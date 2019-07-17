@@ -1,23 +1,30 @@
 <div class="container">
   <div class="flexItem">
     <form [formGroup]="timeTrackingUserSelectionForm">
-      <mat-select placeholder="User" matInput [formControl]="timeTrackingUserSelectionFormControl" [required]="true">
-        <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
-        </mat-option>
-      </mat-select>
-      <mat-select placeholder="Project" matInput [formControl]="timeTrackingProjectSelectionFormControl"
-        [required]="true">
-        <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-          {{projectOption.viewValue}}
-        </mat-option>
-      </mat-select>
-      <mat-select placeholder="Task" matInput [formControl]="timeTrackingTaskSelectionFromControl"
-        [required]="true">
-        <mat-option *ngFor="let taskOption of taskOptions" [value]="taskOption.value">
-          {{taskOption.viewValue}}
-        </mat-option>
-      </mat-select>
       <div class="buttonFlexContainer">
+        <div class="buttonFlexItem">
+          <mat-select placeholder="User" matInput [formControl]="timeTrackingUserSelectionFormControl"
+            [required]="true">
+            <mat-option *ngFor="let userOption of userOptions" [value]="userOption.value">{{userOption.viewValue}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="buttonFlexItem">
+          <mat-select placeholder="Project" matInput [formControl]="timeTrackingProjectSelectionFormControl"
+            [required]="true">
+            <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
+              {{projectOption.viewValue}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="buttonFlexItem">
+          <mat-select placeholder="Task" matInput [formControl]="timeTrackingTaskSelectionFromControl"
+            [required]="true">
+            <mat-option *ngFor="let taskOption of taskOptions" [value]="taskOption.value">
+              {{taskOption.viewValue}}
+            </mat-option>
+          </mat-select>
+        </div>
         <div class="buttonFlexItem">
           <button type="button" (click)="onStartStopButtonClicked()" mat-stroke-button
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}}
