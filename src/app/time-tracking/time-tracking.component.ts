@@ -106,9 +106,15 @@ export class TimeTrackingComponent implements OnInit {
   }
 
   private setTimeEntryIdInUrl(timeEntryId: string) {
-    const queryParams = {};
-    queryParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
-    this.router.navigate([this.router.url, queryParams]);
+    const matrixParams = {};
+    matrixParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
+
+    // https://stackoverflow.com/questions/38242584/clear-all-queryparams-with-new-router-v3-angular2
+    // https://stackoverflow.com/questions/35618463/change-route-params-without-reloading-in-angular-2
+    //this.router.navigate([this.router.url.substr(1)]);
+
+    // https://stackoverflow.com/questions/43698032/angular-how-to-update-queryparams-without-changing-route
+    this.router.navigate([], {queryParams: matrixParams, queryParamsHandling: 'merge'});
   }
 
   public onPauseResumeButtonClicked() {
