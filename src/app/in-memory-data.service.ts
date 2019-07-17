@@ -29,7 +29,8 @@ export class InMemoryDataService implements OnDestroy {
       this.storage = {
         users: null,
         projects: null,
-        tasks: null
+        tasks: null,
+        timeEntries: null
       };
     }
 
