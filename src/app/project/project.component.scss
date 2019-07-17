@@ -1,0 +1,10 @@
+.innerFormFlexContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.innerFormFlexItem {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  flex: 0 1 auto;
+}

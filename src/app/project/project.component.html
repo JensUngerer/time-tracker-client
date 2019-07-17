@@ -1,8 +1,14 @@
 <div class="container">
   <div class="flexItem">
     <form [formGroup]="projectFormGroup" (submit)="onSubmit(projectFormGroup.value)">
-      <input type="text" [required]="true" [formControlName]="formControlNameProjectName">
-      <button type="submit" [disabled]="projectFormGroup.invalid || isAddButtonDisabled">Add project</button>
+      <div class="innerFormFlexContainer">
+        <div class="innerFormFlexItem">
+          <input type="text" [required]="true" [formControlName]="formControlNameProjectName">
+        </div>
+        <div class="innerFormFlexItem">
+          <button type="submit" [disabled]="projectFormGroup.invalid || isAddButtonDisabled">Add project</button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
