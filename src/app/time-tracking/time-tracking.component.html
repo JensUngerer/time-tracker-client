@@ -31,6 +31,9 @@
           </button>
         </div>
         <div class="buttonFlexItem">
+          <div>{{currentTimeEntryDuration}}</div>
+        </div>
+        <div class="buttonFlexItem">
           <button class="buttonFlexItem" type="button" (click)="onPauseResumeButtonClicked()" mat-stroke-button
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isPauseResumeButtonDisabled)">{{pauseResumeButtonLabel}}</button>
         </div>

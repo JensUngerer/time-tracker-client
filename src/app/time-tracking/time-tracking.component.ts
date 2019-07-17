@@ -1,7 +1,8 @@
-import { Router, ActivatedRoute } from '@angular/router';
+import { InMemoryDataService } from './../in-memory-data.service';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
@@ -58,6 +59,10 @@ export class TaskOption implements ITaskOption {
 export class TimeTrackingComponent implements OnInit {
   public static timeEntryIdProperty = 'timeEntryId';
 
+  private cancelIntervalId: NodeJS.Timer = null;
+
+  public currentTimeEntryDuration: string;
+
   public timeTrackingUserSelectionForm: FormGroup = null;
 
   public formControlNameUserSelectionDropDown = 'userSelectionDropDown';
@@ -101,17 +106,13 @@ export class TimeTrackingComponent implements OnInit {
 
 
   private getTimeEntryIdFromUrl(): string {
-    const retrievedTimeEntryId = this.activatedRoute.snapshot.params[TimeTrackingComponent.timeEntryIdProperty];
+    const retrievedTimeEntryId = this.activatedRoute.snapshot.queryParams[TimeTrackingComponent.timeEntryIdProperty];
     return retrievedTimeEntryId;
   }
 
   private setTimeEntryIdInUrl(timeEntryId: string) {
     const matrixParams = {};
     matrixParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
-
-    // https://stackoverflow.com/questions/38242584/clear-all-queryparams-with-new-router-v3-angular2
-    // https://stackoverflow.com/questions/35618463/change-route-params-without-reloading-in-angular-2
-    //this.router.navigate([this.router.url.substr(1)]);
 
     // https://stackoverflow.com/questions/43698032/angular-how-to-update-queryparams-without-changing-route
     this.router.navigate([], {queryParams: matrixParams, queryParamsHandling: 'merge'});
@@ -131,6 +132,7 @@ export class TimeTrackingComponent implements OnInit {
               private projectManagementService: ProjectService,
               private taskManagementService: TaskService,
               private timeTrackingService: TimeTrackingService,
+              private inMemoryDataService: InMemoryDataService,
               private formBuilder: FormBuilder,
               private router: Router,
               private activatedRoute: ActivatedRoute) {
@@ -169,6 +171,36 @@ export class TimeTrackingComponent implements OnInit {
         this.taskOptions.push(new TaskOption(task));
       });
     }
+
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
+      const retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
+      const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
+
+      if (!currentSelectedTimeEntry) {
+        return;
+      }
+      this.visualizeTimeEntry(currentSelectedTimeEntry);
+      if (this.cancelIntervalId) {
+        clearInterval(this.cancelIntervalId);
+      }
+      this.cancelIntervalId = setInterval(() => {
+        this.visualizeTimeEntry(currentSelectedTimeEntry);
+      }, 60 * 1000);
+    });
+  }
+
+  private visualizeTimeEntry(timeEntry: ITimeEntry) {
+    this.currentTimeEntryDuration = this.generateTimeEntryVisualization(timeEntry);
+  }
+
+  private generateTimeEntryVisualization(timeEntry: ITimeEntry): string {
+    if (!timeEntry) {
+      return;
+    }
+    if (!timeEntry.endTime) {
+      return this.timeTrackingService.getTimeDifferenceInMinutes(new Date(), timeEntry.startTime) + ' minutes';
+    }
+    return this.timeTrackingService.getTimeDifferenceInMinutes(timeEntry.endTime, timeEntry.startTime) + ' minutes';
   }
 
   ngOnInit() {

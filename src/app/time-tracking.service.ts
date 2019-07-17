@@ -61,7 +61,7 @@ export class TimeTrackingService {
     return timeEntry;
   }
 
-  private getTimeDifferenceInMinutes(endTime: Date, startTime: Date) {
+  public getTimeDifferenceInMinutes(endTime: Date, startTime: Date) {
     let durationInMinutes = endTime.getTime() - startTime.getTime();
     durationInMinutes = Math.floor(durationInMinutes / 1000);
     durationInMinutes = Math.floor(durationInMinutes / 60);
