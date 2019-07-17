@@ -1,8 +1,8 @@
 <div class="container">
   <div class="flexItem">
     <div class="theInnerFlexContainer">
-      <div class="theInnerFlexItem"><button> << </button></div>
-      <div class="theInnerFlexItem"><button>  >> </button></div>
+      <div class="theInnerFlexItem"><button (click)="onBackwardButtonClicked()" [disabled]="isBackwardButtonDisabled"> << </button></div>
+      <div class="theInnerFlexItem"><button (click)="onForwardButtonClicked()" [disabled]="isForwardButtonDisabled">  >> </button></div>
     </div>
   </div>
 </div>
