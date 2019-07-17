@@ -17,7 +17,11 @@ export class RouterPagesSwitcherComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router) {
                 this.currentUrl$ = this.activatedRoute.url;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[1]] = null;
+                this.urlBackwardMapping['/' + RoutingRoutes.routes[0]] = null;
+
+                this.urlForwardMapping['/' + RoutingRoutes.routes[0].path] = '/' + RoutingRoutes.routes[1].path;
+                this.urlBackwardMapping['/' + RoutingRoutes.routes[1].path] = '/' + RoutingRoutes.routes[0].path;
+
 
                 this.urlForwardMapping['/' + RoutingRoutes.routes[1].path] = '/' + RoutingRoutes.routes[2].path;
                 this.urlBackwardMapping['/' + RoutingRoutes.routes[2].path] = '/' + RoutingRoutes.routes[1].path;
