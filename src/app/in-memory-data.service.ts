@@ -3,6 +3,7 @@ import { IStorageData } from './../../../common/typescript/iStorageData';
 import { IProject } from '../../../common/typescript/iProject';
 import { IUser } from '../../../common/typescript/iUser';
 import { ITask } from '../../../common/typescript/iTask';
+import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -53,10 +54,31 @@ export class InMemoryDataService implements OnDestroy {
     this.storage[key].push(value);
   }
 
-  public get(key: keyof IStorageData): any {
+  public get(key: keyof IStorageData): any[] {
     if (this.storage.hasOwnProperty(key)) {
       return this.storage[key];
     }
     return null;
+  }
+
+  public getTimeEntryById(timeEntryId: string): ITimeEntry {
+    const timeEntries = this.get('timeEntries');
+    if (!timeEntries) {
+      return null;
+    }
+    const foundTimeEntry = timeEntries.find((oneTimeEntry: ITimeEntry)=>{
+      return oneTimeEntry.timeEntryId === timeEntryId;
+    });
+    if (!foundTimeEntry) {
+      return null;
+    }
+    return foundTimeEntry;
+  }
+
+  public setTimeEntryById(timeEntryId: string, timeEntry: ITimeEntry) {
+    // TODO: not necessary as reference in Array still exists -> so the entry is already updated?
+    console.log('updated entry?');
+    console.log(JSON.stringify(this.getTimeEntryById(timeEntryId)));
+    console.log(timeEntry === this.getTimeEntryById(timeEntryId));
   }
 }

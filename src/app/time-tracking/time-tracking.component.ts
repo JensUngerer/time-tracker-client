@@ -1,3 +1,4 @@
+import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
@@ -6,6 +7,7 @@ import { UserManagementService } from '../user-management.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ProjectService } from '../project.service';
 import { ITask } from '../../../../common/typescript/iTask';
+import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 
 export interface IUserOption {
   value: IUser;
@@ -85,10 +87,24 @@ export class TimeTrackingComponent implements OnInit {
   public onStartStopButtonClicked() {
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
+      const taskId = this.timeTrackingTaskSelectionFromControl.value.taskId;
+      const startedTimeEntry: ITimeEntry = this.timeTrackingService.startTimeTracking(taskId);
+      this.setTimeEntryIdInUrl(startedTimeEntry.timeEntryId);
       this.isPauseResumeButtonDisabled = false;
     } else {
+      const stoppedTimeEntry: ITimeEntry = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
       this.isPauseResumeButtonDisabled = true;
     }
+  }
+
+  private DEBUGGING_TIME_ENTRY_ID: string = null;
+
+  private getTimeEntryIdFromUrl(): string {
+    return this.DEBUGGING_TIME_ENTRY_ID;
+  }
+
+  private setTimeEntryIdInUrl(timeEntryId: string) {
+    this.DEBUGGING_TIME_ENTRY_ID = timeEntryId;
   }
 
   public onPauseResumeButtonClicked() {
@@ -104,6 +120,7 @@ export class TimeTrackingComponent implements OnInit {
   constructor(private userManagementService: UserManagementService,
               private projectManagementService: ProjectService,
               private taskManagementService: TaskService,
+              private timeTrackingService: TimeTrackingService,
               private formBuilder: FormBuilder) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
