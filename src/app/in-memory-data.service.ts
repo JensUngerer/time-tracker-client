@@ -74,11 +74,4 @@ export class InMemoryDataService implements OnDestroy {
     }
     return foundTimeEntry;
   }
-
-  public setTimeEntryById(timeEntryId: string, timeEntry: ITimeEntry) {
-    // TODO: not necessary as reference in Array still exists -> so the entry is already updated?
-    console.log('updated entry?');
-    console.log(JSON.stringify(this.getTimeEntryById(timeEntryId)));
-    console.log(timeEntry === this.getTimeEntryById(timeEntryId));
-  }
 }

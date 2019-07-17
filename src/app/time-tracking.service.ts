@@ -58,9 +58,6 @@ export class TimeTrackingService {
     }
     timeEntry.duration = trackedDurationInMinutes;
 
-    // TODO: necessary ?
-    this.inMemoryDataService.setTimeEntryById(timeEntryId, timeEntry);
-
     return timeEntry;
   }
 
