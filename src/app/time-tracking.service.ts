@@ -61,7 +61,28 @@ export class TimeTrackingService {
     return timeEntry;
   }
 
-  public getTimeDifferenceInMinutes(endTime: Date, startTime: Date) {
+  public getTimeDifferenceString(endTime: Date, startTime: Date): string {
+    let theDuration = endTime.getTime() - startTime.getTime();
+    theDuration = Math.floor(theDuration / 1000);
+    const durationInSeconds = theDuration % 60;
+    theDuration = Math.floor(theDuration / 60);
+    const durationInMinutes = theDuration % 60;
+    theDuration = Math.floor(theDuration / 60);
+    const durationInHours = theDuration % 60;
+
+    return this.ensureTowDigits(durationInHours) + ':'
+    + this.ensureTowDigits(durationInMinutes) + ':'
+    + this.ensureTowDigits(durationInSeconds);
+  }
+
+  private ensureTowDigits(oneNumber: number): string {
+    if (oneNumber <= 9) {
+      return '0' + oneNumber;
+    }
+    return oneNumber.toString();
+  }
+
+  public getTimeDifferenceInMinutes(endTime: Date, startTime: Date): number {
     let durationInMinutes = endTime.getTime() - startTime.getTime();
     durationInMinutes = Math.floor(durationInMinutes / 1000);
     durationInMinutes = Math.floor(durationInMinutes / 60);
@@ -70,4 +91,5 @@ export class TimeTrackingService {
     }
     return durationInMinutes;
   }
+
 }

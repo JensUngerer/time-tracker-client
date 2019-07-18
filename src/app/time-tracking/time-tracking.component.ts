@@ -189,7 +189,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       }
       this.cancelIntervalId =  (setInterval(() => {
         this.visualizeTimeEntry(currentSelectedTimeEntry);
-      }, 60 * 1000) as unknown) as number;
+      }, 1000) as unknown) as number;
     });
   }
 
@@ -202,9 +202,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       return;
     }
     if (!timeEntry.endTime) {
-      return this.timeTrackingService.getTimeDifferenceInMinutes(new Date(), timeEntry.startTime) + ' minutes';
+      return this.timeTrackingService.getTimeDifferenceString(new Date(), timeEntry.startTime);
     }
-    return this.timeTrackingService.getTimeDifferenceInMinutes(timeEntry.endTime, timeEntry.startTime) + ' minutes';
+    return this.timeTrackingService.getTimeDifferenceString(timeEntry.endTime, timeEntry.startTime);
   }
 
   ngOnInit() {
