@@ -120,14 +120,23 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     matrixParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
 
     // https://stackoverflow.com/questions/43698032/angular-how-to-update-queryparams-without-changing-route
-    this.router.navigate([], {queryParams: matrixParams, queryParamsHandling: 'merge'});
+    this.router.navigate([], { queryParams: matrixParams, queryParamsHandling: 'merge' });
   }
 
   public onPauseResumeButtonClicked() {
+    // cancel interval
+    if (this.cancelIntervalId) {
+      clearInterval(this.cancelIntervalId);
+    }
+
     this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
     if (this.pauseResumeButtonLabel === 'Resume') {
+      // the 'Pause' button has just been pressed
+
       this.isStartStopButtonDisabled = true;
     } else {
+      this.activatedRouteEventHandler(null);
+
       this.isStartStopButtonDisabled = false;
     }
   }
@@ -178,19 +187,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
 
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
-      const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
-
-      if (!currentSelectedTimeEntry) {
-        return;
-      }
-      this.visualizeTimeEntry(currentSelectedTimeEntry);
-      if (this.cancelIntervalId) {
-        clearInterval(this.cancelIntervalId);
-      }
-      this.cancelIntervalId =  (setInterval(() => {
-        this.visualizeTimeEntry(currentSelectedTimeEntry);
-      }, 1000) as unknown) as number;
+      this.activatedRouteEventHandler(params);
     });
   }
 
@@ -217,6 +214,37 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
     return this.timeTrackingService.getTimeDifferenceString(theDuration);
+  }
+
+  private startVisualizationSetInterval(currentSelectedTimeEntry: ITimeEntry) {
+    this.cancelIntervalId = (setInterval(() => {
+      this.visualizeTimeEntry(currentSelectedTimeEntry);
+    }, 1000) as unknown) as number;
+  }
+
+  private activatedRouteEventHandler(params: Params) {
+    let retrievedTimeEntryIdFromUrl = null;
+    if (params) {
+      retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
+    } else {
+      retrievedTimeEntryIdFromUrl = this.activatedRoute.snapshot.queryParams[TimeTrackingComponent.timeEntryIdProperty];
+    }
+    const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
+
+    if (!currentSelectedTimeEntry) {
+      return;
+    }
+    this.visualizeTimeEntry(currentSelectedTimeEntry);
+    if (this.cancelIntervalId) {
+      clearInterval(this.cancelIntervalId);
+    }
+
+    if (this.pauseResumeButtonLabel === 'Resume') {
+      // as 'Pause' has just been pressed no visualization necessary
+      return;
+    }
+
+    this.startVisualizationSetInterval(currentSelectedTimeEntry);
   }
 
   ngOnInit() {
