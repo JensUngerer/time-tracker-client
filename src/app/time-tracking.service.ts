@@ -39,7 +39,14 @@ export class TimeTrackingService {
     }
     timeEntry.endTime = new Date();
 
-    timeEntry.duration = this.calculateTimeDifferenceWithoutPauses(timeEntry);
+    const durationInMilliseconds = this.calculateTimeDifferenceWithoutPauses(timeEntry);
+
+    let durationInMinutes = this.millisecondsInMinutes(durationInMilliseconds);
+
+    if (durationInMinutes === 0) {
+      durationInMinutes = 1;
+    }
+    timeEntry.duration = durationInMinutes;
 
     return timeEntry;
   }
@@ -48,22 +55,24 @@ export class TimeTrackingService {
     let pausesDuration = 0;
     timeEntry.pauses.forEach((onePause: IPause) => {
       if (onePause.startTime && onePause.endTime) {
-        pausesDuration += this.getTimeDifferenceInMinutes(onePause.endTime, onePause.startTime);
+        pausesDuration += this.getTimeDifferenceInMilliseconds(onePause.endTime, onePause.startTime);
         return;
       }
       if (onePause.startTime && !onePause.endTime) {
         console.error('one pause has no endTime to startTime:' + onePause.startTime);
-        pausesDuration += this.getTimeDifferenceInMinutes(new Date(), onePause.startTime);
+        pausesDuration += this.getTimeDifferenceInMilliseconds(new Date(), onePause.startTime);
         return;
       }
       console.error('pause has neither startTime nor endTime');
     });
-    let trackedDurationInMinutes = this.getTimeDifferenceInMinutes(timeEntry.endTime, timeEntry.startTime);
-    trackedDurationInMinutes = trackedDurationInMinutes - pausesDuration;
-    if (trackedDurationInMinutes <= 0) {
-      trackedDurationInMinutes = 1;
-    }
-    return trackedDurationInMinutes;
+    let trackedDurationInMilliseconds = this.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
+    trackedDurationInMilliseconds = trackedDurationInMilliseconds - pausesDuration;
+
+    // if (trackedDurationInMilliseconds <= 0) {
+    //   trackedDurationInMilliseconds = 1;
+    // }
+
+    return trackedDurationInMilliseconds;
   }
 
   public getTimeDifferenceInMilliseconds(endTime: Date, startTime: Date): number {
@@ -91,14 +100,17 @@ export class TimeTrackingService {
     return oneNumber.toString();
   }
 
-  public getTimeDifferenceInMinutes(endTime: Date, startTime: Date): number {
-    let durationInMinutes = endTime.getTime() - startTime.getTime();
-    durationInMinutes = Math.floor(durationInMinutes / 1000);
-    durationInMinutes = Math.floor(durationInMinutes / 60);
-    if (durationInMinutes === 0) {
-      durationInMinutes = 1;
-    }
-    return durationInMinutes;
-  }
+  // public getTimeDifferenceInMinutes(endTime: Date, startTime: Date): number {
+  //   let durationInMinutes = endTime.getTime() - startTime.getTime();
+  //   durationInMinutes = Math.floor(durationInMinutes / 1000);
+  //   durationInMinutes = Math.floor(durationInMinutes / 60);
+  //   if (durationInMinutes === 0) {
+  //     durationInMinutes = 1;
+  //   }
+  //   return durationInMinutes;
+  // }
 
+  private millisecondsInMinutes(durationInMilliseconds): number {
+    return Math.floor(durationInMilliseconds / (60 * 1000));
+  }
 }

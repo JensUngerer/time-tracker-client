@@ -11,6 +11,7 @@ import { ProjectService } from '../project.service';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
+import * as _ from 'underscore';
 
 export interface IUserOption {
   value: IUser;
@@ -203,10 +204,18 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
     let theDuration: number = null;
     if (!timeEntry.endTime) {
-      theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(new Date(), timeEntry.startTime);
+      const clonedTimeEntry: ITimeEntry = _.clone(timeEntry);
+      clonedTimeEntry.endTime = new Date();
+      theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
+
+      // this.timeTrackingService.getTimeDifferenceInMilliseconds(new Date(), timeEntry.startTime);
+
       return this.timeTrackingService.getTimeDifferenceString(theDuration);
     }
-    theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
+
+    // theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
+
+    theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
     return this.timeTrackingService.getTimeDifferenceString(theDuration);
   }
 
