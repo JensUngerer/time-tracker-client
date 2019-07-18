@@ -129,15 +129,23 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       clearInterval(this.cancelIntervalId);
     }
 
+    const currentTimeEntryId = this.getTimeEntryIdFromUrl();
+
     this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
     if (this.pauseResumeButtonLabel === 'Resume') {
       // the 'Pause' button has just been pressed
 
       this.isStartStopButtonDisabled = true;
+
+      this.timeTrackingService.startPause(currentTimeEntryId);
     } else {
-      this.activatedRouteEventHandler(null);
+      // the 'Resume' button has just been pressed
 
       this.isStartStopButtonDisabled = false;
+
+      this.timeTrackingService.stopPause(currentTimeEntryId);
+
+      this.activatedRouteEventHandler(null);
     }
   }
 
@@ -205,12 +213,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       clonedTimeEntry.endTime = new Date();
       theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
 
-      // this.timeTrackingService.getTimeDifferenceInMilliseconds(new Date(), timeEntry.startTime);
-
       return this.timeTrackingService.getTimeDifferenceString(theDuration);
     }
-
-    // theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
 
     theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
     return this.timeTrackingService.getTimeDifferenceString(theDuration);
@@ -227,7 +231,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (params) {
       retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
     } else {
-      retrievedTimeEntryIdFromUrl = this.activatedRoute.snapshot.queryParams[TimeTrackingComponent.timeEntryIdProperty];
+      retrievedTimeEntryIdFromUrl = this.getTimeEntryIdFromUrl();
     }
     const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
 

@@ -51,6 +51,46 @@ export class TimeTrackingService {
     return timeEntry;
   }
 
+  public startPause(timeEntryId: string){
+    if (!timeEntryId) {
+      console.error('cannot start Pause because of missing timeEntryId:' + timeEntryId);
+      return;
+    }
+
+    const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
+    if (!retrievedTimeEntry || !retrievedTimeEntry.pauses) {
+      console.error('could not add pause because of missing timeEntry');
+      return;
+    }
+    const newPause: IPause = {
+        startTime: new Date(),
+        endTime: null,
+        duration: null
+    };
+
+    retrievedTimeEntry.pauses.push(newPause);
+  }
+
+  public stopPause(timeEntryId: string) {
+    if (!timeEntryId) {
+      console.error('cannot stop Pause because of missing timeEntryId:' + timeEntryId);
+      return;
+    }
+
+    const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
+    if (!retrievedTimeEntry || !retrievedTimeEntry.pauses || retrievedTimeEntry.pauses.length === 0) {
+      console.error('could not stop pause because of missing timeEntry');
+      return;
+    }
+    const lastIndex = retrievedTimeEntry.pauses.length - 1;
+    const latestPause: IPause = retrievedTimeEntry.pauses[lastIndex];
+    latestPause.endTime = new Date();
+
+    // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
+    latestPause.duration = this.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
+    latestPause.duration = this.millisecondsInMinutes(latestPause.duration);
+  }
+
   public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {
     let pausesDuration = 0;
     timeEntry.pauses.forEach((onePause: IPause) => {
