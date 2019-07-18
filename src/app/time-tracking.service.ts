@@ -38,8 +38,15 @@ export class TimeTrackingService {
       return null;
     }
     timeEntry.endTime = new Date();
+
+    timeEntry.duration = this.calculateTimeDifferenceWithoutPauses(timeEntry);
+
+    return timeEntry;
+  }
+
+  public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {
     let pausesDuration = 0;
-    timeEntry.pauses.forEach((onePause: IPause)=>{
+    timeEntry.pauses.forEach((onePause: IPause) => {
       if (onePause.startTime && onePause.endTime) {
         pausesDuration += this.getTimeDifferenceInMinutes(onePause.endTime, onePause.startTime);
         return;
@@ -56,13 +63,15 @@ export class TimeTrackingService {
     if (trackedDurationInMinutes <= 0) {
       trackedDurationInMinutes = 1;
     }
-    timeEntry.duration = trackedDurationInMinutes;
-
-    return timeEntry;
+    return trackedDurationInMinutes;
   }
 
-  public getTimeDifferenceString(endTime: Date, startTime: Date): string {
-    let theDuration = endTime.getTime() - startTime.getTime();
+  public getTimeDifferenceInMilliseconds(endTime: Date, startTime: Date): number {
+    const theDuration = endTime.getTime() - startTime.getTime();
+    return theDuration;
+  }
+
+  public getTimeDifferenceString(theDuration: number): string {
     theDuration = Math.floor(theDuration / 1000);
     const durationInSeconds = theDuration % 60;
     theDuration = Math.floor(theDuration / 60);

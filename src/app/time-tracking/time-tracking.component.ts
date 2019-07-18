@@ -201,10 +201,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (!timeEntry) {
       return;
     }
+    let theDuration: number = null;
     if (!timeEntry.endTime) {
-      return this.timeTrackingService.getTimeDifferenceString(new Date(), timeEntry.startTime);
+      theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(new Date(), timeEntry.startTime);
+      return this.timeTrackingService.getTimeDifferenceString(theDuration);
     }
-    return this.timeTrackingService.getTimeDifferenceString(timeEntry.endTime, timeEntry.startTime);
+    theDuration = this.timeTrackingService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
+    return this.timeTrackingService.getTimeDifferenceString(theDuration);
   }
 
   ngOnInit() {
