@@ -61,7 +61,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public static timeEntryIdProperty = 'timeEntryId';
 
-  private cancelIntervalId: NodeJS.Timer = null;
+  private cancelIntervalId: number = null;
 
   private activatedRouteSubscription: Subscription = null;
 
@@ -187,9 +187,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       if (this.cancelIntervalId) {
         clearInterval(this.cancelIntervalId);
       }
-      this.cancelIntervalId = setInterval(() => {
+      this.cancelIntervalId =  (setInterval(() => {
         this.visualizeTimeEntry(currentSelectedTimeEntry);
-      }, 60 * 1000);
+      }, 60 * 1000) as unknown) as number;
     });
   }
 
