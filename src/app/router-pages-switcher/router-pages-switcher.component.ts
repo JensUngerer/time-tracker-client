@@ -51,8 +51,9 @@ export class RouterPagesSwitcherComponent implements OnInit {
 
   ngOnInit() {
     this.router.events.subscribe(() => {
-      this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(this.router.url);
-      this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(this.router.url);
+      const prefix = this.getPrefixOfRouterUrl();
+      this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(prefix);
+      this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(prefix);
     });
   }
 
@@ -65,11 +66,31 @@ export class RouterPagesSwitcherComponent implements OnInit {
   }
 
   public onForwardButtonClicked() {
-    this.router.navigate([this.urlForwardMapping[this.router.url]]);
+    const prefix = this.getPrefixOfRouterUrl();
+    this.router.navigate([this.urlForwardMapping[prefix]]);
   }
 
   public onBackwardButtonClicked() {
-    this.router.navigate([this.urlBackwardMapping[this.router.url]]);
+    const prefix = this.getPrefixOfRouterUrl();
+    this.router.navigate([this.urlBackwardMapping[prefix]]);
+  }
+
+  private getPrefixOfRouterUrl(): string {
+    const routerUrl = this.router.url;
+    const prefix = this.getRoutePrefix(routerUrl);
+    return prefix;
+  }
+
+  private getRoutePrefix(url: string) {
+    const indexOfQuotationMark = url.indexOf('?');
+    if (indexOfQuotationMark === -1) {
+      return url;
+    }
+    const prefix = url.substring(0, indexOfQuotationMark);
+    if (prefix) {
+      return prefix;
+    }
+    return '';
   }
 
   // private getNextRoute(currentUrl: string): string {
