@@ -45,7 +45,7 @@ export class CommitComponent implements OnInit {
     const projectId = $event.value.projectId;
 
     const summarizedDurationStringForOneProject = this.projectService.summarizeDurationFor(projectId);
-    this.projectDurationsBuffer = summarizedDurationStringForOneProject;
+    this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
   }
 
 }
