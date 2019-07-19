@@ -4,6 +4,7 @@ import { IProject } from '../../../common/typescript/iProject';
 import { IUser } from '../../../common/typescript/iUser';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
+import { SessionStorageSerializationService } from './session-storage-serialization.service';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -18,13 +19,14 @@ export class InMemoryDataService implements OnDestroy {
   private storage: IStorageData;
 
   private saveStorageListener() {
-    window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(this.storage));
+    const serializedStorage: string = this.sessionStorageSerializationService.serialize(this.storage);
+    window.sessionStorage.setItem(this.sessionStorageKey, serializedStorage);
   }
 
-  constructor() {
+  constructor(private sessionStorageSerializationService: SessionStorageSerializationService) {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
-      this.storage = JSON.parse(containedDataStr);
+      this.storage = this.sessionStorageSerializationService.deSerialize(containedDataStr);
     } else {
       this.storage = {
         users: null,
@@ -40,7 +42,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    // window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+    window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
 
   public getProjectById(projectId: string): IProject {

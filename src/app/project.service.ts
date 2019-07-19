@@ -66,12 +66,13 @@ export class ProjectService {
         durationOverallSum += oneTimeEntry.duration;
         tasksSum += oneTimeEntry.duration;
 
-        if (typeof(oneTimeEntry.startTime) === 'string') {
-          oneTimeEntry.startTime = new Date(oneTimeEntry.startTime);
-        }
-        if (typeof(oneTimeEntry.endTime) === 'string') {
-          oneTimeEntry.endTime = new Date(oneTimeEntry.endTime);
-        }
+        // TODO: should no longer be necessary
+        // if (typeof(oneTimeEntry.startTime) === 'string') {
+        //   oneTimeEntry.startTime = new Date(oneTimeEntry.startTime);
+        // }
+        // if (typeof(oneTimeEntry.endTime) === 'string') {
+        //   oneTimeEntry.endTime = new Date(oneTimeEntry.endTime);
+        // }
 
         if (oneTimeEntry.startTime.getTime() < tasksEarliestStartNumber) {
           tasksEarliestStartNumber = oneTimeEntry.startTime.getTime();

@@ -116,13 +116,13 @@ export class TimeTrackingService {
   }
 
   public getTimeDifferenceInMilliseconds(endTime: Date, startTime: Date): number {
-    // TODO: check in caller
-    if (typeof(startTime) === 'string') {
-      startTime = new Date(startTime);
-    }
-    if (typeof(endTime) === 'string') {
-      endTime = new Date(endTime);
-    }
+    // TODO: should no longer be necessary
+    // if (typeof(startTime) === 'string') {
+    //   startTime = new Date(startTime);
+    // }
+    // if (typeof(endTime) === 'string') {
+    //   endTime = new Date(endTime);
+    // }
 
     const theDuration = endTime.getTime() - startTime.getTime();
     return theDuration;
