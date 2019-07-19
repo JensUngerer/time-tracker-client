@@ -13,7 +13,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatSelectModule } from '@angular/material';
+import { MatButtonModule, MatTableModule, MatMenuModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatSelectModule } from '@angular/material';
 import { NavbarTwoComponent } from './navbar-two/navbar-two.component';
 import { LayoutModule } from '@angular/cdk/layout';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
@@ -59,7 +59,8 @@ import { CompletedTimeEntryComponent } from './completed-time-entry/completed-ti
     MatButtonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

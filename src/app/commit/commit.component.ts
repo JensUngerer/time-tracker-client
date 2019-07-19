@@ -3,6 +3,8 @@ import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
+import { MatTableDataSource } from '@angular/material';
+import { ICommitLine } from './../typescript/iCommitLine'
 
 @Component({
   selector: 'mtt-commit',
@@ -20,8 +22,16 @@ export class CommitComponent implements OnInit {
 
   public projectOptions: IProjectOption[] = [];
 
-  @Output()
-  public projectDurationsBuffer = '';
+  public dataSource: MatTableDataSource<ICommitLine> = null;
+
+  public displayedColumns: string[] = [
+    'description',
+    // 'startTime',
+    // 'endTime',
+    'durationStr'
+  ];
+
+  public rawLinesToCommit: ICommitLine[] = null;
 
   constructor(private formBuilder: FormBuilder,
               private projectService: ProjectService) { }
@@ -44,8 +54,13 @@ export class CommitComponent implements OnInit {
     console.log($event.value.projectId);
     const projectId = $event.value.projectId;
 
-    const summarizedDurationStringForOneProject = this.projectService.summarizeDurationFor(projectId);
-    this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
+    this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
+    // this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
+    this.dataSource = new MatTableDataSource(this.rawLinesToCommit);
+  }
+
+  public onCommitClicked() {
+    console.error(this.rawLinesToCommit[this.rawLinesToCommit.length - 1].durationStr);
   }
 
 }
