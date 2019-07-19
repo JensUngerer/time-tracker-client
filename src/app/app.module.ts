@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
 
 // https://stackoverflow.com/questions/38209713/how-to-make-a-responsive-nav-bar-using-angular-material-2
 // https://material.angular.io/guide/getting-started
@@ -13,8 +12,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { MatButtonModule, MatTableModule, MatMenuModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatSelectModule } from '@angular/material';
-import { NavbarTwoComponent } from './navbar-two/navbar-two.component';
+import {
+  MatButtonModule,
+  MatTableModule,
+  MatMenuModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatSidenavModule,
+  MatListModule,
+  MatFormFieldModule,
+  MatSelectModule } from '@angular/material';
 import { LayoutModule } from '@angular/cdk/layout';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
 import { HomeComponent } from './home/home.component';
@@ -30,8 +37,6 @@ import { CompletedTimeEntryComponent } from './completed-time-entry/completed-ti
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
-    NavbarTwoComponent,
     NavbarFourComponent,
     HomeComponent,
     UserComponent,
