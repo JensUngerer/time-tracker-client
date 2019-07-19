@@ -12,10 +12,11 @@ export class TaskService {
 
   constructor(private inMemoryDataService: InMemoryDataService) { }
 
-  public addTask(taskName: string) {
+  public addTask(taskName: string, projectId: string) {
     const newTask: ITask = {
       name: taskName,
-      taskId: uuid.v4()
+      taskId: uuid.v4(),
+      _projectId: projectId
     };
     this.inMemoryDataService.push(this.tasksKey, newTask);
   }

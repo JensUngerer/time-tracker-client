@@ -1,6 +1,8 @@
+import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
+import { ProjectComponent } from '../project/project.component';
 
 @Component({
   selector: 'mtt-task',
@@ -18,12 +20,15 @@ export class TaskComponent implements OnInit {
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
 
-    this.taskService.addTask(newNewTaskName);
+    const projectId = this.currentSelectionsPropertiesService.properties[ProjectComponent.projectIdPropertyName];
+
+    this.taskService.addTask(newNewTaskName, projectId);
 
     this.isButtonDisabled = true;
   }
 
-  constructor(private taskService: TaskService) {
+  constructor(private taskService: TaskService,
+              private currentSelectionsPropertiesService: CurrentSelectionsPropertiesService) {
     const configObj: {[key: string]: AbstractControl} = {};
 
     configObj[this.formControlNameTaskName] = new FormControl('');

@@ -1,1 +1,14 @@
-<p>commit works!</p>
+<div class="container">
+  <div class="flexItem">
+    <form [formGroup]="commitFormGroup">
+      <mat-select (selectionChange)="onProjectSelectionChanged($event)" [formGroupName]="formControlNameProjectDropDown" [required]="true">
+        <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
+          {{projectOption.viewValue}}
+        </mat-option>
+      </mat-select>
+      <div>
+        {{ projectDurationsBuffer }}
+      </div>
+    </form>
+  </div>
+</div>

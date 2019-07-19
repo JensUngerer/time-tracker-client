@@ -25,8 +25,7 @@ export class InMemoryDataService implements OnDestroy {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = JSON.parse(containedDataStr);
-    }
-    else {
+    } else {
       this.storage = {
         users: null,
         projects: null,
@@ -35,13 +34,28 @@ export class InMemoryDataService implements OnDestroy {
       };
     }
 
-    window.addEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+    window.addEventListener(this.beforeUnloadEventName, (event: any) => {
+      this.saveStorageListener();
+    });
   }
 
   public ngOnDestroy(): void {
-    window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+    // window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
 
+  public getProjectById(projectId: string): IProject {
+    if (!this.storage || !this.storage['projects']) {
+      console.error('no storage to retrieve data from');
+      return null;
+    }
+    const foundProject = this.storage['projects'].find((singleProject: IProject) => {
+      return singleProject.projectId === projectId;
+    });
+    if (!foundProject) {
+      return null;
+    }
+    return foundProject;
+  }
 
   public set(key: keyof IStorageData, value: any) {
     this.storage[key] = value;
@@ -73,5 +87,27 @@ export class InMemoryDataService implements OnDestroy {
       return null;
     }
     return foundTimeEntry;
+  }
+
+  public getTasksByProjectId(projectId: string) {
+    const tasks: ITask[] = this.storage['tasks'].filter((oneTask: ITask)=>{
+      return oneTask._projectId === projectId;
+    });
+    if (!tasks || tasks.length === 0) {
+      console.error('!tasks || tasks.length === 0');
+      return null;
+    }
+    return tasks;
+  }
+
+  public getTimeEntriesByTaskId(taksId: string) {
+    const timeEntries: ITimeEntry[] = this.storage['timeEntries'].filter((oneTimeEntry: ITimeEntry)=>{
+      return oneTimeEntry._taskId === taksId;
+    });
+    if (!timeEntries || timeEntries.length === 0) {
+      console.error('!timeEntries || timeEntries.length === 0');
+      return null;
+    }
+    return timeEntries;
   }
 }

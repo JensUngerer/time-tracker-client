@@ -1,3 +1,4 @@
+import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
 import { ProjectService } from './../project.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
@@ -12,6 +13,8 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 })
 export class ProjectComponent implements OnInit {
 
+  public static projectIdPropertyName = 'projectId';
+
   public projectFormGroup: FormGroup = null;
 
   public formControlNameProjectName = 'theProjectName';
@@ -20,11 +23,14 @@ export class ProjectComponent implements OnInit {
 
   public onSubmit(values: any) {
     const projectName = values[this.formControlNameProjectName];
-    this.projectService.addProject(projectName);
+    const projectId: string = this.projectService.addProject(projectName);
     this.isAddButtonDisabled = true;
+
+    this.currentSelectionsPropertiesService.properties[ProjectComponent.projectIdPropertyName] = projectId;
   }
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService,
+              private currentSelectionsPropertiesService: CurrentSelectionsPropertiesService) {
     const configObj: {[key: string]: AbstractControl} = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 

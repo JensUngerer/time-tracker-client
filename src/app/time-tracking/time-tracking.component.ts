@@ -1,9 +1,11 @@
+import { ITaskOption, TaskOption } from './../typescript/taskOption';
+import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { InMemoryDataService } from './../in-memory-data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
-import { FormGroup, AbstractControl, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
 import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
 import { IProject } from '../../../../common/typescript/iProject';
@@ -12,45 +14,7 @@ import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-
-export interface IUserOption {
-  value: IUser;
-  viewValue: string;
-}
-
-export class UserOption implements IUserOption {
-  constructor(public value: IUser) { }
-
-  public get viewValue(): string {
-    return this.value.name + ' ' + this.value.surname;
-  }
-}
-
-export interface IProjectOption {
-  value: IProject;
-  viewValue: string;
-}
-
-export class ProjectOption implements IProjectOption {
-  constructor(public value: IProject) { }
-
-  public get viewValue(): string {
-    return this.value.name;
-  }
-}
-
-export interface ITaskOption {
-  value: ITask;
-  viewValue: string;
-}
-
-export class TaskOption implements ITaskOption {
-  constructor(public value: ITask) { }
-
-  public get viewValue(): string {
-    return this.value.name;
-  }
-}
+import { IUserOption, UserOption } from './../typescript/userOption';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
