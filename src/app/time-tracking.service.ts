@@ -1,3 +1,4 @@
+import { HelpersService } from './helpers.service';
 import { Injectable } from '@angular/core';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import uuid from 'uuid';
@@ -11,7 +12,8 @@ export class TimeTrackingService {
 
   private readonly timeEntriesKey = 'timeEntries';
 
-  constructor(private inMemoryDataService: InMemoryDataService) { }
+  constructor(private inMemoryDataService: InMemoryDataService,
+              private helpersService: HelpersService) { }
 
   public startTimeTracking(taskId: string, projectId?: string, userId?: string): ITimeEntry {
     const timeEntry: ITimeEntry = {
@@ -41,7 +43,7 @@ export class TimeTrackingService {
 
     const durationInMilliseconds = this.calculateTimeDifferenceWithoutPauses(timeEntry);
 
-    let durationInMinutes = this.millisecondsInMinutes(durationInMilliseconds);
+    let durationInMinutes = this.helpersService.millisecondsInMinutes(durationInMilliseconds);
 
     if (durationInMinutes === 0) {
       durationInMinutes = 1;
@@ -87,70 +89,27 @@ export class TimeTrackingService {
     latestPause.endTime = new Date();
 
     // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
-    latestPause.duration = this.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
-    latestPause.duration = this.millisecondsInMinutes(latestPause.duration);
+    latestPause.duration = this.helpersService.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
+    latestPause.duration = this.helpersService.millisecondsInMinutes(latestPause.duration);
   }
 
   public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {
     let pausesDuration = 0;
     timeEntry.pauses.forEach((onePause: IPause) => {
       if (onePause.startTime && onePause.endTime) {
-        pausesDuration += this.getTimeDifferenceInMilliseconds(onePause.endTime, onePause.startTime);
+        pausesDuration += this.helpersService.getTimeDifferenceInMilliseconds(onePause.endTime, onePause.startTime);
         return;
       }
       if (onePause.startTime && !onePause.endTime) {
         console.error('one pause has no endTime to startTime:' + onePause.startTime);
-        pausesDuration += this.getTimeDifferenceInMilliseconds(new Date(), onePause.startTime);
+        pausesDuration += this.helpersService.getTimeDifferenceInMilliseconds(new Date(), onePause.startTime);
         return;
       }
       console.error('pause has neither startTime nor endTime');
     });
-    let trackedDurationInMilliseconds = this.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
+    let trackedDurationInMilliseconds = this.helpersService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
     trackedDurationInMilliseconds = trackedDurationInMilliseconds - pausesDuration;
 
-    // if (trackedDurationInMilliseconds <= 0) {
-    //   trackedDurationInMilliseconds = 1;
-    // }
-
     return trackedDurationInMilliseconds;
-  }
-
-  public getTimeDifferenceInMilliseconds(endTime: Date, startTime: Date): number {
-    const theDuration = endTime.getTime() - startTime.getTime();
-    return theDuration;
-  }
-
-  public getTimeDifferenceString(theDuration: number): string {
-    theDuration = Math.floor(theDuration / 1000);
-    const durationInSeconds = theDuration % 60;
-    theDuration = Math.floor(theDuration / 60);
-    const durationInMinutes = theDuration % 60;
-    theDuration = Math.floor(theDuration / 60);
-    const durationInHours = theDuration % 60;
-
-    return this.ensureTowDigits(durationInHours) + ':'
-    + this.ensureTowDigits(durationInMinutes) + ':'
-    + this.ensureTowDigits(durationInSeconds);
-  }
-
-  private ensureTowDigits(oneNumber: number): string {
-    if (oneNumber <= 9) {
-      return '0' + oneNumber;
-    }
-    return oneNumber.toString();
-  }
-
-  // public getTimeDifferenceInMinutes(endTime: Date, startTime: Date): number {
-  //   let durationInMinutes = endTime.getTime() - startTime.getTime();
-  //   durationInMinutes = Math.floor(durationInMinutes / 1000);
-  //   durationInMinutes = Math.floor(durationInMinutes / 60);
-  //   if (durationInMinutes === 0) {
-  //     durationInMinutes = 1;
-  //   }
-  //   return durationInMinutes;
-  // }
-
-  private millisecondsInMinutes(durationInMilliseconds): number {
-    return Math.floor(durationInMilliseconds / (60 * 1000));
   }
 }

@@ -5,6 +5,7 @@ import uuid from 'uuid';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
+import { HelpersService } from './helpers.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class ProjectService {
 
   private readonly projectsKey = 'projects';
 
-  constructor(private inMemoryDataService: InMemoryDataService) { }
+  constructor(private inMemoryDataService: InMemoryDataService,
+              private helpersService: HelpersService) { }
 
   public addProject(projectName: string): string {
     const newProject: IProject = {
@@ -76,7 +78,10 @@ export class ProjectService {
         }
       });
 
-      oneCommitLine.durationStr = this.ensureTwoDigits(Math.floor(tasksSum / 60)) + ':' + this.ensureTwoDigits(tasksSum % 60);
+      const taskSumInMinutes = tasksSum % 60;
+      const taskSumInHours = Math.floor(tasksSum / 60);
+
+      oneCommitLine.durationStr = this.helpersService.getDurationStr(taskSumInHours, taskSumInMinutes);
       oneCommitLine.startTime = tasksEarliestStartDate;
       oneCommitLine.endTime = tasksLatestEndDate;
 
@@ -90,17 +95,10 @@ export class ProjectService {
       description: 'sum',
       endTime: null,
       startTime: null,
-      durationStr: this.ensureTwoDigits(hours) + ':' + this.ensureTwoDigits(minutes)
+      durationStr: this.helpersService.getDurationStr(hours, minutes)
     };
     commitLines.push(sumLine);
 
     return commitLines;
-  }
-
-  private ensureTwoDigits(aNumber: number): string {
-    if (aNumber <= 9) {
-      return '0' + aNumber;
-    }
-    return aNumber.toString();
   }
 }

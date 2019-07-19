@@ -1,3 +1,4 @@
+import { HelpersService } from './../helpers.service';
 import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { InMemoryDataService } from './../in-memory-data.service';
@@ -119,6 +120,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
               private taskManagementService: TaskService,
               private timeTrackingService: TimeTrackingService,
               private inMemoryDataService: InMemoryDataService,
+              private helpersService: HelpersService,
               private formBuilder: FormBuilder,
               private router: Router,
               private activatedRoute: ActivatedRoute) {
@@ -177,11 +179,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       clonedTimeEntry.endTime = new Date();
       theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
 
-      return this.timeTrackingService.getTimeDifferenceString(theDuration);
+      return this.helpersService.getTimeDifferenceString(theDuration);
     }
 
     theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
-    return this.timeTrackingService.getTimeDifferenceString(theDuration);
+    return this.helpersService.getTimeDifferenceString(theDuration);
   }
 
   private startVisualizationSetInterval(currentSelectedTimeEntry: ITimeEntry) {
