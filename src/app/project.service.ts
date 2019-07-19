@@ -6,6 +6,7 @@ import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { HelpersService } from './helpers.service';
+import { IGridCommitLine } from './commit/commit.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ProjectService {
   private readonly projectsKey = 'projects';
 
   constructor(private inMemoryDataService: InMemoryDataService,
-              private helpersService: HelpersService) { }
+    private helpersService: HelpersService) { }
 
   public addProject(projectName: string): string {
     const newProject: IProject = {
@@ -34,14 +35,14 @@ export class ProjectService {
   public getProjectByProjectId(projectId: string) {
   }
 
-  public summarizeDurationFor(projectId: string): ICommitLine[] {
+  public summarizeDurationFor(projectId: string): IGridCommitLine[] {
     const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
     if (!tasksByProjectId || tasksByProjectId.length === 0) {
       console.error('!tasksByProjectId');
       return;
     }
     let durationOverallSum = 0;
-    const commitLines: ICommitLine[] = [];
+    const commitLines: IGridCommitLine[] = [];
     tasksByProjectId.forEach((singleTask: ITask) => {
       let tasksSum = 0;
 
@@ -53,10 +54,12 @@ export class ProjectService {
 
 
       const taskId = singleTask.taskId;
-      const oneCommitLine: ICommitLine = {
+      const oneCommitLine: IGridCommitLine = {
         description: singleTask.name,
         startTime: null,
         endTime: null,
+        dateStructure: null,
+        durationStructure: null,
         durationStr: null
       };
       const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(taskId);
@@ -81,9 +84,13 @@ export class ProjectService {
       const taskSumInMinutes = tasksSum % 60;
       const taskSumInHours = Math.floor(tasksSum / 60);
 
-      oneCommitLine.durationStr = this.helpersService.getDurationStr(taskSumInHours, taskSumInMinutes);
+      oneCommitLine.durationStructure = this.helpersService.getDurationStructure(taskSumInHours, taskSumInMinutes);
       oneCommitLine.startTime = tasksEarliestStartDate;
       oneCommitLine.endTime = tasksLatestEndDate;
+      oneCommitLine.durationStr = this.helpersService.getDurationStr(oneCommitLine.durationStructure.hours,
+        oneCommitLine.durationStructure.minutes);
+
+      oneCommitLine.dateStructure = this.helpersService.getDateStructure(tasksLatestEndDate);
 
       commitLines.push(oneCommitLine);
     });
@@ -91,14 +98,46 @@ export class ProjectService {
     const minutes = durationOverallSum % 60;
     const hours = Math.floor(durationOverallSum / 60);
 
-    const sumLine: ICommitLine = {
+    const theStartDate = this.getMinValueOfDates(commitLines);
+    const theEndDate = this.getMaxValueOfDates(commitLines);
+    const sumLine: IGridCommitLine = {
       description: 'sum',
-      endTime: null,
-      startTime: null,
+      endTime: theEndDate,
+      startTime: theStartDate,
+      durationStructure: this.helpersService.getDurationStructure(hours, minutes),
+      dateStructure: this.helpersService.getDateStructure(theEndDate),
       durationStr: this.helpersService.getDurationStr(hours, minutes)
     };
     commitLines.push(sumLine);
 
     return commitLines;
+  }
+
+  private getMaxValueOfDates(lines: ICommitLine[]): Date {
+    let theGetTime = 0;
+    let theDate = null;
+
+    lines.forEach((oneLine: ICommitLine) => {
+      if (oneLine.endTime.getTime() > theGetTime) {
+        theGetTime = oneLine.endTime.getTime();
+        theDate = oneLine.endTime;
+      }
+    });
+
+    return theDate;
+  }
+
+  private getMinValueOfDates(liens: ICommitLine[]): Date {
+    let theGetTime = new Date().getTime();
+    let theDate = null;
+
+    liens.forEach((oneLine: ICommitLine) => {
+      if (oneLine.startTime.getTime() < theGetTime) {
+        theGetTime = oneLine.startTime.getTime();
+        theDate = oneLine.startTime;
+      }
+    });
+
+    return theDate;
   }
 }

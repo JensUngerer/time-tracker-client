@@ -1,3 +1,5 @@
+import { IDate } from './../typescript/iDate';
+import { IDuration } from './../typescript/iDuration';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
@@ -5,6 +7,16 @@ import { FormGroup, FormBuilder, AbstractControl, FormControl } from '@angular/f
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource } from '@angular/material';
 import { ICommitLine } from './../typescript/iCommitLine'
+import { HelpersService } from '../helpers.service';
+
+export interface IGridCommitLine {
+  description: string;
+  durationStructure: IDuration;
+  dateStructure: IDate;
+  durationStr: string;
+  startTime: Date;
+  endTime: Date;
+}
 
 @Component({
   selector: 'mtt-commit',
@@ -22,7 +34,7 @@ export class CommitComponent implements OnInit {
 
   public projectOptions: IProjectOption[] = [];
 
-  public dataSource: MatTableDataSource<ICommitLine> = null;
+  public dataSource: MatTableDataSource<IGridCommitLine> = null;
 
   public displayedColumns: string[] = [
     'description',
@@ -31,10 +43,11 @@ export class CommitComponent implements OnInit {
     'durationStr'
   ];
 
-  public rawLinesToCommit: ICommitLine[] = null;
+  public rawLinesToCommit: IGridCommitLine[] = null;
 
   constructor(private formBuilder: FormBuilder,
-              private projectService: ProjectService) { }
+              private projectService: ProjectService,
+              private helpersService: HelpersService) { }
 
   ngOnInit() {
     const configObj: {[key: string]: AbstractControl} = {};
@@ -51,7 +64,6 @@ export class CommitComponent implements OnInit {
   }
 
   public onProjectSelectionChanged($event: any) {
-    console.log($event.value.projectId);
     const projectId = $event.value.projectId;
 
     this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
@@ -60,7 +72,10 @@ export class CommitComponent implements OnInit {
   }
 
   public onCommitClicked() {
-    console.error(this.rawLinesToCommit[this.rawLinesToCommit.length - 1].durationStr);
+    const sumLine: IGridCommitLine = this.rawLinesToCommit[this.rawLinesToCommit.length - 1];
+    // console.error(sumLine.durationStr);
+    // console.error(this.helpersService.getCurrentDateStr(sumLine.endTime));
+    console.error(JSON.stringify(sumLine, null, 4));
   }
 
 }

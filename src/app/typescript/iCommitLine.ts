@@ -1,6 +1,10 @@
+import { IDuration } from './iDuration';
+import { IDate } from './iDate';
+
 export interface ICommitLine {
   description: string;
   startTime: Date;
   endTime: Date;
-  durationStr: string;
+  durationStructure: IDuration;
+  dateStructure: IDate;
 }

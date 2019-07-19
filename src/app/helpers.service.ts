@@ -1,4 +1,6 @@
+import { IDate } from './typescript/iDate';
 import { Injectable } from '@angular/core';
+import { IDuration } from './typescript/iDuration';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +18,18 @@ export class HelpersService {
 
   public getDurationStr(hours: number, minutes: number): string {
     return this.ensureTwoDigits(hours) + ':' + this.ensureTwoDigits(minutes);
+  }
+
+  public getDurationStructure(hours: number, minutes: number): IDuration {
+    return { hours, minutes };
+  }
+
+  public getDateStructure(theDate: Date): IDate {
+    return {
+      day: theDate.getDate(),
+      month: theDate.getMonth() + 1,
+      year: theDate.getFullYear()
+    };
   }
 
   public getFullDurationStr(hours: number, minutes: number, seconds: number) {
@@ -40,5 +54,9 @@ export class HelpersService {
 
   public millisecondsInMinutes(durationInMilliseconds): number {
     return Math.floor(durationInMilliseconds / (60 * 1000));
+  }
+
+  public getCurrentDateStr(theDate: Date) {
+    return theDate.getDate() + ':' + (theDate.getMonth() + 1) + ':' + theDate.getFullYear();
   }
 }
