@@ -16,7 +16,7 @@ export class ProjectService {
   private readonly projectsKey = 'projects';
 
   constructor(private inMemoryDataService: InMemoryDataService,
-    private helpersService: HelpersService) { }
+              private helpersService: HelpersService) { }
 
   public addProject(projectName: string): string {
     const newProject: IProject = {
@@ -41,6 +41,7 @@ export class ProjectService {
       console.error('!tasksByProjectId');
       return;
     }
+    // let concatenatedDescriptions = '';
     let durationOverallSum = 0;
     const commitLines: IGridCommitLine[] = [];
     tasksByProjectId.forEach((singleTask: ITask) => {
@@ -52,6 +53,7 @@ export class ProjectService {
       let tasksLatestEndDate: Date = null;
       let tasksLatestEndNumber = 0;
 
+      // concatenatedDescriptions += singleTask.name + '\n';
 
       const taskId = singleTask.taskId;
       const oneCommitLine: IGridCommitLine = {
@@ -127,11 +129,11 @@ export class ProjectService {
     return theDate;
   }
 
-  private getMinValueOfDates(liens: ICommitLine[]): Date {
+  private getMinValueOfDates(line: ICommitLine[]): Date {
     let theGetTime = new Date().getTime();
     let theDate = null;
 
-    liens.forEach((oneLine: ICommitLine) => {
+    line.forEach((oneLine: ICommitLine) => {
       if (oneLine.startTime.getTime() < theGetTime) {
         theGetTime = oneLine.startTime.getTime();
         theDate = oneLine.startTime;

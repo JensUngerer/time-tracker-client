@@ -6,7 +6,7 @@ import { Component, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource } from '@angular/material';
-import { ICommitLine } from './../typescript/iCommitLine'
+// import { ICommitLine } from './../typescript/iCommitLine'
 import { HelpersService } from '../helpers.service';
 
 export interface IGridCommitLine {
@@ -57,7 +57,7 @@ export class CommitComponent implements OnInit {
 
     const allProjects = this.projectService.getProjects();
     if(allProjects && allProjects.length > 0) {
-      allProjects.forEach((project: IProject)=>{
+      allProjects.forEach((project: IProject) => {
         this.projectOptions.push(new ProjectOption(project));
       });
     }
