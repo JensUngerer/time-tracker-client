@@ -1,10 +1,12 @@
+import { CommitService } from './commit.service';
 import { Injectable, OnDestroy } from '@angular/core';
 import { IStorageData } from './../../../common/typescript/iStorageData';
 import { IProject } from '../../../common/typescript/iProject';
-import { IUser } from '../../../common/typescript/iUser';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
+import { IProjectsDocument } from './../../../common/typescript/mongoDB/iProjectsDocument';
+import { ITasksDocument } from './../../../common/typescript/mongoDB/iTasksDocument';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -23,17 +25,34 @@ export class InMemoryDataService implements OnDestroy {
     window.sessionStorage.setItem(this.sessionStorageKey, serializedStorage);
   }
 
-  constructor(private sessionStorageSerializationService: SessionStorageSerializationService) {
+  constructor(private sessionStorageSerializationService: SessionStorageSerializationService,
+              private commitService: CommitService) {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = this.sessionStorageSerializationService.deSerialize(containedDataStr);
     } else {
+      const projectsPromise: Promise<IProjectsDocument[]> = this.commitService.getProjects();
+      const tasksPromise: Promise<ITasksDocument[]> = this.commitService.getTasks();
       this.storage = {
         users: null,
         projects: null,
         tasks: null,
         timeEntries: null
       };
+
+      projectsPromise.then((docs: IProjectsDocument[]) => {
+        this.storage.projects = docs;
+      });
+      projectsPromise.catch(() => {
+        console.error('projectsPromise.catch');
+      });
+
+      tasksPromise.then((docs: ITasksDocument[]) => {
+        this.storage.tasks = docs;
+      });
+      tasksPromise.catch(() => {
+        console.error('tasksPromise.catch');
+      })
     }
 
     window.addEventListener(this.beforeUnloadEventName, (event: any) => {
@@ -42,7 +61,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+    // window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
 
   public getProjectById(projectId: string): IProject {
@@ -82,7 +101,7 @@ export class InMemoryDataService implements OnDestroy {
     if (!timeEntries) {
       return null;
     }
-    const foundTimeEntry = timeEntries.find((oneTimeEntry: ITimeEntry)=>{
+    const foundTimeEntry = timeEntries.find((oneTimeEntry: ITimeEntry) => {
       return oneTimeEntry.timeEntryId === timeEntryId;
     });
     if (!foundTimeEntry) {
@@ -92,7 +111,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public getTasksByProjectId(projectId: string) {
-    const tasks: ITask[] = this.storage['tasks'].filter((oneTask: ITask)=>{
+    const tasks: ITask[] = this.storage['tasks'].filter((oneTask: ITask) => {
       return oneTask._projectId === projectId;
     });
     if (!tasks || tasks.length === 0) {
@@ -103,7 +122,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public getTimeEntriesByTaskId(taksId: string) {
-    const timeEntries: ITimeEntry[] = this.storage['timeEntries'].filter((oneTimeEntry: ITimeEntry)=>{
+    const timeEntries: ITimeEntry[] = this.storage['timeEntries'].filter((oneTimeEntry: ITimeEntry) => {
       return oneTimeEntry._taskId === taksId;
     });
     if (!timeEntries || timeEntries.length === 0) {

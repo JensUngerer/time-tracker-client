@@ -27,7 +27,7 @@ export class CommitService {
   }
 
   public postCommit(line: ITimeRecordsDocument): Promise<any> {
-    const url =  this.httpBaseUrl + routes.port + routes.timeRecord;
+    const url = this.httpBaseUrl + routes.port + routes.timeRecord;
     return this.httpPost(routes.timeRecordBodyProperty, line, url);
   }
 
@@ -39,7 +39,32 @@ export class CommitService {
         'Content-Type': 'application/json'
       };
       this.httpClient.post(url, body, options).subscribe((subscriptionValue: any) => {
-         resolve(subscriptionValue);
+        resolve(subscriptionValue);
+      });
+    });
+  }
+
+  public getTasks(): Promise<any[]> {
+    const url = this.httpBaseUrl + routes.port + routes.task;
+    return this.httpGet(url);
+  }
+
+  public getProjects(): Promise<any[]> {
+    const url = this.httpBaseUrl + routes.port + routes.project;
+    return this.httpGet(url);
+  }
+
+  private httpGet(url: string): Promise<any[]> {
+    return new Promise<any[]>((resolve: (values: any[]) => void, reject: (value: any) => void) => {
+      const options: any = {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        reportProgress: true,
+        responseType: 'json'
+      };
+      this.httpClient.get(url, options).subscribe((subscriptionReceivedData: any) => {
+        resolve(subscriptionReceivedData);
       });
     });
   }

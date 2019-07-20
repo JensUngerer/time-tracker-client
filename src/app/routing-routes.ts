@@ -10,57 +10,59 @@ import { CompletedTimeEntryComponent } from './completed-time-entry/completed-ti
 
 export class RoutingRoutes {
 
+  public static viewsPrefix = 'views/';
+
   public static routes: Routes = [{
-    path: 'home',
+    path: RoutingRoutes.viewsPrefix + 'home',
     component: HomeComponent,
     data: {
       label: 'Home'
     }
   },
   {
-    path: 'user',
+    path: RoutingRoutes.viewsPrefix + 'user',
     component: UserComponent,
     data: {
       label: 'User-Management'
     }
   },
   {
-    path: 'project',
+    path: RoutingRoutes.viewsPrefix + 'project',
     component: ProjectComponent,
     data: {
       label: 'Project-Management'
     }
   },
   {
-    path: 'task',
+    path: RoutingRoutes.viewsPrefix + 'task',
     component: TaskComponent,
     data: {
       label: 'Task-Management'
     }
   },
   {
-    path: 'timeTracking',
+    path: RoutingRoutes.viewsPrefix + 'timeTracking',
     component: TimeTrackingComponent,
     data: {
       label: 'Time-Tracking'
     }
   },
   {
-    path: 'commit',
+    path: RoutingRoutes.viewsPrefix + 'commit',
     component: CommitComponent,
     data: {
       label: 'Commit'
     }
   },
   {
-    path: 'completedTask',
+    path: RoutingRoutes.viewsPrefix + 'completedTask',
     component: CompletedTaskComponent,
     data: {
       label: 'Completed-Tasks'
     }
   },
   {
-    path: 'completedTimeEntry',
+    path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
     component: CompletedTimeEntryComponent,
     data: {
       label: 'Completed-Time-Entries'
@@ -68,7 +70,7 @@ export class RoutingRoutes {
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: RoutingRoutes.viewsPrefix + 'home',
     pathMatch: 'full'
   }];
 }
