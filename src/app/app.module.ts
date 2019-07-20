@@ -33,6 +33,7 @@ import { TaskComponent } from './task/task.component';
 import { CommitComponent } from './commit/commit.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { CompletedTimeEntryComponent } from './completed-time-entry/completed-ti
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTableModule
+    MatTableModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

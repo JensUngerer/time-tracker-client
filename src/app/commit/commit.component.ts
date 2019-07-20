@@ -8,6 +8,7 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource } from '@angular/material';
 // import { ICommitLine } from './../typescript/iCommitLine'
 import { HelpersService } from '../helpers.service';
+import { CommitService } from '../commit.service';
 
 export interface IGridCommitLine {
   description: string;
@@ -47,7 +48,8 @@ export class CommitComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private projectService: ProjectService,
-              private helpersService: HelpersService) { }
+              private helpersService: HelpersService,
+              private commitService: CommitService) { }
 
   ngOnInit() {
     const configObj: {[key: string]: AbstractControl} = {};
@@ -76,6 +78,11 @@ export class CommitComponent implements OnInit {
     // console.error(sumLine.durationStr);
     // console.error(this.helpersService.getCurrentDateStr(sumLine.endTime));
     console.error(JSON.stringify(sumLine, null, 4));
+    this.commitService.postCommit(sumLine).then(()=>{
+      console.log('then');
+    }).catch(()=>{
+      console.log('catch');
+    });
   }
 
 }
