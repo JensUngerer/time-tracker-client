@@ -19,7 +19,7 @@ export class UserComponent implements OnInit {
   public nameForm: FormGroup = null;
 
   public onSubmit(values: any) {
-    this.userManagementService.addUser(values[this.formControlSurname], values[this.formControlName]);
+    // this.userManagementService.addUser(values[this.formControlSurname], values[this.formControlName]);
     this.isButtonDisabled = true;
   }
 

@@ -19,13 +19,13 @@ export class RoutingRoutes {
       label: 'Home'
     }
   },
-  {
-    path: RoutingRoutes.viewsPrefix + 'user',
-    component: UserComponent,
-    data: {
-      label: 'User-Management'
-    }
-  },
+  // {
+  //   path: RoutingRoutes.viewsPrefix + 'user',
+  //   component: UserComponent,
+  //   data: {
+  //     label: 'User-Management'
+  //   }
+  // },
   {
     path: RoutingRoutes.viewsPrefix + 'project',
     component: ProjectComponent,

@@ -34,7 +34,7 @@ export class InMemoryDataService implements OnDestroy {
       const projectsPromise: Promise<IProjectsDocument[]> = this.commitService.getProjects();
       const tasksPromise: Promise<ITasksDocument[]> = this.commitService.getTasks();
       this.storage = {
-        users: null,
+        // users: null,
         projects: null,
         tasks: null,
         timeEntries: null

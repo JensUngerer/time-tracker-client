@@ -12,16 +12,16 @@ export class UserManagementService {
 
   constructor(private inMemoryDataService: InMemoryDataService) { }
 
-  public addUser(surname: string, name: string) {
-    const userData: IUser = {
-      name,
-      surname,
-      userId: uuid.v4()
-    };
-    this.inMemoryDataService.push(this.usersPropertyName, userData);
-  }
+  // public addUser(surname: string, name: string) {
+  //   const userData: IUser = {
+  //     name,
+  //     surname,
+  //     userId: uuid.v4()
+  //   };
+  //   this.inMemoryDataService.push(this.usersPropertyName, userData);
+  // }
 
-  public getUsers(): IUser[] {
-    return this.inMemoryDataService.get(this.usersPropertyName);
-  }
+  // public getUsers(): IUser[] {
+  //   return this.inMemoryDataService.get(this.usersPropertyName);
+  // }
 }
