@@ -68,7 +68,12 @@ export class CommitComponent implements OnInit {
     // console.error(sumLine.durationStr);
     // console.error(this.helpersService.getCurrentDateStr(sumLine.endTime));
     console.error(JSON.stringify(sumLine, null, 4));
-    this.commitService.postCommit(sumLine).then(()=>{
+    this.commitService.postCommit({
+      _id: 'anyIdWithWillBeReplaced',
+      dateStructure: sumLine.dateStructure,
+      descriptionArray: sumLine.descriptionArr,
+      durationStructure: sumLine.durationStructure
+    }).then(()=>{
       console.log('then');
     }).catch(()=>{
       console.log('catch');
