@@ -14,7 +14,7 @@ import { IGridCommitLine } from './../../../../common/typescript/iGridCommitLine
   templateUrl: './commit.component.html',
   styleUrls: [
     './commit.component.scss',
-  './../css/centerVerticalHorizontal.scss'
+    './../css/centerVerticalHorizontal.scss'
   ]
 })
 export class CommitComponent implements OnInit {
@@ -34,21 +34,23 @@ export class CommitComponent implements OnInit {
     'durationStr'
   ];
 
+  private currentProjectId: string = null;
+
   public rawLinesToCommit: IGridCommitLine[] = null;
 
   constructor(private formBuilder: FormBuilder,
-              private projectService: ProjectService,
-              private helpersService: HelpersService,
-              private commitService: CommitService) { }
+    private projectService: ProjectService,
+    private helpersService: HelpersService,
+    private commitService: CommitService) { }
 
   ngOnInit() {
-    const configObj: {[key: string]: AbstractControl} = {};
+    const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.formControlNameProjectDropDown] = new FormControl('');
 
     this.commitFormGroup = this.formBuilder.group(configObj);
 
     const allProjects = this.projectService.getProjects();
-    if(allProjects && allProjects.length > 0) {
+    if (allProjects && allProjects.length > 0) {
       allProjects.forEach((project: IProject) => {
         this.projectOptions.push(new ProjectOption(project));
       });
@@ -58,6 +60,8 @@ export class CommitComponent implements OnInit {
   public onProjectSelectionChanged($event: any) {
     const projectId = $event.value.projectId;
 
+    this.currentProjectId = projectId;
+
     this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
     // this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
     this.dataSource = new MatTableDataSource(this.rawLinesToCommit);
@@ -65,6 +69,12 @@ export class CommitComponent implements OnInit {
 
   public onCommitClicked() {
     const sumLine: IGridCommitLine = this.rawLinesToCommit[this.rawLinesToCommit.length - 1];
+
+    // const theProjectFormControl: AbstractControl = this.commitFormGroup.controls[this.formControlNameProjectDropDown];
+    // let projectId = '';
+    // if (theProjectFormControl) {
+    //   projectId = theProjectFormControl.value.projectId;
+    // }
     // console.error(sumLine.durationStr);
     // console.error(this.helpersService.getCurrentDateStr(sumLine.endTime));
     console.error(JSON.stringify(sumLine, null, 4));
@@ -72,10 +82,11 @@ export class CommitComponent implements OnInit {
       _id: 'anyIdWithWillBeReplaced',
       dateStructure: sumLine.dateStructure,
       descriptionArray: sumLine.descriptionArr,
-      durationStructure: sumLine.durationStructure
-    }).then(()=>{
+      durationStructure: sumLine.durationStructure,
+      _projectId: this.currentProjectId
+    }).then(() => {
       console.log('then');
-    }).catch(()=>{
+    }).catch(() => {
       console.log('catch');
     });
   }
