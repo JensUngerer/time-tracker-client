@@ -13,15 +13,30 @@ export class CommitService {
   constructor(private httpClient: HttpClient) { }
 
   public postCommit(line: ITimeRecordsDocument): Promise<any> {
+    // return new Promise<any>((resolve: (value: any) => void) => {
+    // const url = 'http://localhost:' + routes.port + routes.timeRecord;
+    //   const body: any = {};
+    //   body[routes.timeRecordBodyProperty] = line;
+    //   const options: any = {
+    //     'Content-Type': 'application/json'
+    //   };
+    //   this.httpClient.post(url, body, options).subscribe((subscriptionValue: any) => {
+    //     resolve(subscriptionValue);
+    //   });
+    // });
+    const url = 'http://localhost:' + routes.port + routes.timeRecord;
+    return this.httpPost(routes.timeRecordBodyProperty, line, url);
+  }
+
+  private httpPost(propertyName: string, data: any, url: string): Promise<any> {
     return new Promise<any>((resolve: (value: any) => void) => {
-      const url = 'http://localhost:' + routes.port + routes.timeRecord;
       const body: any = {};
-      body[routes.timeRecordBodyProperty] = line;
+      body[propertyName] = data;
       const options: any = {
         'Content-Type': 'application/json'
       };
       this.httpClient.post(url, body, options).subscribe((subscriptionValue: any) => {
-        resolve(subscriptionValue);
+         resolve(subscriptionValue);
       });
     });
   }
