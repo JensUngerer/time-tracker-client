@@ -1,7 +1,9 @@
+import { CommitService } from './../commit.service';
 import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
 import { ProjectService } from './../project.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
+import { IProject } from '../../../../common/typescript/iProject';
 
 @Component({
   selector: 'mtt-project',
@@ -23,14 +25,14 @@ export class ProjectComponent implements OnInit {
 
   public onSubmit(values: any) {
     const projectName = values[this.formControlNameProjectName];
-    const projectId: string = this.projectService.addProject(projectName);
+    const project: IProject = this.projectService.addProject(projectName);
     this.isAddButtonDisabled = true;
 
-    this.currentSelectionsPropertiesService.properties[ProjectComponent.projectIdPropertyName] = projectId;
+    this.commitService.postProject(project);
   }
 
   constructor(private projectService: ProjectService,
-              private currentSelectionsPropertiesService: CurrentSelectionsPropertiesService) {
+              private commitService: CommitService) {
     const configObj: {[key: string]: AbstractControl} = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 

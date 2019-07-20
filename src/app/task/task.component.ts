@@ -1,3 +1,4 @@
+import { CommitService } from './../commit.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { ActivatedRoute } from '@angular/router';
 import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
@@ -7,6 +8,7 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { ProjectComponent } from '../project/project.component';
 import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
+import { ITask } from '../../../../common/typescript/iTask';
 
 @Component({
   selector: 'mtt-task',
@@ -35,13 +37,16 @@ export class TaskComponent implements OnInit {
 
     const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
 
-    this.taskService.addTask(newNewTaskName, projectId);
+    const task: ITask = this.taskService.addTask(newNewTaskName, projectId);
 
     this.isButtonDisabled = true;
+
+    this.commitService.postTask(task);
   }
 
   constructor(private taskService: TaskService,
-              private projectService: ProjectService) {
+              private projectService: ProjectService,
+              private commitService: CommitService) {
     const configObj: {[key: string]: AbstractControl} = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');

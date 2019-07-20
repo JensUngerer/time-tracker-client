@@ -18,14 +18,14 @@ export class ProjectService {
   constructor(private inMemoryDataService: InMemoryDataService,
               private helpersService: HelpersService) { }
 
-  public addProject(projectName: string): string {
+  public addProject(projectName: string): IProject {
     const newProject: IProject = {
       name: projectName,
       projectId: uuid.v4()
     };
 
     this.inMemoryDataService.push(this.projectsKey, newProject);
-    return newProject.projectId;
+    return newProject;
   }
 
   public getProjects(): IProject[] {
