@@ -10,13 +10,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
-
   public postCommit(line: IGridCommitLine): Promise<any> {
     return new Promise<any>((resolve: (value: any) => void) => {
-      const url = 'http://localhost:3000' + routesConfig.timeRecord;
-      const body: any = {
-        line
-      };
+      const url = 'http://localhost:' + routesConfig.port + routesConfig.timeRecord;
+      const body: any = {};
+      body[routesConfig.timeRecordBodyProperty] = line;
       const options: any = {
         'Content-Type': 'application/json'
       };
