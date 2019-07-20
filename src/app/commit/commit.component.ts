@@ -1,5 +1,3 @@
-import { IDate } from './../typescript/iDate';
-import { IDuration } from './../typescript/iDuration';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
@@ -9,15 +7,7 @@ import { MatTableDataSource } from '@angular/material';
 // import { ICommitLine } from './../typescript/iCommitLine'
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
-
-export interface IGridCommitLine {
-  description: string;
-  durationStructure: IDuration;
-  dateStructure: IDate;
-  durationStr: string;
-  startTime: Date;
-  endTime: Date;
-}
+import { IGridCommitLine } from './../../../../common/typescript/iGridCommitLine';
 
 @Component({
   selector: 'mtt-commit',

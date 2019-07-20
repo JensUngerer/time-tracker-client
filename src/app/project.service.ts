@@ -6,7 +6,7 @@ import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { HelpersService } from './helpers.service';
-import { IGridCommitLine } from './commit/commit.component';
+import { IGridCommitLine } from './../../../common/typescript/iGridCommitLine';
 
 @Injectable({
   providedIn: 'root'

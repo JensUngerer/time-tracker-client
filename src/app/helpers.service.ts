@@ -1,6 +1,6 @@
-import { IDate } from './typescript/iDate';
+import { IDate } from './../../../common/typescript/iDate';
 import { Injectable } from '@angular/core';
-import { IDuration } from './typescript/iDuration';
+import { IDuration } from './../../../common/typescript/iDuration';
 
 @Injectable({
   providedIn: 'root'

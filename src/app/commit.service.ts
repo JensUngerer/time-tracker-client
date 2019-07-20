@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IGridCommitLine } from './commit/commit.component';
+import { IGridCommitLine } from './../../../common/typescript/iGridCommitLine';
 import routesConfig from './../../../common/typescript/routes';
 
 @Injectable({
