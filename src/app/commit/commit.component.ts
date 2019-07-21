@@ -72,7 +72,7 @@ export class CommitComponent implements OnInit {
   public onCommitClicked(values: any) {
     const sumLine: IGridCommitLine = this.rawLinesToCommit[this.rawLinesToCommit.length - 1];
 
-    const projectId = values[this.formControlNameProjectDropDown];
+    const projectId = values[this.formControlNameProjectDropDown].projectId;
 
     this.commitService.postCommit({
       _id: 'anyIdWithWillBeReplaced',
