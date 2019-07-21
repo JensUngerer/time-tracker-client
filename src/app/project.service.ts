@@ -41,7 +41,7 @@ export class ProjectService {
       console.error('!tasksByProjectId');
       return [];
     }
-    const descriptionArr: string[] = [];
+    const taskIds: string[] = [];
     let durationOverallSum = 0;
     const commitLines: IGridCommitLine[] = [];
     let abort = false;
@@ -54,7 +54,7 @@ export class ProjectService {
       let tasksLatestEndDate: Date = null;
       let tasksLatestEndNumber = 0;
 
-      descriptionArr.push(singleTask.name);
+      taskIds.push(singleTask.taskId);
 
       const taskId = singleTask.taskId;
       const oneCommitLine: IGridCommitLine = {
@@ -64,7 +64,7 @@ export class ProjectService {
         dateStructure: null,
         durationStructure: null,
         durationStr: null,
-        descriptionArr: []
+        _taskIds: []
       };
       const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(taskId);
       if (!timeEntries || timeEntries.length === 0) {
@@ -120,7 +120,7 @@ export class ProjectService {
       durationStructure: this.helpersService.getDurationStructure(hours, minutes),
       dateStructure: this.helpersService.getDateStructure(theEndDate),
       durationStr: this.helpersService.getDurationStr(hours, minutes),
-      descriptionArr: descriptionArr
+      _taskIds: taskIds
     };
     commitLines.push(sumLine);
 

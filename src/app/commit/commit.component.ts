@@ -77,7 +77,7 @@ export class CommitComponent implements OnInit {
     this.commitService.postCommit({
       _id: 'anyIdWithWillBeReplaced',
       dateStructure: sumLine.dateStructure,
-      descriptionArray: sumLine.descriptionArr,
+      _taskIds: sumLine._taskIds,
       durationStructure: sumLine.durationStructure,
       _projectId: projectId
     }).then(() => {
