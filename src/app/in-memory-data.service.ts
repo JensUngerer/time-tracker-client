@@ -129,7 +129,11 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public getTimeEntriesByTaskId(taksId: string) {
-    const timeEntries: ITimeEntry[] = this.storage['timeEntries'].filter((oneTimeEntry: ITimeEntry) => {
+    const storageEntries: ITimeEntry[] = this.storage['timeEntries'];
+    if (!storageEntries) {
+      return null;
+    }
+    const timeEntries: ITimeEntry[] = storageEntries.filter((oneTimeEntry: ITimeEntry) => {
       return oneTimeEntry._taskId === taksId;
     });
     if (!timeEntries || timeEntries.length === 0) {
