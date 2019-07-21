@@ -63,6 +63,8 @@ export class CommitComponent implements OnInit {
     this.currentProjectId = projectId;
 
     this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
+
+    
     // this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
     this.dataSource = new MatTableDataSource(this.rawLinesToCommit);
   }

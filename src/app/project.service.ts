@@ -39,11 +39,12 @@ export class ProjectService {
     const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
     if (!tasksByProjectId || tasksByProjectId.length === 0) {
       console.error('!tasksByProjectId');
-      return;
+      return [];
     }
     const descriptionArr: string[] = [];
     let durationOverallSum = 0;
     const commitLines: IGridCommitLine[] = [];
+    let abort = false;
     tasksByProjectId.forEach((singleTask: ITask) => {
       let tasksSum = 0;
 
@@ -68,6 +69,7 @@ export class ProjectService {
       const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(taskId);
       if (!timeEntries || timeEntries.length === 0) {
         console.error('!timeEntries || timeEntries.length === 0');
+        abort = true;
         return;
       }
       timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
@@ -84,6 +86,10 @@ export class ProjectService {
         }
       });
 
+      if (abort) {
+        return;
+      }
+
       const taskSumInMinutes = tasksSum % 60;
       const taskSumInHours = Math.floor(tasksSum / 60);
 
@@ -97,6 +103,10 @@ export class ProjectService {
 
       commitLines.push(oneCommitLine);
     });
+
+    if (abort) {
+      return [];
+    }
 
     const minutes = durationOverallSum % 60;
     const hours = Math.floor(durationOverallSum / 60);
