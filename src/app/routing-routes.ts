@@ -7,10 +7,11 @@ import { TaskComponent } from './task/task.component';
 import { CommitComponent } from './commit/commit.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
+import * as routesConfig from './../../../common/typescript/routes.js';
 
 export class RoutingRoutes {
 
-  public static viewsPrefix = 'views/';
+  public static viewsPrefix = routesConfig.viewsPrefix;
 
   public static routes: Routes = [{
     path: RoutingRoutes.viewsPrefix + 'home',
