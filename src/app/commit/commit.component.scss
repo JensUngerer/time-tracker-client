@@ -6,3 +6,12 @@
 .innerFlexItem {
   flex: 0 1 auto;
 }
+
+.formFlexContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.formFlexItem {
+  flex: 0 1 auto;
+}
