@@ -21,7 +21,7 @@ export class InMemoryDataService implements OnDestroy {
   private storage: IStorageData;
 
   private saveStorageListener() {
-    const serializedStorage: string = this.sessionStorageSerializationService.serialize(this.storage);
+    const serializedStorage: string = this.sessionStorageSerializationService.serialize<IStorageData>(this.storage);
     window.sessionStorage.setItem(this.sessionStorageKey, serializedStorage);
   }
 
@@ -29,10 +29,10 @@ export class InMemoryDataService implements OnDestroy {
               private commitService: CommitService) {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
-      this.storage = this.sessionStorageSerializationService.deSerialize(containedDataStr);
+      this.storage = this.sessionStorageSerializationService.deSerialize<IStorageData>(containedDataStr);
     } else {
-      const projectsPromise: Promise<IProjectsDocument[]> = this.commitService.getProjects();
-      const tasksPromise: Promise<ITasksDocument[]> = this.commitService.getTasks();
+      const projectsPromise: Promise<string> = this.commitService.getProjects();
+      const tasksPromise: Promise<string> = this.commitService.getTasks();
       this.storage = {
         // users: null,
         projects: null,
@@ -40,19 +40,24 @@ export class InMemoryDataService implements OnDestroy {
         timeEntries: null
       };
 
-      projectsPromise.then((docs: IProjectsDocument[]) => {
-        this.storage.projects = docs;
+      projectsPromise.then((projectDocs: string) => {
+        this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
+
+        tasksPromise.then((taskDocs: string) => {
+          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs);
+
+          // const reSerializedStorage = this.sessionStorageSerializationService.serialize(this.storage);
+          // this.storage = this.sessionStorageSerializationService.deSerialize(reSerializedStorage);
+        });
+        tasksPromise.catch(() => {
+          console.error('tasksPromise.catch');
+        });
       });
       projectsPromise.catch(() => {
         console.error('projectsPromise.catch');
       });
 
-      tasksPromise.then((docs: ITasksDocument[]) => {
-        this.storage.tasks = docs;
-      });
-      tasksPromise.catch(() => {
-        console.error('tasksPromise.catch');
-      })
+
     }
 
     window.addEventListener(this.beforeUnloadEventName, (event: any) => {
@@ -61,7 +66,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    // window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+    window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
   }
 
   public getProjectById(projectId: string): IProject {

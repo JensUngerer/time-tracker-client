@@ -44,24 +44,24 @@ export class CommitService {
     });
   }
 
-  public getTasks(): Promise<any[]> {
+  public getTasks(): Promise<string> {
     const url = this.httpBaseUrl + routes.port + routes.task;
     return this.httpGet(url);
   }
 
-  public getProjects(): Promise<any[]> {
+  public getProjects(): Promise<string> {
     const url = this.httpBaseUrl + routes.port + routes.project;
     return this.httpGet(url);
   }
 
-  private httpGet(url: string): Promise<any[]> {
-    return new Promise<any[]>((resolve: (values: any[]) => void, reject: (value: any) => void) => {
+  private httpGet(url: string): Promise<string> {
+    return new Promise<string>((resolve: (values: string) => void, reject: (value: any) => void) => {
       const options: any = {
         headers: {
           'Content-Type': 'application/json'
         },
         reportProgress: true,
-        responseType: 'json'
+        responseType: 'text'
       };
       this.httpClient.get(url, options).subscribe((subscriptionReceivedData: any) => {
         resolve(subscriptionReceivedData);
