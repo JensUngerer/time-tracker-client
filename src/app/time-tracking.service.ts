@@ -15,7 +15,7 @@ export class TimeTrackingService {
   constructor(private inMemoryDataService: InMemoryDataService,
               private helpersService: HelpersService) { }
 
-  public startTimeTracking(taskId: string, projectId?: string, userId?: string): ITimeEntry {
+  public startTimeTracking(taskId: string): ITimeEntry {
     const timeEntry: ITimeEntry = {
       startTime: new Date(),
       endTime: null,
@@ -27,10 +27,6 @@ export class TimeTrackingService {
     this.inMemoryDataService.push(this.timeEntriesKey, timeEntry);
 
     return timeEntry;
-    // if (!projectId || !userId) {
-    //   console.error('ids of project and user not propagated');
-    //   return;
-    // }
   }
 
   public stopTimeTracking(timeEntryId: string): ITimeEntry {
