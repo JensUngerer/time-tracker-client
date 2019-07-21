@@ -62,15 +62,14 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
     });
 
     this.isReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isMemoryDataReady: boolean) => {
-      // const prefix = this.getPrefixOfRouterUrl();
       if (isMemoryDataReady) {
         console.error('ready');
-        // this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(prefix);
-        // this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(prefix);
+
         this.isReady = true;
         this.triggerUrlCheck();
       } else {
         console.error('waiting for isMemoryDataReady:' + isMemoryDataReady);
+
         this.isForwardButtonDisabled = true;
         this.isBackwardButtonDisabled = true;
 
