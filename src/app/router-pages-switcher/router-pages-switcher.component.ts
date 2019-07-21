@@ -41,10 +41,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
                 this.urlForwardMapping['/' + RoutingRoutes.routes[5].path] = '/' + RoutingRoutes.routes[6].path;
                 this.urlBackwardMapping['/' + RoutingRoutes.routes[6].path] = '/' + RoutingRoutes.routes[5].path;
 
-                this.urlForwardMapping['/' + RoutingRoutes.routes[6].path] = '/' + RoutingRoutes.routes[7].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[7].path] = '/' + RoutingRoutes.routes[6].path;
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[7].path] = null;
+                this.urlForwardMapping['/' + RoutingRoutes.routes[6].path] = null;
               }
 
   public isForwardButtonDisabled = true;
