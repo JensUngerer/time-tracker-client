@@ -23,6 +23,8 @@ export class CommitComponent implements OnInit {
 
   public formControlNameProjectDropDown = 'formControlProjectDropDown';
 
+  public formControlProjectDropDown: AbstractControl = null;
+
   public projectOptions: IProjectOption[] = [];
 
   public dataSource: MatTableDataSource<IGridCommitLine> = null;
@@ -34,20 +36,16 @@ export class CommitComponent implements OnInit {
     'durationStr'
   ];
 
-  private currentProjectId: string = null;
-
   public rawLinesToCommit: IGridCommitLine[] = null;
 
-  constructor(private formBuilder: FormBuilder,
-    private projectService: ProjectService,
-    private helpersService: HelpersService,
-    private commitService: CommitService) { }
-
-  ngOnInit() {
+  constructor(private projectService: ProjectService,
+              private commitService: CommitService) {
     const configObj: { [key: string]: AbstractControl } = {};
-    configObj[this.formControlNameProjectDropDown] = new FormControl('');
 
-    this.commitFormGroup = this.formBuilder.group(configObj);
+    this.formControlProjectDropDown = new FormControl('');
+    configObj[this.formControlNameProjectDropDown] = this.formControlProjectDropDown;
+
+    this.commitFormGroup = new FormGroup(configObj);
 
     const allProjects = this.projectService.getProjects();
     if (allProjects && allProjects.length > 0) {
@@ -57,35 +55,31 @@ export class CommitComponent implements OnInit {
     }
   }
 
+  ngOnInit() {
+
+  }
+
   public onProjectSelectionChanged($event: any) {
     const projectId = $event.value.projectId;
 
-    this.currentProjectId = projectId;
-
     this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
 
-    
+
     // this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
     this.dataSource = new MatTableDataSource(this.rawLinesToCommit);
   }
 
-  public onCommitClicked() {
+  public onCommitClicked(values: any) {
     const sumLine: IGridCommitLine = this.rawLinesToCommit[this.rawLinesToCommit.length - 1];
 
-    // const theProjectFormControl: AbstractControl = this.commitFormGroup.controls[this.formControlNameProjectDropDown];
-    // let projectId = '';
-    // if (theProjectFormControl) {
-    //   projectId = theProjectFormControl.value.projectId;
-    // }
-    // console.error(sumLine.durationStr);
-    // console.error(this.helpersService.getCurrentDateStr(sumLine.endTime));
-    console.error(JSON.stringify(sumLine, null, 4));
+    const projectId = values[this.formControlNameProjectDropDown];
+
     this.commitService.postCommit({
       _id: 'anyIdWithWillBeReplaced',
       dateStructure: sumLine.dateStructure,
       descriptionArray: sumLine.descriptionArr,
       durationStructure: sumLine.durationStructure,
-      _projectId: this.currentProjectId
+      _projectId: projectId
     }).then(() => {
       console.log('then');
     }).catch(() => {

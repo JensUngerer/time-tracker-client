@@ -29,17 +29,15 @@
 
       </div>
       <div class="innerFlexItem">
-        <form [formGroup]="commitFormGroup" (submit)="onCommitClicked()">
+        <form [formGroup]="commitFormGroup" (submit)="onCommitClicked(commitFormGroup.value)">
           <div class="formFlexContainer">
             <div class="formFlexItem">
-              <mat-form-field>
-                <mat-select (selectionChange)="onProjectSelectionChanged($event)"
-                  [formGroupName]="formControlNameProjectDropDown" [required]="true">
-                  <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-                    {{projectOption.viewValue}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+              <mat-select (selectionChange)="onProjectSelectionChanged($event)"
+                [formControl]="formControlProjectDropDown" [required]="true">
+                <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
+                  {{projectOption.viewValue}}
+                </mat-option>
+              </mat-select>
             </div>
             <div class="formFlexItem">
               <button type="submit">Commit</button>
