@@ -7,6 +7,7 @@ import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 import { IProjectsDocument } from './../../../common/typescript/mongoDB/iProjectsDocument';
 import { ITasksDocument } from './../../../common/typescript/mongoDB/iTasksDocument';
+import { BehaviorSubject } from 'rxjs';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -20,6 +21,8 @@ export class InMemoryDataService implements OnDestroy {
 
   private storage: IStorageData;
 
+  private isReady$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
   private saveStorageListener() {
     const serializedStorage: string = this.sessionStorageSerializationService.serialize<IStorageData>(this.storage);
     window.sessionStorage.setItem(this.sessionStorageKey, serializedStorage);
@@ -30,6 +33,7 @@ export class InMemoryDataService implements OnDestroy {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = this.sessionStorageSerializationService.deSerialize<IStorageData>(containedDataStr);
+      this.isReady$.next(true);
     } else {
       const projectsPromise: Promise<string> = this.commitService.getProjects();
       const tasksPromise: Promise<string> = this.commitService.getTasks();
@@ -44,10 +48,8 @@ export class InMemoryDataService implements OnDestroy {
         this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
 
         tasksPromise.then((taskDocs: string) => {
-          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs);
-
-          // const reSerializedStorage = this.sessionStorageSerializationService.serialize(this.storage);
-          // this.storage = this.sessionStorageSerializationService.deSerialize(reSerializedStorage);
+          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
+          this.isReady$.next(true);
         });
         tasksPromise.catch(() => {
           console.error('tasksPromise.catch');
@@ -135,5 +137,9 @@ export class InMemoryDataService implements OnDestroy {
       return null;
     }
     return timeEntries;
+  }
+
+  public getIsReady(): BehaviorSubject<boolean> {
+    return this.isReady$;
   }
 }

@@ -1,21 +1,22 @@
+import { InMemoryDataService } from './../in-memory-data.service';
 import { RoutingRoutes } from './../routing-routes';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'mtt-router-pages-switcher',
   templateUrl: './router-pages-switcher.component.html',
   styleUrls: ['./router-pages-switcher.component.scss', './../css/centerVerticalHorizontal.scss']
 })
-export class RouterPagesSwitcherComponent implements OnInit {
-
+export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
   private currentUrl$: Observable<UrlSegment[]> = null;
 
   private urlForwardMapping: {[key: string]: string} = {};
   private urlBackwardMapping: {[key: string]: string} = {};
   constructor(private activatedRoute: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private inMemoryDataService: InMemoryDataService) {
                 this.currentUrl$ = this.activatedRoute.url;
                 this.urlBackwardMapping['/' + RoutingRoutes.routes[0]] = null;
 
@@ -46,15 +47,42 @@ export class RouterPagesSwitcherComponent implements OnInit {
                 this.urlForwardMapping['/' + RoutingRoutes.routes[7].path] = null;
               }
 
-  public isForwardButtonDisabled = false;
-  public isBackwardButtonDisabled = false;
+  public isForwardButtonDisabled = true;
+  public isBackwardButtonDisabled = true;
+
+  private routerEventsSubscription: Subscription = null;
+  private isReadySubscription: Subscription = null;
+  private isReady = false;
 
   ngOnInit() {
-    this.router.events.subscribe(() => {
-      const prefix = this.getPrefixOfRouterUrl();
-      this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(prefix);
-      this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(prefix);
+    this.routerEventsSubscription = this.router.events.subscribe(() => {
+      if (this.isReady) {
+        this.triggerUrlCheck();
+      }
     });
+
+    this.isReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isMemoryDataReady: boolean) => {
+      // const prefix = this.getPrefixOfRouterUrl();
+      if (isMemoryDataReady) {
+        console.error('ready');
+        // this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(prefix);
+        // this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(prefix);
+        this.isReady = true;
+        this.triggerUrlCheck();
+      } else {
+        console.error('waiting for isMemoryDataReady:' + isMemoryDataReady);
+        this.isForwardButtonDisabled = true;
+        this.isBackwardButtonDisabled = true;
+
+        this.isReady = false;
+      }
+    });
+  }
+
+  private triggerUrlCheck() {
+    const prefix = this.getPrefixOfRouterUrl();
+    this.isForwardButtonDisabled = this.checkIsForwardButtonDisabled(prefix);
+    this.isBackwardButtonDisabled = this.checkIsBackwardButtonDisabled(prefix);
   }
 
   private checkIsForwardButtonDisabled(currentUrl: string): boolean {
@@ -93,8 +121,8 @@ export class RouterPagesSwitcherComponent implements OnInit {
     return '';
   }
 
-  // private getNextRoute(currentUrl: string): string {
-  //   const nextUrl: string = this.urlForwardMapping[currentUrl];
-  //   return nextUrl;
-  // }
+  ngOnDestroy(): void {
+    this.routerEventsSubscription.unsubscribe();
+    this.isReadySubscription.unsubscribe();
+  }
 }
