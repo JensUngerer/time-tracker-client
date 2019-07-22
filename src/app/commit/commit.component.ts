@@ -72,12 +72,14 @@ export class CommitComponent implements OnInit {
     if (this.sumForOneProject) {
       this.commitService.postCommit(this.sumForOneProject.data).then(() => {
         this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
+        this.durationStr = '';
       }).catch(() => {
         console.log('catch');
+        this.durationStr = '';
       });
     } else {
       console.error('commit is not possible');
+      this.durationStr = '';
     }
-
   }
 }
