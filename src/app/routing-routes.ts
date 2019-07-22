@@ -13,58 +13,54 @@ export class RoutingRoutes {
 
   public static viewsPrefix = routesConfig.viewsPrefix;
 
-  public static routes: Routes = [{
-    path: RoutingRoutes.viewsPrefix + 'home',
-    component: HomeComponent,
-    data: {
-      label: 'Home'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'project',
-    component: ProjectComponent,
-    data: {
-      label: 'Project-Management'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'task',
-    component: TaskComponent,
-    data: {
-      label: 'Task-Management'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'timeTracking',
-    component: TimeTrackingComponent,
-    data: {
-      label: 'Time-Tracking'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'commit',
-    component: CommitComponent,
-    data: {
-      label: 'Commit'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'completedTask',
-    component: CompletedTaskComponent,
-    data: {
-      label: 'Completed-Tasks'
-    }
-  },
-  {
-    path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
-    component: CompletedTimeEntryComponent,
-    data: {
-      label: 'Completed-Time-Entries'
-    }
-  },
-  {
-    path: '',
-    redirectTo: RoutingRoutes.viewsPrefix + 'home',
-    pathMatch: 'full'
-  }];
+  public static startRoute = 'project';
+
+  public static routes: Routes = [
+    {
+      path: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
+      component: ProjectComponent,
+      data: {
+        label: 'Project-Management'
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + 'task',
+      component: TaskComponent,
+      data: {
+        label: 'Task-Management'
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + 'timeTracking',
+      component: TimeTrackingComponent,
+      data: {
+        label: 'Time-Tracking'
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + 'completedTask',
+      component: CompletedTaskComponent,
+      data: {
+        label: 'Completed-Tasks'
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
+      component: CompletedTimeEntryComponent,
+      data: {
+        label: 'Completed-Time-Entries'
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + 'commit',
+      component: CommitComponent,
+      data: {
+        label: 'Commit'
+      }
+    },
+    {
+      path: '',
+      redirectTo: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
+      pathMatch: 'full'
+    }];
 }
