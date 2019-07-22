@@ -1,5 +1,5 @@
 import { IProjectGridLine } from './../project/project.component';
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { MatTable, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './name-table.component.html',
   styleUrls: ['./name-table.component.scss']
 })
-export class NameTableComponent implements OnInit, OnDestroy {
+export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
 
   @ViewChild(MatTable, { static: false })
   public theTable: MatTable<IProjectGridLine>;
@@ -70,6 +70,12 @@ export class NameTableComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.redrawTableSubscription) {
       this.redrawTableSubscription.unsubscribe();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes && changes.gridLines) {
+      this.onRedrawTable(true);
     }
   }
 }
