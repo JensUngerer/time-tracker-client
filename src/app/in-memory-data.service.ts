@@ -43,14 +43,16 @@ export class InMemoryDataService implements OnDestroy {
         timeEntries: null
       };
 
-      // no longer retrieve from DB
-      // const projectsPromise: Promise<string> = this.commitService.getProjects();
-      // projectsPromise.then((projectDocs: string) => {
-      //   this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
-      // });
-      // projectsPromise.catch(() => {
-      //   console.error('projectsPromise.catch');
-      // });
+      // retrieve projects (again!) from DB - but only if they are not marked as isDeletedInClient
+      const projectsPromise: Promise<string> = this.commitService.getProjects();
+      projectsPromise.then((projectDocs: string) => {
+        this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
+        this.isReady$.next(true);
+      });
+      projectsPromise.catch(() => {
+        console.error('projectsPromise.catch');
+        this.isReady$.next(true);
+      });
 
       // no longer retrieve from DB
       // tasksPromise.then((taskDocs: string) => {

@@ -1,3 +1,4 @@
+import { InMemoryDataService } from './../in-memory-data.service';
 import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
@@ -92,14 +93,19 @@ export class ProjectComponent implements OnInit, AfterViewInit {
   constructor(private projectService: ProjectService,
     private commitService: CommitService,
     private router: Router,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 
     this.projectFormGroup = new FormGroup(configObj);
 
     this.dataSource = new MatTableDataSource(this.gridLines);
-    this.setCloneGridLines();
+    const isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean)=>{
+      if (isReady) {
+        this.drawTable(true);
+      }
+    });
   }
 
   ngOnInit() {
