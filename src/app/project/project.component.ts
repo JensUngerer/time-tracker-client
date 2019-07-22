@@ -3,16 +3,14 @@ import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
 import { ProjectService } from './../project.service';
-import { Component, OnInit, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, ViewChild, AfterViewInit, OnDestroy, EventEmitter } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource, MatTable, MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
 import * as routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
-
 
 export interface IProjectGridLine extends IProject {
   deleteRow: string;
@@ -30,29 +28,24 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public static projectIdPropertyName = 'projectId';
 
-  private gridLines: IProjectGridLine[] = [];
+  @Output()
+  public gridLines: IProjectGridLine[] = [];
 
   private afterDialogCloseSubscription$: Observable<boolean> = null;
 
   private isMemoryReadySubscription: Subscription = null;
-
-  public faTrash = faTrash;
-
-  @ViewChild(MatTable, { static: false })
-  public theTable: MatTable<IProjectGridLine>;
 
   public projectFormGroup: FormGroup = null;
 
   public formControlNameProjectName = 'theProjectName';
 
   @Output()
-  public displayedColumns: string[] = ['name', 'deleteRow'];
+  public redrawTable: EventEmitter<boolean> = new EventEmitter();
 
-  @Output()
-  public dataSource: MatTableDataSource<IProjectGridLine> = null;
 
   @Output()
   public onProjectRowClicked(row: IProjectGridLine) {
+    // TODO: use row to set projectId as queryParam
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
     this.router.navigate([tasksRoutePath]);
   }
@@ -93,16 +86,15 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(private projectService: ProjectService,
-    private commitService: CommitService,
-    private router: Router,
-    public dialog: MatDialog,
-    private inMemoryDataService: InMemoryDataService) {
+              private commitService: CommitService,
+              private router: Router,
+              public dialog: MatDialog,
+              private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 
     this.projectFormGroup = new FormGroup(configObj);
 
-    this.dataSource = new MatTableDataSource(this.gridLines);
     this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean)=>{
       if (isReady) {
         this.drawTable(true);
@@ -128,7 +120,8 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     const projects = this.projectService.getProjects();
 
     if (!projects || projects.length === 0) {
-      this.dataSource.data = this.gridLines;
+      // this.dataSource.data = this.gridLines;
+      console.error('no projects to display');
       return;
     }
 
@@ -137,15 +130,13 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
       clonedLine.deleteRow = '';
       this.gridLines.push(clonedLine);
     });
-    this.dataSource.data = this.gridLines;
+    // this.dataSource.data = this.gridLines;
   }
 
   private drawTable(resetRows: boolean) {
     if (resetRows) {
       this.setCloneGridLines();
     }
-    if (this.theTable) {
-      this.theTable.renderRows();
-    }
+    this.redrawTable.emit(resetRows);
   }
 }

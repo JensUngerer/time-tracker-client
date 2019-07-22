@@ -37,6 +37,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ProjectDeleteDialogComponent } from './project-delete-dialog/project-delete-dialog.component';
+import { NameTableComponent } from './name-table/name-table.component';
 
 @NgModule({
   entryComponents:[
@@ -54,7 +55,8 @@ import { ProjectDeleteDialogComponent } from './project-delete-dialog/project-de
     CommitComponent,
     CompletedTaskComponent,
     CompletedTimeEntryComponent,
-    ProjectDeleteDialogComponent
+    ProjectDeleteDialogComponent,
+    NameTableComponent
   ],
   imports: [
     BrowserModule,
