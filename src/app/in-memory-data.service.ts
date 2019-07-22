@@ -52,13 +52,14 @@ export class InMemoryDataService implements OnDestroy {
       //   console.error('projectsPromise.catch');
       // });
 
-      tasksPromise.then((taskDocs: string) => {
-        this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
-        this.isReady$.next(true);
-      });
-      tasksPromise.catch(() => {
-        console.error('tasksPromise.catch');
-      });
+      // no longer retrieve from DB
+      // tasksPromise.then((taskDocs: string) => {
+      //   this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
+      //   this.isReady$.next(true);
+      // });
+      // tasksPromise.catch(() => {
+      //   console.error('tasksPromise.catch');
+      // });
 
     }
 

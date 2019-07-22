@@ -1,3 +1,4 @@
+import { TaskService } from './task.service';
 import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
 import uuid from 'uuid';
@@ -17,7 +18,8 @@ export class ProjectService {
   private readonly projectsKey = 'projects';
 
   constructor(private inMemoryDataService: InMemoryDataService,
-    private helpersService: HelpersService) { }
+    private helpersService: HelpersService,
+    private taskService: TaskService) { }
 
   public addProject(projectName: string): IProject {
     const newProject: IProject = {
@@ -35,11 +37,24 @@ export class ProjectService {
       console.error('no projects found!');
       return;
     }
-    const index = allProjects.findIndex((oneProject: IProject) => {
+    const projectIndex = allProjects.findIndex((oneProject: IProject) => {
       return oneProject.projectId === projectId;
     });
-    if (index !== -1) {
-      allProjects.splice(index, 1);
+    if (projectIndex !== -1) {
+      const taskIdsToDelete = this.getTaskIdsToProjectId(projectId);
+      const allTasksInMem = this.inMemoryDataService.get('tasks');
+      taskIdsToDelete.forEach((currentTaskIdToDelete: string) => {
+        const taskIndex = allTasksInMem.findIndex((theTask: ITask) => {
+          return theTask.taskId === currentTaskIdToDelete;
+        });
+        if (taskIndex !== -1) {
+          allTasksInMem.splice(taskIndex, 1);
+        } else {
+          console.error('cannot delete taskId:' + currentTaskIdToDelete);
+        }
+      });
+
+      allProjects.splice(projectIndex, 1);
     } else {
       console.error('cannot delete projectId:' + projectId);
     }
@@ -221,5 +236,25 @@ export class ProjectService {
     const hours = Math.floor(durationOverallSum / 60);
 
     return this.helpersService.getDurationStructure(hours, minutes);
+  }
+
+  private getTaskIdsToProjectId(projectId: string): string[] {
+    const allTasksInMemory: ITask[] = this.inMemoryDataService.get('tasks');
+    if (!allTasksInMemory || allTasksInMemory.length === 0) {
+      return [];
+    }
+    const correspondingTasks: ITask[] = allTasksInMemory.filter((oneTask: ITask) => {
+      return oneTask._projectId === projectId;
+    });
+    if (!correspondingTasks || correspondingTasks.length === 0) {
+      return [];
+    }
+    const theTaskIds: string[] = correspondingTasks.map((oneCorrespondingTask: ITask) => {
+      return oneCorrespondingTask.taskId;
+    });
+    if (!theTaskIds || theTaskIds.length === 0) {
+      return [];
+    }
+    return theTaskIds;
   }
 }
