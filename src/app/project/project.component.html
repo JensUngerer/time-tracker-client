@@ -1,6 +1,6 @@
 <div class="container">
   <div class="flexItem">
-    <div>
+    <div *ngIf="dataSource && dataSource.data && dataSource.data.length > 0">
       <table #projectsTable mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Project-Name</th>
