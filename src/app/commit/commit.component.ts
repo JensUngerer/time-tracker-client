@@ -67,7 +67,7 @@ export class CommitComponent implements OnInit {
         this.sumForOneProject.data.durationStructure.minutes);
       this.isButtonDisabled = false;
     } else {
-      this.durationStr = 'not available, as there are no time-entries';
+      this.durationStr = 'no time-entries to sum';
       this.isButtonDisabled = true;
     }
   }
