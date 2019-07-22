@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-// import { IGridCommitLine } from './../../../common/typescript/iGridCommitLine';
-// import * as routesConfig from './../../../common/typescript/routes.js'; // './../../../common/typescript/routes';
-import { ITimeRecordsDocument } from './../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { ITimeRecordsDocumentData } from './../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import * as routes from './../../../common/typescript/routes.js';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
@@ -26,7 +24,7 @@ export class CommitService {
     this.httpPost(routes.projectBodyProperty, project, url);
   }
 
-  public postCommit(line: ITimeRecordsDocument): Promise<any> {
+  public postCommit(line: ITimeRecordsDocumentData): Promise<any> {
     const url = this.httpBaseUrl + routes.port + routes.timeRecord;
     return this.httpPost(routes.timeRecordBodyProperty, line, url);
   }

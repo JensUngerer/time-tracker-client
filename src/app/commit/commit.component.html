@@ -2,31 +2,7 @@
   <div class="flexItem">
     <div class="innerContainer">
       <div class="innerFlexItem">
-        <!-- {{ projectDurationsBuffer }} -->
-        <table mat-table [dataSource]="dataSource">
-
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Descr.</th>
-            <td mat-cell *matCellDef="let line">{{line.description}}</td>
-          </ng-container>
-          <!-- <ng-container matColumnDef="startTime">
-              <th mat-header-cell *matHeaderCellDef>Start</th>
-              <td mat-cell *matCellDef="let line">{{line.startTime}}</td>
-            </ng-container>
-            <ng-container matColumnDef="endTime">
-                <th mat-header-cell *matHeaderCellDef>End</th>
-                <td mat-cell *matCellDef="let line">{{line.endTime}}</td>
-              </ng-container> -->
-          <ng-container matColumnDef="durationStr">
-            <th mat-header-cell *matHeaderCellDef>Dur.</th>
-            <td mat-cell *matCellDef="let line">{{line.durationStr}}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-
+        <div>Sum to commit: {{durationStr}}</div>
       </div>
       <div class="innerFlexItem">
         <form [formGroup]="commitFormGroup" (submit)="onCommitClicked(commitFormGroup.value)">

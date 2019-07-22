@@ -1,4 +1,3 @@
-import { ICommitLine } from './typescript/iCommitLine';
 import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
 import uuid from 'uuid';
@@ -6,7 +5,9 @@ import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { HelpersService } from './helpers.service';
-import { IGridCommitLine } from './../../../common/typescript/iGridCommitLine';
+import { IDuration } from '../../../common/typescript/iDuration';
+import { ITimeRecordsDocumentData } from '../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { IDate } from '../../../common/typescript/iDate';
 
 @Injectable({
   providedIn: 'root'
@@ -32,126 +33,152 @@ export class ProjectService {
     return this.inMemoryDataService.get(this.projectsKey);
   }
 
-  public getProjectByProjectId(projectId: string) {
-  }
-
-  public summarizeDurationFor(projectId: string): IGridCommitLine[] {
+  public summarizeDurationFor(projectId: string): ITimeRecordsDocumentData {
     const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
     if (!tasksByProjectId || tasksByProjectId.length === 0) {
       console.error('!tasksByProjectId');
-      return [];
+      return;
     }
+
+    const sumValue: ITimeRecordsDocumentData = {
+      durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
+      dateStructure: this.getDateStructureOfOneProject(tasksByProjectId),
+      _taskIds: this.getTaskIdsOfOneProject(tasksByProjectId),
+      _projectId: projectId
+    };
+
+    return sumValue;
+  }
+
+  private getTaskIdsOfOneProject(tasksByProjectId: ITask[]): string[] {
     const taskIds: string[] = [];
-    let durationOverallSum = 0;
-    const commitLines: IGridCommitLine[] = [];
-    let abort = false;
-    tasksByProjectId.forEach((singleTask: ITask) => {
-      let tasksSum = 0;
 
-      let tasksEarliestStartDate: Date = null;
-      let tasksEarliestStartNumber = new Date().getTime();
-
-      let tasksLatestEndDate: Date = null;
-      let tasksLatestEndNumber = 0;
-
-      taskIds.push(singleTask.taskId);
-
-      const taskId = singleTask.taskId;
-      const oneCommitLine: IGridCommitLine = {
-        description: singleTask.name,
-        startTime: null,
-        endTime: null,
-        dateStructure: null,
-        durationStructure: null,
-        durationStr: null,
-        _taskIds: []
-      };
-      const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(taskId);
-      if (!timeEntries || timeEntries.length === 0) {
-        console.error('!timeEntries || timeEntries.length === 0');
-        abort = true;
-        return;
-      }
-      timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
-        durationOverallSum += oneTimeEntry.duration;
-        tasksSum += oneTimeEntry.duration;
-
-        if (oneTimeEntry.startTime.getTime() < tasksEarliestStartNumber) {
-          tasksEarliestStartNumber = oneTimeEntry.startTime.getTime();
-          tasksEarliestStartDate = oneTimeEntry.startTime;
-        }
-        if (oneTimeEntry.endTime.getTime() > tasksLatestEndNumber) {
-          tasksLatestEndNumber = oneTimeEntry.endTime.getTime();
-          tasksLatestEndDate = oneTimeEntry.endTime;
-        }
-      });
-
-      if (abort) {
-        return;
-      }
-
-      const taskSumInMinutes = tasksSum % 60;
-      const taskSumInHours = Math.floor(tasksSum / 60);
-
-      oneCommitLine.durationStructure = this.helpersService.getDurationStructure(taskSumInHours, taskSumInMinutes);
-      oneCommitLine.startTime = tasksEarliestStartDate;
-      oneCommitLine.endTime = tasksLatestEndDate;
-      oneCommitLine.durationStr = this.helpersService.getDurationStr(oneCommitLine.durationStructure.hours,
-        oneCommitLine.durationStructure.minutes);
-
-      oneCommitLine.dateStructure = this.helpersService.getDateStructure(tasksLatestEndDate);
-
-      commitLines.push(oneCommitLine);
+    tasksByProjectId.forEach((oneTask: ITask) => {
+      taskIds.push(oneTask.taskId);
     });
 
-    if (abort) {
-      return [];
+    return taskIds;
+  }
+
+  private summarizeDurationsOfOneTask(singleTask: ITask): number {
+    let tasksDurationSum = 0;
+    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    if (!timeEntries || timeEntries.length === 0) {
+      console.error('!timeEntries || timeEntries.length === 0');
+      return;
     }
+    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+      tasksDurationSum += oneTimeEntry.duration;
+    });
+    return tasksDurationSum;
+  }
+
+  private getMinDateValuesOfOneTask(singleTask: ITask): Date {
+    let storedTime = new Date().getTime();
+    let storedDate = null;
+    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    if (!timeEntries || timeEntries.length === 0) {
+      console.error('!timeEntries || timeEntries.length === 0');
+      return;
+    }
+    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+      const currentStartTime = oneTimeEntry.startTime.getTime();
+      if (currentStartTime < storedTime) {
+        storedTime = currentStartTime;
+        storedDate = oneTimeEntry.startTime;
+      }
+    });
+    return storedDate;
+  }
+
+  private getMaxDateValueOfOneTask(singleTask: ITask): Date {
+    let storedTime = 0;
+    let storedDate = null;
+
+    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    if (!timeEntries || timeEntries.length === 0) {
+      console.error('!timeEntries || timeEntries.length === 0');
+      return;
+    }
+
+    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+      const currentEndTime = oneTimeEntry.endTime.getTime();
+      if (currentEndTime > storedTime) {
+        storedTime = currentEndTime;
+        storedDate = oneTimeEntry.endTime;
+      }
+    });
+
+    return storedDate;
+  }
+
+  // TODO: necessary ?
+  // private getEarliestStartOfEntireProject(earliestStartTimesOfTasks: Date[]) {
+  //   let storedTime = new Date().getTime();
+  //   let storedDate = null;
+
+  //   earliestStartTimesOfTasks.forEach((oneStartTime: Date) => {
+  //     const currentStartTime = oneStartTime.getTime();
+  //     if (currentStartTime < storedTime) {
+  //       storedTime = currentStartTime;
+  //       storedDate = oneStartTime;
+  //     }
+  //   });
+
+  //   return storedDate;
+  // }
+
+  private getLatestEndOfEntireProject(latestEndTimesOfTasks: Date[]) {
+    let storedTime = 0;
+    let storedDate = null;
+
+    latestEndTimesOfTasks.forEach((oneEndTime: Date) => {
+      const currentTime = oneEndTime.getTime();
+      if (currentTime > storedTime) {
+        storedTime = currentTime;
+        storedDate = oneEndTime;
+      }
+    });
+
+    return storedDate;
+  }
+
+  private getDateStructureOfOneProject(tasksByProjectId: ITask[]): IDate {
+    const earliestStartTimesOfTasks: Date[] = [];
+    const latestEndTimesOfTasks: Date[] = [];
+    tasksByProjectId.forEach((singleTask: ITask) => {
+      const earliestStart: Date = this.getMinDateValuesOfOneTask(singleTask);
+      if (earliestStart) {
+        earliestStartTimesOfTasks.push(earliestStart);
+      }
+      const latestEnd: Date = this.getMaxDateValueOfOneTask(singleTask);
+      if (latestEnd) {
+        latestEndTimesOfTasks.push(latestEnd);
+      }
+    });
+
+    // TODO: necessary ?
+    // const earliestStartOfEntireProject = this.getEarliestStartOfEntireProject(earliestStartTimesOfTasks);
+
+    const latestEndOfEntireProject = this.getLatestEndOfEntireProject(latestEndTimesOfTasks);
+    return this.helpersService.getDateStructure(latestEndOfEntireProject);
+  }
+
+  private summarizeDurationsOfOneProject(tasksByProjectId: ITask[]): number {
+    let durationOverallSum = 0;
+    tasksByProjectId.forEach((singleTask: ITask) => {
+      const durationOfOneTask: any = this.summarizeDurationsOfOneTask(singleTask);
+      durationOverallSum += durationOfOneTask;
+    });
+    return durationOverallSum;
+  }
+
+  private getDurationStructureOfOneProject(tasksByProjectId: ITask[]): IDuration {
+    const durationOverallSum = this.summarizeDurationsOfOneProject(tasksByProjectId);
 
     const minutes = durationOverallSum % 60;
     const hours = Math.floor(durationOverallSum / 60);
 
-    const theStartDate = this.getMinValueOfDates(commitLines);
-    const theEndDate = this.getMaxValueOfDates(commitLines);
-    const sumLine: IGridCommitLine = {
-      description: 'sum',
-      endTime: theEndDate,
-      startTime: theStartDate,
-      durationStructure: this.helpersService.getDurationStructure(hours, minutes),
-      dateStructure: this.helpersService.getDateStructure(theEndDate),
-      durationStr: this.helpersService.getDurationStr(hours, minutes),
-      _taskIds: taskIds
-    };
-    commitLines.push(sumLine);
-
-    return commitLines;
-  }
-
-  private getMaxValueOfDates(lines: ICommitLine[]): Date {
-    let theGetTime = 0;
-    let theDate = null;
-
-    lines.forEach((oneLine: ICommitLine) => {
-      if (oneLine.endTime.getTime() > theGetTime) {
-        theGetTime = oneLine.endTime.getTime();
-        theDate = oneLine.endTime;
-      }
-    });
-
-    return theDate;
-  }
-
-  private getMinValueOfDates(line: ICommitLine[]): Date {
-    let theGetTime = new Date().getTime();
-    let theDate = null;
-
-    line.forEach((oneLine: ICommitLine) => {
-      if (oneLine.startTime.getTime() < theGetTime) {
-        theGetTime = oneLine.startTime.getTime();
-        theDate = oneLine.startTime;
-      }
-    });
-
-    return theDate;
+    return this.helpersService.getDurationStructure(hours, minutes);
   }
 }

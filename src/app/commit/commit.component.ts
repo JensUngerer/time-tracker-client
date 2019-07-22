@@ -1,13 +1,11 @@
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
-import { FormGroup, FormBuilder, AbstractControl, FormControl } from '@angular/forms';
+import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
-import { MatTableDataSource } from '@angular/material';
-// import { ICommitLine } from './../typescript/iCommitLine'
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
-import { IGridCommitLine } from './../../../../common/typescript/iGridCommitLine';
+import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 
 @Component({
   selector: 'mtt-commit',
@@ -27,19 +25,14 @@ export class CommitComponent implements OnInit {
 
   public projectOptions: IProjectOption[] = [];
 
-  public dataSource: MatTableDataSource<IGridCommitLine> = null;
+  @Output()
+  public durationStr: string = null;
 
-  public displayedColumns: string[] = [
-    'description',
-    // 'startTime',
-    // 'endTime',
-    'durationStr'
-  ];
-
-  public rawLinesToCommit: IGridCommitLine[] = null;
+  private sumForOneProject: ITimeRecordsDocumentData = null;
 
   constructor(private projectService: ProjectService,
-              private commitService: CommitService) {
+              private commitService: CommitService,
+              private helpersService: HelpersService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -62,29 +55,17 @@ export class CommitComponent implements OnInit {
   public onProjectSelectionChanged($event: any) {
     const projectId = $event.value.projectId;
 
-    this.rawLinesToCommit = this.projectService.summarizeDurationFor(projectId);
+    this.sumForOneProject = this.projectService.summarizeDurationFor(projectId);
 
-
-    // this.projectDurationsBuffer = JSON.stringify(summarizedDurationStringForOneProject, null, 4);
-    this.dataSource = new MatTableDataSource(this.rawLinesToCommit);
+    this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.durationStructure.hours,
+      this.sumForOneProject.durationStructure.minutes);
   }
 
   public onCommitClicked(values: any) {
-    const sumLine: IGridCommitLine = this.rawLinesToCommit[this.rawLinesToCommit.length - 1];
-
-    const projectId = values[this.formControlNameProjectDropDown].projectId;
-
-    this.commitService.postCommit({
-      _id: 'anyIdWithWillBeReplaced',
-      dateStructure: sumLine.dateStructure,
-      _taskIds: sumLine._taskIds,
-      durationStructure: sumLine.durationStructure,
-      _projectId: projectId
-    }).then(() => {
+    this.commitService.postCommit(this.sumForOneProject).then(() => {
       console.log('then');
     }).catch(() => {
       console.log('catch');
     });
   }
-
 }
