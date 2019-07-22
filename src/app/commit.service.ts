@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ITimeRecordsDocumentData } from './../../../common/typescript/mongoDB/iTimeRecordsDocument';
-import * as routes from './../../../common/typescript/routes.js';
+import routes from './../../../common/typescript/routes.js';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 
@@ -14,13 +14,35 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  private getProjectsUrl(): string {
+    const url = this.httpBaseUrl + routes.port + routes.project;
+    return url;
+  }
+
+  public patchProjectIsDeletedInClient(projectId: string): Promise<any> {
+    const url = this.getProjectsUrl();
+    const body: any = {};
+    body[routes.httpPatchIdPropertyName] = routes.projectIdProperty;
+    body[routes.httpPatchIdPropertyValue] = projectId;
+
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
+    body[routes.httpPatchIdPropertyToUpdateValue] = true;
+
+    return new Promise<any>((resolve: (value: any) => void) => {
+      this.httpClient.patch(url, body).subscribe((subscriptionReturnValue: any) => {
+        resolve(subscriptionReturnValue);
+      });
+    });
+  }
+
   public postTask(task: ITask) {
     const url = this.httpBaseUrl + routes.port + routes.task;
     this.httpPost(routes.taskBodyProperty, task, url);
   }
 
+
   public postProject(project: IProject) {
-    const url = this.httpBaseUrl + routes.port + routes.project;
+    const url = this.getProjectsUrl();
     this.httpPost(routes.projectBodyProperty, project, url);
   }
 
@@ -48,7 +70,7 @@ export class CommitService {
   }
 
   public getProjects(): Promise<string> {
-    const url = this.httpBaseUrl + routes.port + routes.project;
+    const url = this.getProjectsUrl();
     return this.httpGet(url);
   }
 

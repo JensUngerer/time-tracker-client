@@ -64,6 +64,16 @@ export class ProjectComponent implements OnInit, AfterViewInit {
       if (isOkButtonPressed) {
         this.projectService.deleteProject(row.projectId);
         this.drawTable(true);
+
+        // NEW update database with the idDeletedInClient = true flag
+        const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.projectId);
+        dbPatchedPromise.then((resolveValue: any) => {
+           console.log(resolveValue);
+        });
+        dbPatchedPromise.catch((rejectValue: any) => {
+          // should be never called
+          console.error(rejectValue);
+        });
       }
     });
   }
@@ -120,7 +130,8 @@ export class ProjectComponent implements OnInit, AfterViewInit {
     if (resetRows) {
       this.setCloneGridLines();
     }
-
-    this.theTable.renderRows();
+    if (this.theTable) {
+      this.theTable.renderRows();
+    }
   }
 }
