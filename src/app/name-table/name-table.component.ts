@@ -20,9 +20,6 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   public gridLines: IProjectGridLine[] = [];
 
-  @Input()
-  public redrawTable: EventEmitter<boolean> = null;
-
   @Output()
   public nameCellClicked: EventEmitter<IProjectGridLine> = new EventEmitter<IProjectGridLine>();
 
@@ -34,8 +31,6 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   public readonly faTrash = faTrash;
 
   public readonly dataSource: MatTableDataSource<IProjectGridLine> = null;
-
-  private redrawTableSubscription: Subscription = null;
 
   private onRedrawTable(areRowsReset: boolean) {
     if (areRowsReset) {
@@ -62,15 +57,10 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    this.redrawTableSubscription = this.redrawTable.subscribe((areRowsReset: boolean) => {
-      this.onRedrawTable(areRowsReset);
-    });
+
   }
 
   ngOnDestroy() {
-    if (this.redrawTableSubscription) {
-      this.redrawTableSubscription.unsubscribe();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

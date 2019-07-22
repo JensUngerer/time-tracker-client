@@ -40,10 +40,6 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   public formControlNameProjectName = 'theProjectName';
 
   @Output()
-  public redrawTable: EventEmitter<boolean> = new EventEmitter();
-
-
-  @Output()
   public onProjectRowClicked(row: IProjectGridLine) {
     // TODO: use row to set projectId as queryParam
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
@@ -137,6 +133,5 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     if (resetRows) {
       this.setCloneGridLines();
     }
-    this.redrawTable.emit(resetRows);
   }
 }
