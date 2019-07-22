@@ -3,7 +3,7 @@ import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
 import { ProjectService } from './../project.service';
-import { Component, OnInit, Output, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource, MatTable, MatDialog, MatDialogRef } from '@angular/material';
@@ -26,13 +26,15 @@ export interface IProjectGridLine extends IProject {
     './../css/centerVerticalHorizontal.scss'
   ]
 })
-export class ProjectComponent implements OnInit, AfterViewInit {
+export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public static projectIdPropertyName = 'projectId';
 
   private gridLines: IProjectGridLine[] = [];
 
   private afterDialogCloseSubscription$: Observable<boolean> = null;
+
+  private isMemoryReadySubscription: Subscription = null;
 
   public faTrash = faTrash;
 
@@ -101,7 +103,7 @@ export class ProjectComponent implements OnInit, AfterViewInit {
     this.projectFormGroup = new FormGroup(configObj);
 
     this.dataSource = new MatTableDataSource(this.gridLines);
-    const isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean)=>{
+    this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean)=>{
       if (isReady) {
         this.drawTable(true);
       }
@@ -113,6 +115,12 @@ export class ProjectComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.drawTable(false);
+  }
+
+  ngOnDestroy() {
+    if (this.isMemoryReadySubscription) {
+      this.isMemoryReadySubscription.unsubscribe();
+    }
   }
 
   private setCloneGridLines() {
