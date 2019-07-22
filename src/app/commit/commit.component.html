@@ -16,7 +16,7 @@
               </mat-select>
             </div>
             <div class="formFlexItem">
-              <button type="submit">Commit</button>
+              <button type="submit" [disabled]="commitFormGroup.invalid || isButtonDisabled">Commit</button>
             </div>
           </div>
         </form>

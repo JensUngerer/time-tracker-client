@@ -29,12 +29,15 @@ export class CommitComponent implements OnInit {
   @Output()
   public durationStr: string = null;
 
+  @Output()
+  public isButtonDisabled = false;
+
   private sumForOneProject: IExtendedTimeRecordsDocumentData = null;
 
   constructor(private projectService: ProjectService,
-              private commitService: CommitService,
-              private helpersService: HelpersService,
-              private inMemoryDataService: InMemoryDataService) {
+    private commitService: CommitService,
+    private helpersService: HelpersService,
+    private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -62,8 +65,10 @@ export class CommitComponent implements OnInit {
     if (this.sumForOneProject) {
       this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.data.durationStructure.hours,
         this.sumForOneProject.data.durationStructure.minutes);
+      this.isButtonDisabled = false;
     } else {
       this.durationStr = 'not available, as there are no time-entries';
+      this.isButtonDisabled = true;
     }
   }
 
@@ -73,13 +78,16 @@ export class CommitComponent implements OnInit {
       this.commitService.postCommit(this.sumForOneProject.data).then(() => {
         this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
         this.durationStr = '';
+        this.formControlProjectDropDown.setValue('');
       }).catch(() => {
         console.log('catch');
         this.durationStr = '';
+        this.formControlProjectDropDown.setValue('');
       });
     } else {
       console.error('commit is not possible');
       this.durationStr = '';
+      this.formControlProjectDropDown.setValue('');
     }
   }
 }
