@@ -1,12 +1,15 @@
+import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
 import { ProjectService } from './../project.service';
 import { Component, OnInit, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource, MatTable } from '@angular/material';
+import { Router } from '@angular/router';
+import * as routesConfig from './../../../../common/typescript/routes.js';
 
-// export interface IProjectComponentLine {
-//   name: string;
+// export interface IProjectGridLine extends IProject {
+//   deleteRow: string;
 // }
 
 @Component({
@@ -21,6 +24,8 @@ export class ProjectComponent implements OnInit, AfterViewInit {
 
   public static projectIdPropertyName = 'projectId';
 
+  private gridLines: IProject[] = [];
+
   @ViewChild(MatTable, {static: false})
   public theTable: MatTable<IProject>;
 
@@ -34,7 +39,11 @@ export class ProjectComponent implements OnInit, AfterViewInit {
   @Output()
   public dataSource: MatTableDataSource<IProject> = null;
 
-  public gridLines: IProject[] = [];
+  @Output()
+  public onProjectRowClicked(row: IProject) {
+    const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
+    this.router.navigate([tasksRoutePath]);
+  }
 
   public onSubmit(values: any) {
     const projectName = values[this.formControlNameProjectName];
@@ -42,11 +51,13 @@ export class ProjectComponent implements OnInit, AfterViewInit {
 
     this.commitService.postProject(project);
 
+    this.projectFormGroup.controls[this.formControlNameProjectName].setValue('');
     this.drawTable(true);
   }
 
   constructor(private projectService: ProjectService,
-              private commitService: CommitService) {
+              private commitService: CommitService,
+              private router: Router) {
     const configObj: {[key: string]: AbstractControl} = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 

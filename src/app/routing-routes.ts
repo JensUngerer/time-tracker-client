@@ -8,26 +8,28 @@ import { CommitComponent } from './commit/commit.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import * as routesConfig from './../../../common/typescript/routes.js';
+import { ViewLabels } from './viewLabelsEnum';
+import { ViewPaths } from './viewPathsEnum';
 
 export class RoutingRoutes {
 
   public static viewsPrefix = routesConfig.viewsPrefix;
 
-  public static startRoute = 'project';
+  public static startRoute = ViewPaths.project;
 
   public static routes: Routes = [
     {
       path: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
       component: ProjectComponent,
       data: {
-        label: 'Project-Management'
+        label: ViewLabels.projectManagement
       }
     },
     {
-      path: RoutingRoutes.viewsPrefix + 'task',
+      path: RoutingRoutes.viewsPrefix + ViewPaths.task,
       component: TaskComponent,
       data: {
-        label: 'Task-Management'
+        label: ViewLabels.taskManagement
       }
     },
     {
