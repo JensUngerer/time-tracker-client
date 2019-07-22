@@ -35,8 +35,13 @@ import { CompletedTaskComponent } from './completed-task/completed-task.componen
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {MatDialogModule} from '@angular/material/dialog';
+import { ProjectDeleteDialogComponent } from './project-delete-dialog/project-delete-dialog.component';
 
 @NgModule({
+  entryComponents:[
+    ProjectDeleteDialogComponent
+  ],
   declarations: [
     AppComponent,
     NavbarFourComponent,
@@ -48,7 +53,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     TaskComponent,
     CommitComponent,
     CompletedTaskComponent,
-    CompletedTimeEntryComponent
+    CompletedTimeEntryComponent,
+    ProjectDeleteDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -69,7 +75,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatSelectModule,
     MatTableModule,
     HttpClientModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

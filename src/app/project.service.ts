@@ -29,6 +29,22 @@ export class ProjectService {
     return newProject;
   }
 
+  public deleteProject(projectId: string) {
+    const allProjects: IProject[] = this.inMemoryDataService.get('projects');
+    if (!allProjects || allProjects.length === 0) {
+      console.error('no projects found!');
+      return;
+    }
+    const index = allProjects.findIndex((oneProject: IProject) => {
+      return oneProject.projectId === projectId;
+    });
+    if (index !== -1) {
+      allProjects.splice(index, 1);
+    } else {
+      console.error('cannot delete projectId:' + projectId);
+    }
+  }
+
   public getProjects(): IProject[] {
     return this.inMemoryDataService.get(this.projectsKey);
   }

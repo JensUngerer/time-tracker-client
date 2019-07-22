@@ -35,7 +35,6 @@ export class InMemoryDataService implements OnDestroy {
       this.storage = this.sessionStorageSerializationService.deSerialize<IStorageData>(containedDataStr);
       this.isReady$.next(true);
     } else {
-      const projectsPromise: Promise<string> = this.commitService.getProjects();
       const tasksPromise: Promise<string> = this.commitService.getTasks();
       this.storage = {
         // users: null,
@@ -44,21 +43,22 @@ export class InMemoryDataService implements OnDestroy {
         timeEntries: null
       };
 
-      projectsPromise.then((projectDocs: string) => {
-        this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
+      // no longer retrieve from DB
+      // const projectsPromise: Promise<string> = this.commitService.getProjects();
+      // projectsPromise.then((projectDocs: string) => {
+      //   this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
+      // });
+      // projectsPromise.catch(() => {
+      //   console.error('projectsPromise.catch');
+      // });
 
-        tasksPromise.then((taskDocs: string) => {
-          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
-          this.isReady$.next(true);
-        });
-        tasksPromise.catch(() => {
-          console.error('tasksPromise.catch');
-        });
+      tasksPromise.then((taskDocs: string) => {
+        this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
+        this.isReady$.next(true);
       });
-      projectsPromise.catch(() => {
-        console.error('projectsPromise.catch');
+      tasksPromise.catch(() => {
+        console.error('tasksPromise.catch');
       });
-
 
     }
 
