@@ -29,7 +29,7 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   constructor(private sessionStorageSerializationService: SessionStorageSerializationService,
-              private commitService: CommitService) {
+    private commitService: CommitService) {
     const containedDataStr: string = window.sessionStorage.getItem(this.sessionStorageKey);
     if (containedDataStr) {
       this.storage = this.sessionStorageSerializationService.deSerialize<IStorageData>(containedDataStr);
@@ -69,6 +69,36 @@ export class InMemoryDataService implements OnDestroy {
 
   public ngOnDestroy(): void {
     window.removeEventListener(this.beforeUnloadEventName, this.saveStorageListener);
+  }
+
+  public areTimeEntriesAvailableForProjectId(projectId: string) {
+    let isAvailable = true;
+    const tasks = this.getTasksByProjectId(projectId);
+    if (!tasks || tasks.length === 0) {
+      isAvailable = false;
+    } else {
+      tasks.forEach((oneTask: ITask)=>{
+        const timeEntries = this.getTimeEntriesByTaskId(oneTask.taskId);
+        if (!timeEntries || timeEntries.length === 0) {
+          isAvailable = false;
+        }
+      });
+    }
+
+    return isAvailable;
+  }
+
+  public clearTimeEntries(entryIdsToClear: string[]) {
+    for (let currentIndex = entryIdsToClear.length - 1; currentIndex >= 0; currentIndex--) {
+      const currentIndexToClear = this.storage.timeEntries.findIndex((iteratedTimeEntry: ITimeEntry) => {
+        return iteratedTimeEntry.timeEntryId === entryIdsToClear[currentIndex];
+      });
+      if (currentIndexToClear !== -1) {
+        this.storage.timeEntries.splice(currentIndexToClear, 1);
+      } else {
+        console.error('unable to clear the timeEntryId:' + JSON.stringify(entryIdsToClear[currentIndex]));
+      }
+    }
   }
 
   public getProjectById(projectId: string): IProject {

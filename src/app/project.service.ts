@@ -6,7 +6,7 @@ import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { HelpersService } from './helpers.service';
 import { IDuration } from '../../../common/typescript/iDuration';
-import { ITimeRecordsDocumentData } from '../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { ITimeRecordsDocumentData, IExtendedTimeRecordsDocumentData } from '../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { IDate } from '../../../common/typescript/iDate';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class ProjectService {
   private readonly projectsKey = 'projects';
 
   constructor(private inMemoryDataService: InMemoryDataService,
-              private helpersService: HelpersService) { }
+    private helpersService: HelpersService) { }
 
   public addProject(projectName: string): IProject {
     const newProject: IProject = {
@@ -33,11 +33,15 @@ export class ProjectService {
     return this.inMemoryDataService.get(this.projectsKey);
   }
 
-  public summarizeDurationFor(projectId: string): ITimeRecordsDocumentData {
+  public summarizeDurationFor(projectId: string): IExtendedTimeRecordsDocumentData {
     const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
     if (!tasksByProjectId || tasksByProjectId.length === 0) {
       console.error('!tasksByProjectId');
       return;
+    }
+    const isDataAvailable = this.inMemoryDataService.areTimeEntriesAvailableForProjectId(projectId);
+    if (!isDataAvailable) {
+      return null;
     }
 
     const sumValue: ITimeRecordsDocumentData = {
@@ -47,7 +51,25 @@ export class ProjectService {
       _projectId: projectId
     };
 
-    return sumValue;
+    return {
+      data: sumValue,
+      timeEntryIds: this.getTimeEntryIdsFor(tasksByProjectId)
+    };
+  }
+
+  private getTimeEntryIdsFor(tasksByProjectId: ITask[]) {
+    let buffer: string[] = [];
+    tasksByProjectId.forEach((oneTask: ITask) => {
+      const timeEntries = this.inMemoryDataService.getTimeEntriesByTaskId(oneTask.taskId);
+      if (!timeEntries) {
+        return;
+      }
+      const theIds = timeEntries.map((oneTimeEntry: ITimeEntry) => {
+        return oneTimeEntry.timeEntryId;
+      });
+      buffer = buffer.concat(theIds);
+    });
+    return buffer;
   }
 
   private getTaskIdsOfOneProject(tasksByProjectId: ITask[]): string[] {
@@ -161,6 +183,9 @@ export class ProjectService {
     // const earliestStartOfEntireProject = this.getEarliestStartOfEntireProject(earliestStartTimesOfTasks);
 
     const latestEndOfEntireProject = this.getLatestEndOfEntireProject(latestEndTimesOfTasks);
+    if (!latestEndOfEntireProject) {
+      return null;
+    }
     return this.helpersService.getDateStructure(latestEndOfEntireProject);
   }
 

@@ -1,3 +1,4 @@
+import { InMemoryDataService } from './../in-memory-data.service';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
@@ -5,7 +6,7 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
-import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { ITimeRecordsDocumentData, IExtendedTimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 
 @Component({
   selector: 'mtt-commit',
@@ -28,11 +29,12 @@ export class CommitComponent implements OnInit {
   @Output()
   public durationStr: string = null;
 
-  private sumForOneProject: ITimeRecordsDocumentData = null;
+  private sumForOneProject: IExtendedTimeRecordsDocumentData = null;
 
   constructor(private projectService: ProjectService,
               private commitService: CommitService,
-              private helpersService: HelpersService) {
+              private helpersService: HelpersService,
+              private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -57,15 +59,25 @@ export class CommitComponent implements OnInit {
 
     this.sumForOneProject = this.projectService.summarizeDurationFor(projectId);
 
-    this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.durationStructure.hours,
-      this.sumForOneProject.durationStructure.minutes);
+    if (this.sumForOneProject) {
+      this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.data.durationStructure.hours,
+        this.sumForOneProject.data.durationStructure.minutes);
+    } else {
+      this.durationStr = 'not available, as there are no time-entries';
+    }
   }
 
+
   public onCommitClicked(values: any) {
-    this.commitService.postCommit(this.sumForOneProject).then(() => {
-      console.log('then');
-    }).catch(() => {
-      console.log('catch');
-    });
+    if (this.sumForOneProject) {
+      this.commitService.postCommit(this.sumForOneProject.data).then(() => {
+        this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
+      }).catch(() => {
+        console.log('catch');
+      });
+    } else {
+      console.error('commit is not possible');
+    }
+
   }
 }
