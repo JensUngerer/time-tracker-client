@@ -4,7 +4,17 @@
       <table #projectsTable mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Project-Name</th>
-          <td class="pointerCursor" mat-cell *matCellDef="let line" (click)="onProjectRowClicked(line)">{{line.name}}</td>
+          <td class="pointerCursor" mat-cell *matCellDef="let line" (click)="onProjectRowClicked(line)">{{line.name}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="deleteRow">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let line"><button class="buttonSize, pointerCursor" mat-stroke-button
+              (click)="onDeleteRowClicked(line)">
+              <div style="text-align:center">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </div>
+            </button></td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

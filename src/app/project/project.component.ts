@@ -7,10 +7,13 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource, MatTable } from '@angular/material';
 import { Router } from '@angular/router';
 import * as routesConfig from './../../../../common/typescript/routes.js';
+import * as _ from 'underscore';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-// export interface IProjectGridLine extends IProject {
-//   deleteRow: string;
-// }
+
+export interface IProjectGridLine extends IProject {
+  deleteRow: string;
+}
 
 @Component({
   selector: 'mtt-project',
@@ -24,25 +27,33 @@ export class ProjectComponent implements OnInit, AfterViewInit {
 
   public static projectIdPropertyName = 'projectId';
 
-  private gridLines: IProject[] = [];
+  private gridLines: IProjectGridLine[] = [];
+
+  public faTrash = faTrash;
 
   @ViewChild(MatTable, {static: false})
-  public theTable: MatTable<IProject>;
+  public theTable: MatTable<IProjectGridLine>;
 
   public projectFormGroup: FormGroup = null;
 
   public formControlNameProjectName = 'theProjectName';
 
   @Output()
-  public displayedColumns: string[] = ['name'];
+  public displayedColumns: string[] = ['name', 'deleteRow'];
 
   @Output()
-  public dataSource: MatTableDataSource<IProject> = null;
+  public dataSource: MatTableDataSource<IProjectGridLine> = null;
 
   @Output()
-  public onProjectRowClicked(row: IProject) {
+  public onProjectRowClicked(row: IProjectGridLine) {
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
     this.router.navigate([tasksRoutePath]);
+  }
+
+  @Output()
+  public onDeleteRowClicked(row: IProjectGridLine) {
+    console.log('delete');
+    console.log(row);
   }
 
   public onSubmit(values: any) {
@@ -63,23 +74,36 @@ export class ProjectComponent implements OnInit, AfterViewInit {
 
     this.projectFormGroup = new FormGroup(configObj);
 
-    this.gridLines = this.projectService.getProjects();
+    this.setCloneGridLines();
     this.dataSource = new MatTableDataSource(this.gridLines);
   }
 
   ngOnInit() {
+    this.gridLines = [];
+    const projects = this.projectService.getProjects();
+    if (!projects || projects.length === 0) {
+      return;
+    }
+    projects.forEach((oneProject: IProject) => {
+      const clonedLine: IProjectGridLine = _.clone(oneProject) as IProjectGridLine;
+      clonedLine.deleteRow = '';
+      this.gridLines.push(clonedLine);
+    });
 
+    this.dataSource.data = this.gridLines;
   }
 
   ngAfterViewInit() {
     this.drawTable(false)
   }
 
+  private setCloneGridLines(){
+
+  }
+
   private drawTable(resetRows: boolean) {
     if (resetRows) {
-      this.gridLines = this.projectService.getProjects();
-
-      this.dataSource.data = this.gridLines;
+      this.setCloneGridLines();
     }
 
     this.theTable.renderRows();

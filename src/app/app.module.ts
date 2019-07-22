@@ -34,6 +34,7 @@ import { CommitComponent } from './commit/commit.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import { HttpClientModule } from '@angular/common/http';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatFormFieldModule,
     MatSelectModule,
     MatTableModule,
-    HttpClientModule
+    HttpClientModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
