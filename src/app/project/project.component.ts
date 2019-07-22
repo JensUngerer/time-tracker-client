@@ -72,7 +72,7 @@ export class ProjectComponent implements OnInit, AfterViewInit {
     const projectName = values[this.formControlNameProjectName];
     const project: IProject = this.projectService.addProject(projectName);
 
-    // store in db ? --> TODO: really necessary?
+    // store in db ? --> necessary but when deleting mark as isLocallyDeleted as true
     this.commitService.postProject(project);
 
     this.projectFormGroup.controls[this.formControlNameProjectName].setValue('');
