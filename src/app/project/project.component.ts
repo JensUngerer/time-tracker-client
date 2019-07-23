@@ -13,10 +13,6 @@ import * as _ from 'underscore';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
 import { IGridLine } from './../typescript/iGridLine';
 
-// export interface IProjectGridLine extends IProject {
-//   deleteRow: string;
-// }
-
 @Component({
   selector: 'mtt-project',
   templateUrl: './project.component.html',

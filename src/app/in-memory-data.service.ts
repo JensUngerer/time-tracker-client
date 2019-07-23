@@ -47,21 +47,23 @@ export class InMemoryDataService implements OnDestroy {
       const projectsPromise: Promise<string> = this.commitService.getProjects();
       projectsPromise.then((projectDocs: string) => {
         this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
-        this.isReady$.next(true);
+        // this.isReady$.next(true);
+
+        // retrieve from DB (again)
+        tasksPromise.then((taskDocs: string) => {
+          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
+          this.isReady$.next(true);
+        });
+        tasksPromise.catch(() => {
+          console.error('tasksPromise.catch');
+        });
       });
       projectsPromise.catch(() => {
         console.error('projectsPromise.catch');
         this.isReady$.next(true);
       });
 
-      // no longer retrieve from DB
-      // tasksPromise.then((taskDocs: string) => {
-      //   this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
-      //   this.isReady$.next(true);
-      // });
-      // tasksPromise.catch(() => {
-      //   console.error('tasksPromise.catch');
-      // });
+
 
     }
 
@@ -80,7 +82,7 @@ export class InMemoryDataService implements OnDestroy {
     if (!tasks || tasks.length === 0) {
       isAvailable = false;
     } else {
-      tasks.forEach((oneTask: ITask)=>{
+      tasks.forEach((oneTask: ITask) => {
         const timeEntries = this.getTimeEntriesByTaskId(oneTask.taskId);
         if (!timeEntries || timeEntries.length === 0) {
           isAvailable = false;
@@ -151,7 +153,13 @@ export class InMemoryDataService implements OnDestroy {
   }
 
   public getTasksByProjectId(projectId: string) {
-    const tasks: ITask[] = this.storage['tasks'].filter((oneTask: ITask) => {
+    const tasksStorage = this.storage['tasks'];
+    if (!tasksStorage) {
+      console.error('no tasks for projectId:' + projectId);
+      return [];
+    }
+
+    const tasks: ITask[] = tasksStorage.filter((oneTask: ITask) => {
       return oneTask._projectId === projectId;
     });
     if (!tasks || tasks.length === 0) {

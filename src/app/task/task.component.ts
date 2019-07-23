@@ -37,10 +37,6 @@ export class TaskComponent implements OnInit, OnDestroy {
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
 
-    // const projectId = this.currentSelectionsPropertiesService.properties[ProjectComponent.projectIdPropertyName];
-
-    // const projectId = this.activatedRoute.snapshot.queryParams[ProjectComponent.projectIdPropertyName];
-
     const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
 
     const task: ITask = this.taskService.addTask(newNewTaskName, projectId);
@@ -48,6 +44,16 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.isButtonDisabled = true;
 
     this.commitService.postTask(task);
+
+    const currentProject = this.projectOptions.find((aProjectOption: IProjectOption) => {
+      return aProjectOption.value.projectId === projectId;
+    });
+    if (!currentProject) {
+      console.error('no current project found');
+      return;
+    }
+
+    this.redrawTableOfProject(currentProject.value);
   }
 
   constructor(private taskService: TaskService,
@@ -77,7 +83,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     .controls[this.formControlNameProjectName]
     .valueChanges
     .subscribe((theEvent: any) => {
-      this.onProjectSelectionChanged(theEvent);
+      this.redrawTableOfProject(theEvent);
     });
 
     this.activatedRoute.queryParams.subscribe((params: Params) => {
@@ -102,7 +108,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   }
 
-  public onProjectSelectionChanged(selectedProject: IProject) {
+  public redrawTableOfProject(selectedProject: IProject) {
     const existingCorrespondingTasks = this.inMemoryDataService.getTasksByProjectId(selectedProject.projectId);
     if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
       console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
@@ -111,7 +117,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     existingCorrespondingTasks.forEach((oneTask: ITask) => {
       const taskForRow: IGridLine = {
         name: oneTask.name,
-        id: oneTask._projectId,
+        id: oneTask.taskId,
         deleteRow: ''
       };
       this.gridLines.push(taskForRow);
