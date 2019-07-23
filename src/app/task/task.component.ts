@@ -1,21 +1,25 @@
 import { CommitService } from './../commit.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
 import { TaskService } from './../task.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { ProjectComponent, IProjectGridLine } from '../project/project.component';
 import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
+import routesConfig from './../../../../common/typescript/routes.js';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'mtt-task',
   templateUrl: './task.component.html',
   styleUrls: ['./task.component.scss', './../css/centerVerticalHorizontal.scss']
 })
-export class TaskComponent implements OnInit {
+export class TaskComponent implements OnInit, OnDestroy {
+
+  private projectChangesSubscription: Subscription = null;
 
   public taskFormGroup: FormGroup = null;
 
@@ -47,7 +51,8 @@ export class TaskComponent implements OnInit {
 
   constructor(private taskService: TaskService,
     private projectService: ProjectService,
-    private commitService: CommitService) {
+    private commitService: CommitService,
+    private activatedRoute: ActivatedRoute) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -65,6 +70,26 @@ export class TaskComponent implements OnInit {
     projects.forEach((element: IProject) => {
       this.projectOptions.push(new ProjectOption(element));
     });
+
+    this.projectChangesSubscription = this.taskFormGroup
+    .controls[this.formControlNameProjectName]
+    .valueChanges
+    .subscribe((theEvent: any) => {
+      this.onProjectSelectionChanged(theEvent);
+    });
+
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
+      const projectIdFromUrl = params[routesConfig.projectIdProperty];
+
+      const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+        return oneProjectOption.value.projectId === projectIdFromUrl;
+      });
+      if (!correspondingDropDownMenuEntry) {
+        console.error('!correspondingDropDownMenuEntry');
+        return;
+      }
+      this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
+    });
   }
 
   public onTaskRowClicked(line: IProjectGridLine) {
@@ -75,7 +100,14 @@ export class TaskComponent implements OnInit {
 
   }
 
+  public onProjectSelectionChanged($event: any) {
+    console.log($event);
+  }
+
   ngOnInit() {
   }
 
+  ngOnDestroy() {
+    this.projectChangesSubscription.unsubscribe();
+  }
 }

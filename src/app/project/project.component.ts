@@ -8,7 +8,7 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { MatTableDataSource, MatTable, MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
-import * as routesConfig from './../../../../common/typescript/routes.js';
+import routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
 
@@ -41,9 +41,11 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Output()
   public onProjectRowClicked(row: IProjectGridLine) {
-    // TODO: use row to set projectId as queryParam
+    const queryParams = {};
+    queryParams[routesConfig.projectIdProperty] = row.projectId;
+
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
-    this.router.navigate([tasksRoutePath]);
+    this.router.navigate([tasksRoutePath], {queryParams});
   }
 
   @Output()
