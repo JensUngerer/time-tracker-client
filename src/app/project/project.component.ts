@@ -11,10 +11,11 @@ import { Router } from '@angular/router';
 import routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
+import { IGridLine } from './../typescript/iGridLine';
 
-export interface IProjectGridLine extends IProject {
-  deleteRow: string;
-}
+// export interface IProjectGridLine extends IProject {
+//   deleteRow: string;
+// }
 
 @Component({
   selector: 'mtt-project',
@@ -29,7 +30,7 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   public static projectIdPropertyName = 'projectId';
 
   @Output()
-  public gridLines: IProjectGridLine[] = [];
+  public gridLines: IGridLine[] = [];
 
   private afterDialogCloseSubscription$: Observable<boolean> = null;
 
@@ -40,27 +41,27 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   public formControlNameProjectName = 'theProjectName';
 
   @Output()
-  public onProjectRowClicked(row: IProjectGridLine) {
+  public onProjectRowClicked(row: IGridLine) {
     const queryParams = {};
-    queryParams[routesConfig.projectIdProperty] = row.projectId;
+    queryParams[routesConfig.projectIdProperty] = row.id;
 
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
     this.router.navigate([tasksRoutePath], {queryParams});
   }
 
   @Output()
-  public onDeleteRowClicked(row: IProjectGridLine) {
+  public onDeleteRowClicked(row: IGridLine) {
     const dialogRef: MatDialogRef<ProjectDeleteDialogComponent, boolean> = this.dialog.open(ProjectDeleteDialogComponent, {
       data: row
     });
     this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
     this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
       if (isOkButtonPressed) {
-        this.projectService.deleteProject(row.projectId);
+        this.projectService.deleteProject(row.id);
         this.drawTable(true);
 
         // NEW update database with the idDeletedInClient = true flag
-        const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.projectId);
+        const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
         dbPatchedPromise.then((resolveValue: any) => {
            console.log(resolveValue);
         });
@@ -118,17 +119,18 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     const projects = this.projectService.getProjects();
 
     if (!projects || projects.length === 0) {
-      // this.dataSource.data = this.gridLines;
       console.error('no projects to display');
       return;
     }
 
     projects.forEach((oneProject: IProject) => {
-      const clonedLine: IProjectGridLine = _.clone(oneProject) as IProjectGridLine;
-      clonedLine.deleteRow = '';
-      this.gridLines.push(clonedLine);
+      const gridLine: IGridLine = {
+        name: oneProject.name,
+        id: oneProject.projectId,
+        deleteRow: ''
+      };
+      this.gridLines.push(gridLine);
     });
-    // this.dataSource.data = this.gridLines;
   }
 
   private drawTable(resetRows: boolean) {

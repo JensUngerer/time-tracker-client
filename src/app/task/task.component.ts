@@ -1,11 +1,9 @@
 import { CommitService } from './../commit.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CurrentSelectionsPropertiesService } from './../current-selections-properties.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
-import { ProjectComponent, IProjectGridLine } from '../project/project.component';
 import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
@@ -13,6 +11,7 @@ import routesConfig from './../../../../common/typescript/routes.js';
 import { Subscription } from 'rxjs';
 import { InMemoryDataService } from '../in-memory-data.service';
 import * as _ from 'underscore';
+import { IGridLine } from './../typescript/iGridLine';
 
 @Component({
   selector: 'mtt-task',
@@ -33,7 +32,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public projectOptions: IProjectOption[] = [];
 
-  public gridLines: IProjectGridLine[] = [];
+  public gridLines: IGridLine[] = [];
 
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
@@ -95,11 +94,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onTaskRowClicked(line: IProjectGridLine) {
+  public onTaskRowClicked(line: IGridLine) {
 
   }
 
-  public onDeleteRowClicked(line: IProjectGridLine) {
+  public onDeleteRowClicked(line: IGridLine) {
 
   }
 
@@ -110,9 +109,9 @@ export class TaskComponent implements OnInit, OnDestroy {
       return;
     }
     existingCorrespondingTasks.forEach((oneTask: ITask) => {
-      const taskForRow: IProjectGridLine = {
+      const taskForRow: IGridLine = {
         name: oneTask.name,
-        projectId: oneTask._projectId,
+        id: oneTask._projectId,
         deleteRow: ''
       };
       this.gridLines.push(taskForRow);
