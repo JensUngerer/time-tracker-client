@@ -1,21 +1,27 @@
 <div class="container">
   <div class="flexItem">
-    <form [formGroup]="taskFormGroup" (submit)="onSubmit(taskFormGroup.value)">
-      <div class="innerFormFlexContainer">
-        <div class="innerFormFlexItem">
-          <mat-select placeholder="Project" matInput [formControlName]="formControlNameProjectName" [required]="true">
-            <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-              {{projectOption.viewValue}}
-            </mat-option>
-          </mat-select>
+    <div>
+      <mtt-name-table columnName="Task-Name" [gridLines]="gridLines" (nameCellClicked)="onTaskRowClicked($event)"
+        (deleteRowClicked)="onDeleteRowClicked($event)"></mtt-name-table>
+    </div>
+    <div>
+      <form [formGroup]="taskFormGroup" (submit)="onSubmit(taskFormGroup.value)">
+        <div class="innerFormFlexContainer">
+          <div class="innerFormFlexItem">
+            <mat-select placeholder="Project" matInput [formControlName]="formControlNameProjectName" [required]="true">
+              <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
+                {{projectOption.viewValue}}
+              </mat-option>
+            </mat-select>
+          </div>
+          <div class="innerFormFlexItem">
+            <input type="text" [formControlName]="formControlNameTaskName" [required]="true">
+          </div>
+          <div class="innerFormFlexItem">
+            <button type="submit" [disabled]="isButtonDisabled || taskFormGroup.invalid">Add Task</button>
+          </div>
         </div>
-        <div class="innerFormFlexItem">
-          <input type="text" [formControlName]="formControlNameTaskName" [required]="true">
-        </div>
-        <div class="innerFormFlexItem">
-          <button type="submit" [disabled]="isButtonDisabled || taskFormGroup.invalid">Add Task</button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>

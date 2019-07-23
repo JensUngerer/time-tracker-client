@@ -5,7 +5,7 @@ import { CurrentSelectionsPropertiesService } from './../current-selections-prop
 import { TaskService } from './../task.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
-import { ProjectComponent } from '../project/project.component';
+import { ProjectComponent, IProjectGridLine } from '../project/project.component';
 import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
@@ -25,8 +25,9 @@ export class TaskComponent implements OnInit {
 
   public formControlNameProjectName = 'theProjectName';
 
-  public  projectOptions: IProjectOption[] = [];
+  public projectOptions: IProjectOption[] = [];
 
+  public gridLines: IProjectGridLine[] = [];
 
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
@@ -45,9 +46,9 @@ export class TaskComponent implements OnInit {
   }
 
   constructor(private taskService: TaskService,
-              private projectService: ProjectService,
-              private commitService: CommitService) {
-    const configObj: {[key: string]: AbstractControl} = {};
+    private projectService: ProjectService,
+    private commitService: CommitService) {
+    const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
 
@@ -64,6 +65,14 @@ export class TaskComponent implements OnInit {
     projects.forEach((element: IProject) => {
       this.projectOptions.push(new ProjectOption(element));
     });
+  }
+
+  public onTaskRowClicked(line: IProjectGridLine) {
+
+  }
+
+  public onDeleteRowClicked(line: IProjectGridLine) {
+
   }
 
   ngOnInit() {
