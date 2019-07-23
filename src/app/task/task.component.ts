@@ -21,6 +21,7 @@ import { IGridLine } from './../typescript/iGridLine';
 export class TaskComponent implements OnInit, OnDestroy {
 
   private projectChangesSubscription: Subscription = null;
+  private isMemoryReadySubscription: Subscription = null;
 
   public taskFormGroup: FormGroup = null;
 
@@ -43,8 +44,22 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     this.isButtonDisabled = true;
 
-    this.commitService.postTask(task);
+    const createTaskPromise: Promise<any> = this.commitService.postTask(task);
+    createTaskPromise.then(() => {
+      this.inMemoryDataService.loadDataFromDb();
 
+      // isReady will be triggered!
+      // --> this.triggerReDraw(projectId);
+    });
+    createTaskPromise.catch(() => {
+      this.inMemoryDataService.loadDataFromDb();
+
+      // isReady will be triggered!
+      // --> this.triggerReDraw(projectId);
+    });
+  }
+
+  private triggerReDraw(projectId: string) {
     const currentProject = this.projectOptions.find((aProjectOption: IProjectOption) => {
       return aProjectOption.value.projectId === projectId;
     });
@@ -57,10 +72,10 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-              private projectService: ProjectService,
-              private commitService: CommitService,
-              private activatedRoute: ActivatedRoute,
-              private inMemoryDataService: InMemoryDataService) {
+    private projectService: ProjectService,
+    private commitService: CommitService,
+    private activatedRoute: ActivatedRoute,
+    private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -80,11 +95,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     });
 
     this.projectChangesSubscription = this.taskFormGroup
-    .controls[this.formControlNameProjectName]
-    .valueChanges
-    .subscribe((theEvent: any) => {
-      this.redrawTableOfProject(theEvent);
-    });
+      .controls[this.formControlNameProjectName]
+      .valueChanges
+      .subscribe((theEvent: any) => {
+        this.redrawTableOfProject(theEvent);
+      });
 
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectIdFromUrl = params[routesConfig.projectIdProperty];
@@ -97,6 +112,15 @@ export class TaskComponent implements OnInit, OnDestroy {
         return;
       }
       this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
+
+      if (this.isMemoryReadySubscription) {
+        this.isMemoryReadySubscription.unsubscribe();
+      }
+      this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
+        if (isReady) {
+          this.triggerReDraw(projectIdFromUrl);
+        }
+      });
     });
   }
 
@@ -140,5 +164,6 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.projectChangesSubscription.unsubscribe();
+    this.isMemoryReadySubscription.unsubscribe();
   }
 }

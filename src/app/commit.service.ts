@@ -46,7 +46,7 @@ export class CommitService {
 
   public postTask(task: ITask) {
     const url = this.getTaskUrl();
-    this.httpPost(routes.taskBodyProperty, task, url);
+    return this.httpPost(routes.taskBodyProperty, task, url);
   }
 
   public deleteTask(taskId: string) {
@@ -59,12 +59,12 @@ export class CommitService {
     body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
-    this.performHttpPatch(url, body);
+    return this.performHttpPatch(url, body);
   }
 
   public postProject(project: IProject) {
     const url = this.getProjectsUrl();
-    this.httpPost(routes.projectBodyProperty, project, url);
+    return this.httpPost(routes.projectBodyProperty, project, url);
   }
 
   public postCommit(line: ITimeRecordsDocumentData): Promise<any> {

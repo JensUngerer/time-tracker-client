@@ -35,7 +35,6 @@ export class InMemoryDataService implements OnDestroy {
       this.storage = this.sessionStorageSerializationService.deSerialize<IStorageData>(containedDataStr);
       this.isReady$.next(true);
     } else {
-      const tasksPromise: Promise<string> = this.commitService.getTasks();
       this.storage = {
         // users: null,
         projects: null,
@@ -43,32 +42,35 @@ export class InMemoryDataService implements OnDestroy {
         timeEntries: null
       };
 
-      // retrieve projects (again!) from DB - but only if they are not marked as isDeletedInClient
-      const projectsPromise: Promise<string> = this.commitService.getProjects();
-      projectsPromise.then((projectDocs: string) => {
-        this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
-        // this.isReady$.next(true);
-
-        // retrieve from DB (again)
-        tasksPromise.then((taskDocs: string) => {
-          this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
-          this.isReady$.next(true);
-        });
-        tasksPromise.catch(() => {
-          console.error('tasksPromise.catch');
-        });
-      });
-      projectsPromise.catch(() => {
-        console.error('projectsPromise.catch');
-        this.isReady$.next(true);
-      });
-
-
-
+      this.loadDataFromDb();
     }
 
     window.addEventListener(this.beforeUnloadEventName, (event: any) => {
       this.saveStorageListener();
+    });
+  }
+
+  public loadDataFromDb() {
+    this.isReady$.next(false);
+    // retrieve projects (again!) from DB - but only if they are not marked as isDeletedInClient
+    const projectsPromise: Promise<string> = this.commitService.getProjects();
+    const tasksPromise: Promise<string> = this.commitService.getTasks();
+    projectsPromise.then((projectDocs: string) => {
+      this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
+
+      // retrieve from DB (again)
+      tasksPromise.then((taskDocs: string) => {
+        this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
+        this.isReady$.next(true);
+      });
+      tasksPromise.catch(() => {
+        console.error('tasksPromise.catch');
+        this.isReady$.next(true);
+      });
+    });
+    projectsPromise.catch(() => {
+      console.error('projectsPromise.catch');
+      this.isReady$.next(true);
     });
   }
 
