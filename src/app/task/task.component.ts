@@ -145,9 +145,11 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
     const queryParams = {
-      taskId,
-      projectId
-    }
+      // taskId,
+      // projectId
+    };
+    queryParams[routesConfig.taskIdProperty] = taskId;
+    queryParams[routesConfig.projectIdProperty] = projectId;
     this.router.navigate([url], { queryParams });
   }
 

@@ -7,7 +7,6 @@ import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
-import { IUser } from '../../../../common/typescript/iUser';
 import { UserManagementService } from '../user-management.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ProjectService } from '../project.service';
@@ -16,6 +15,7 @@ import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
 import { IUserOption, UserOption } from './../typescript/userOption';
+import routesConfig from './../../../../common/typescript/routes.js';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -161,6 +161,27 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
 
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
+      const projectId = params[routesConfig.projectIdProperty];
+      const taskId = params[routesConfig.taskIdProperty];
+      if (projectId && taskId) {
+        const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+          return oneProjectOption.value.projectId === projectId;
+        });
+        if (projectOption) {
+          this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
+        } else {
+          console.error('no project option for: ' + projectId);
+        }
+        const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
+          return oneTaskOption.value.taskId === taskId;
+        });
+        if (taskOption) {
+          this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
+        } else {
+          console.error('no task option for:' + taskId);
+        }
+      }
+
       this.activatedRouteEventHandler(params);
     });
   }
