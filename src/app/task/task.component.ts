@@ -220,7 +220,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     if (this.projectChangesSubscription) {
       this.projectChangesSubscription.unsubscribe();
     }
-    if (this.inMemoryDataService) {
+    if (this.isMemoryReadySubscription) {
       this.isMemoryReadySubscription.unsubscribe();
     }
   }
