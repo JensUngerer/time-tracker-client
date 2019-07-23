@@ -104,8 +104,19 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   }
 
-  public onDeleteRowClicked(line: IGridLine) {
+  // private getSelectedProjectId(): string {
+  //   const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
+  //   return projectId;
+  // }
 
+  public onDeleteRowClicked(line: IGridLine) {
+    // const projectId = this.getSelectedProjectId();
+    const taskId = line.id;
+    this.commitService.deleteTask(taskId);
+
+    // TODO: dialog
+
+    // TODO: delete all corresponding time-entries (which have not yet been committed!)
   }
 
   public redrawTableOfProject(selectedProject: IProject) {

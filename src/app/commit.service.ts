@@ -19,6 +19,11 @@ export class CommitService {
     return url;
   }
 
+  private getTaskUrl(): string {
+    const url = this.httpBaseUrl + routes.port + routes.task;
+    return url;
+  }
+
   public patchProjectIsDeletedInClient(projectId: string): Promise<any> {
     const url = this.getProjectsUrl();
     const body: any = {};
@@ -28,6 +33,10 @@ export class CommitService {
     body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
+    return this.performHttpPatch(url, body);
+  }
+
+  private performHttpPatch(url: string, body: any): Promise<any> {
     return new Promise<any>((resolve: (value: any) => void) => {
       this.httpClient.patch(url, body).subscribe((subscriptionReturnValue: any) => {
         resolve(subscriptionReturnValue);
@@ -36,10 +45,22 @@ export class CommitService {
   }
 
   public postTask(task: ITask) {
-    const url = this.httpBaseUrl + routes.port + routes.task;
+    const url = this.getTaskUrl();
     this.httpPost(routes.taskBodyProperty, task, url);
   }
 
+  public deleteTask(taskId: string) {
+    const url = this.getTaskUrl();
+    const body: any = {};
+
+    body[routes.httpPatchIdPropertyName] = routes.taskIdProperty;
+    body[routes.httpPatchIdPropertyValue] = taskId;
+
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
+    body[routes.httpPatchIdPropertyToUpdateValue] = true;
+
+    this.performHttpPatch(url, body);
+  }
 
   public postProject(project: IProject) {
     const url = this.getProjectsUrl();
