@@ -33,10 +33,10 @@ export class RoutingRoutes {
       }
     },
     {
-      path: RoutingRoutes.viewsPrefix + 'timeTracking',
+      path: RoutingRoutes.viewsPrefix + ViewPaths.timeTracking,
       component: TimeTrackingComponent,
       data: {
-        label: 'Time-Tracking'
+        label: ViewLabels.timeTracking
       }
     },
     {

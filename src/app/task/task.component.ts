@@ -15,6 +15,8 @@ import { IGridLine } from './../typescript/iGridLine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { IDeleteDialogData } from '../typescript/iDeleteDialogData';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
+import { ViewPaths } from '../viewPathsEnum';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'mtt-task',
@@ -83,7 +85,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     private commitService: CommitService,
     private activatedRoute: ActivatedRoute,
     private inMemoryDataService: InMemoryDataService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private router: Router) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -133,13 +136,21 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   public onTaskRowClicked(line: IGridLine) {
+    const projectId = this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty];
+    if (!projectId) {
+      console.error('cannot switch to commit-view as missing projectId:' + projectId);
+      return;
+    }
+    const taskId = line.id;
 
+    const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
+    const queryParams = {
+      taskId,
+      projectId
+    }
+    this.router.navigate([url], { queryParams });
   }
 
-  // private getSelectedProjectId(): string {
-  //   const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
-  //   return projectId;
-  // }
 
   public onDeleteRowClicked(line: IGridLine) {
     // const projectId = this.getSelectedProjectId();
