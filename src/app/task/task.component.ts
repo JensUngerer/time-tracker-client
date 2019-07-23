@@ -27,8 +27,6 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public formControlNameTaskName = 'theTaskName';
 
-  public isButtonDisabled = false;
-
   public formControlNameProjectName = 'theProjectName';
 
   public projectOptions: IProjectOption[] = [];
@@ -42,10 +40,9 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const task: ITask = this.taskService.addTask(newNewTaskName, projectId);
 
-    this.isButtonDisabled = true;
+    // clear input field (and so disable button)
+    this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
 
-    // clear input field
-    this.taskFormGroup[this.formControlNameTaskName].setValue('');
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
@@ -59,6 +56,9 @@ export class TaskComponent implements OnInit, OnDestroy {
 
       // isReady will be triggered!
       // --> this.triggerReDraw(projectId);
+
+      // clear input field
+      // this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
     });
   }
 
