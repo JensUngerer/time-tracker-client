@@ -11,6 +11,8 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
 import routesConfig from './../../../../common/typescript/routes.js';
 import { Subscription } from 'rxjs';
+import { InMemoryDataService } from '../in-memory-data.service';
+import * as _ from 'underscore';
 
 @Component({
   selector: 'mtt-task',
@@ -50,9 +52,10 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-    private projectService: ProjectService,
-    private commitService: CommitService,
-    private activatedRoute: ActivatedRoute) {
+              private projectService: ProjectService,
+              private commitService: CommitService,
+              private activatedRoute: ActivatedRoute,
+              private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -100,8 +103,20 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   }
 
-  public onProjectSelectionChanged($event: any) {
-    console.log($event);
+  public onProjectSelectionChanged(selectedProject: IProject) {
+    const existingCorrespondingTasks = this.inMemoryDataService.getTasksByProjectId(selectedProject.projectId);
+    if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
+      console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
+      return;
+    }
+    existingCorrespondingTasks.forEach((oneTask: ITask) => {
+      const taskForRow: IProjectGridLine = {
+        name: oneTask.name,
+        projectId: oneTask._projectId,
+        deleteRow: ''
+      };
+      this.gridLines.push(taskForRow);
+    });
   }
 
   ngOnInit() {
