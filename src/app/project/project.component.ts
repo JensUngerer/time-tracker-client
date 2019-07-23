@@ -13,6 +13,7 @@ import routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
 import { IGridLine } from './../typescript/iGridLine';
+import { ITask } from '../../../../common/typescript/iTask';
 
 @Component({
   selector: 'mtt-project',
@@ -43,7 +44,7 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     queryParams[routesConfig.projectIdProperty] = row.id;
 
     const tasksRoutePath = routesConfig.viewsPrefix + ViewPaths.task;
-    this.router.navigate([tasksRoutePath], {queryParams});
+    this.router.navigate([tasksRoutePath], { queryParams });
   }
 
   @Output()
@@ -51,7 +52,7 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     const dialogData: IDeleteDialogData = {
       line: row,
       headerText: 'Delete project:',
-      contentText: 'Plus all corresponding tasks?'
+      contentText: 'Plus all corresponding tasks; Plus the corresponding timeEntry (which have not yet been committed)?'
     };
     const dialogRef: MatDialogRef<ProjectDeleteDialogComponent, boolean> = this.dialog.open(ProjectDeleteDialogComponent, {
       data: dialogData
@@ -59,17 +60,45 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
     this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
       if (isOkButtonPressed) {
-        this.projectService.deleteProject(row.id);
-        this.drawTable(true);
+        // TODO: no longer needed as
+        // this.projectService.deleteProject(row.id);
+        // this.drawTable(true);
 
-        // NEW update database with the idDeletedInClient = true flag
+        // a) delete all (not yet committed!) timeEntries
+        const projectId = row.id;
+        const correspondingTasks = this.inMemoryDataService.getTasksByProjectId(projectId);
+        let taskIds = [];
+        if (correspondingTasks || correspondingTasks.length > 0) {
+          taskIds = correspondingTasks.map((oneTask: ITask) => {
+            return oneTask.taskId;
+          });
+        }
+        if (taskIds && taskIds.length > 0) {
+          taskIds.forEach((singleTaskId: string) => {
+            this.inMemoryDataService.deleteTimeEntriesByTaskId(singleTaskId);
+          });
+        }
+
+        // b) update database with the idDeletedInClient = true flag
         const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
         dbPatchedPromise.then((resolveValue: any) => {
-           console.log(resolveValue);
+          console.log(resolveValue);
+
+          // c) refresh the inMemoryData
+          this.inMemoryDataService.loadDataFromDb();
+
+          // d) will be automatically called?
+          // this.drawTable(true);
         });
         dbPatchedPromise.catch((rejectValue: any) => {
           // should be never called
           console.error(rejectValue);
+
+          // c) refresh the inMemoryData
+          this.inMemoryDataService.loadDataFromDb();
+
+          // d) will be automatically called?
+          // this.drawTable(true);
         });
       }
     });
@@ -87,16 +116,16 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(private projectService: ProjectService,
-              private commitService: CommitService,
-              private router: Router,
-              public dialog: MatDialog,
-              private inMemoryDataService: InMemoryDataService) {
+    private commitService: CommitService,
+    private router: Router,
+    public dialog: MatDialog,
+    private inMemoryDataService: InMemoryDataService) {
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 
     this.projectFormGroup = new FormGroup(configObj);
 
-    this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean)=>{
+    this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
       if (isReady) {
         this.drawTable(true);
       }

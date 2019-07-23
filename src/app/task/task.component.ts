@@ -79,11 +79,11 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-              private projectService: ProjectService,
-              private commitService: CommitService,
-              private activatedRoute: ActivatedRoute,
-              private inMemoryDataService: InMemoryDataService,
-              public dialog: MatDialog) {
+    private projectService: ProjectService,
+    private commitService: CommitService,
+    private activatedRoute: ActivatedRoute,
+    private inMemoryDataService: InMemoryDataService,
+    public dialog: MatDialog) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -155,15 +155,23 @@ export class TaskComponent implements OnInit, OnDestroy {
       data: dialogData
     });
     this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
-    this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean)=>{
+    this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
       if (isOkButtonPressed) {
         const deleteTaskPromise = this.commitService.deleteTask(taskId);
         deleteTaskPromise.then((resolvedValue: any) => {
           console.log(resolvedValue);
+
+          // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
+          this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+
           this.inMemoryDataService.loadDataFromDb();
         });
         deleteTaskPromise.catch((rejectValue: any) => {
           console.error(rejectValue);
+
+          // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
+          this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+
           this.inMemoryDataService.loadDataFromDb();
         });
 
@@ -171,7 +179,7 @@ export class TaskComponent implements OnInit, OnDestroy {
       }
     });
 
-    // TODO: delete all corresponding time-entries (which have not yet been committed!)
+
   }
 
   public redrawTableOfProject(selectedProject: IProject) {
@@ -196,7 +204,11 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.projectChangesSubscription.unsubscribe();
-    this.isMemoryReadySubscription.unsubscribe();
+    if (this.projectChangesSubscription) {
+      this.projectChangesSubscription.unsubscribe();
+    }
+    if (this.inMemoryDataService) {
+      this.isMemoryReadySubscription.unsubscribe();
+    }
   }
 }

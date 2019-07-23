@@ -171,19 +171,48 @@ export class InMemoryDataService implements OnDestroy {
     return tasks;
   }
 
-  public getTimeEntriesByTaskId(taksId: string) {
+  public getTimeEntriesByTaskId(taskId: string) {
     const storageEntries: ITimeEntry[] = this.storage['timeEntries'];
     if (!storageEntries) {
       return null;
     }
     const timeEntries: ITimeEntry[] = storageEntries.filter((oneTimeEntry: ITimeEntry) => {
-      return oneTimeEntry._taskId === taksId;
+      return oneTimeEntry._taskId === taskId;
     });
     if (!timeEntries || timeEntries.length === 0) {
       console.error('!timeEntries || timeEntries.length === 0');
       return null;
     }
     return timeEntries;
+  }
+
+  public deleteTimeEntriesByTaskId(taskId: string) {
+    const storageEntries: ITimeEntry[] = this.storage['timeEntries'];
+    if (!storageEntries) {
+      console.error('no time entries at all');
+      return null;
+    }
+
+    const correspondingTask = this.getTimeEntriesByTaskId(taskId);
+    if (!correspondingTask || correspondingTask.length === 0) {
+      console.error('cannot delete timeEntries as no are found!');
+      return;
+    }
+    const timeEntryIdsToDelete: string[] = [];
+    correspondingTask.forEach((timeEntryToDelete: ITimeEntry) => {
+      timeEntryIdsToDelete.push(timeEntryToDelete.timeEntryId);
+    });
+
+    timeEntryIdsToDelete.forEach((timeEntryIdToDelete: string) => {
+      const foundIndex = storageEntries.findIndex((theStoredTimeEntry: ITimeEntry) => {
+        return theStoredTimeEntry.timeEntryId === timeEntryIdToDelete;
+      });
+      if (foundIndex !== -1) {
+        storageEntries.splice(foundIndex, 1);
+      } else {
+        console.error('cannot delete timeEntryId:' + timeEntryIdToDelete);
+      }
+    });
   }
 
   public getIsReady(): BehaviorSubject<boolean> {
