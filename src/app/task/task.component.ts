@@ -44,6 +44,9 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     this.isButtonDisabled = true;
 
+    // clear input field
+    this.taskFormGroup[this.formControlNameTaskName].setValue('');
+
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
       this.inMemoryDataService.loadDataFromDb();
@@ -144,6 +147,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   public redrawTableOfProject(selectedProject: IProject) {
+    // TODO: FIXME: why two times triggered ??
+    this.gridLines = [];
     const existingCorrespondingTasks = this.inMemoryDataService.getTasksByProjectId(selectedProject.projectId);
     if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
       console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
