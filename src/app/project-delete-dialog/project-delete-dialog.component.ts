@@ -1,6 +1,6 @@
-import { IGridLine } from './../typescript/iGridLine';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { IDeleteDialogData } from '../typescript/iDeleteDialogData';
 
 @Component({
   selector: 'mtt-project-delete-dialog',
@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ProjectDeleteDialogComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: IGridLine) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: IDeleteDialogData) { }
 
   ngOnInit() {
   }

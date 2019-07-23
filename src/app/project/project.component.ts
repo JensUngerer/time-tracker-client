@@ -1,3 +1,4 @@
+import { IDeleteDialogData } from './../typescript/iDeleteDialogData';
 import { InMemoryDataService } from './../in-memory-data.service';
 import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
@@ -47,8 +48,13 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Output()
   public onDeleteRowClicked(row: IGridLine) {
+    const dialogData: IDeleteDialogData = {
+      line: row,
+      headerText: 'Delete project:',
+      contentText: 'Plus all corresponding tasks?'
+    };
     const dialogRef: MatDialogRef<ProjectDeleteDialogComponent, boolean> = this.dialog.open(ProjectDeleteDialogComponent, {
-      data: row
+      data: dialogData
     });
     this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
     this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
