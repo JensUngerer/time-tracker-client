@@ -8,10 +8,13 @@ import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
 import routesConfig from './../../../../common/typescript/routes.js';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { InMemoryDataService } from '../in-memory-data.service';
 import * as _ from 'underscore';
 import { IGridLine } from './../typescript/iGridLine';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { IDeleteDialogData } from '../typescript/iDeleteDialogData';
+import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
 
 @Component({
   selector: 'mtt-task',
@@ -22,6 +25,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   private projectChangesSubscription: Subscription = null;
   private isMemoryReadySubscription: Subscription = null;
+  private afterDialogCloseSubscription$: Observable<boolean> = null;
 
   public taskFormGroup: FormGroup = null;
 
@@ -75,10 +79,11 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-    private projectService: ProjectService,
-    private commitService: CommitService,
-    private activatedRoute: ActivatedRoute,
-    private inMemoryDataService: InMemoryDataService) {
+              private projectService: ProjectService,
+              private commitService: CommitService,
+              private activatedRoute: ActivatedRoute,
+              private inMemoryDataService: InMemoryDataService,
+              public dialog: MatDialog) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -139,9 +144,32 @@ export class TaskComponent implements OnInit, OnDestroy {
   public onDeleteRowClicked(line: IGridLine) {
     // const projectId = this.getSelectedProjectId();
     const taskId = line.id;
-    this.commitService.deleteTask(taskId);
 
-    // TODO: dialog
+
+    const dialogData: IDeleteDialogData = {
+      line,
+      headerText: 'Delete task:',
+      contentText: 'Plus all corresponding (not committed!!!) timeEntries?'
+    };
+    const dialogRef: MatDialogRef<ProjectDeleteDialogComponent, boolean> = this.dialog.open(ProjectDeleteDialogComponent, {
+      data: dialogData
+    });
+    this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
+    this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean)=>{
+      if (isOkButtonPressed) {
+        const deleteTaskPromise = this.commitService.deleteTask(taskId);
+        deleteTaskPromise.then((resolvedValue: any) => {
+          console.log(resolvedValue);
+          this.inMemoryDataService.loadDataFromDb();
+        });
+        deleteTaskPromise.catch((rejectValue: any) => {
+          console.error(rejectValue);
+          this.inMemoryDataService.loadDataFromDb();
+        });
+
+        // --> a refresh will be triggered automatically?
+      }
+    });
 
     // TODO: delete all corresponding time-entries (which have not yet been committed!)
   }
