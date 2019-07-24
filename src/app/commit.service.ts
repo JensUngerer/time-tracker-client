@@ -56,6 +56,29 @@ export class CommitService {
     return url;
   }
 
+  public patchTimeEntriesStop(timeEntryId: string): Promise<any> {
+    const url = this.getTimeEntriesUrl() + routes.timeEntriesStopPathSuffix;
+    const body: any = {};
+    body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntryId;
+
+    // further boy properties are not necessary as in /NodeJS/timeEntries/stop an endTime-timestamp will be set!
+
+    return this.performHttpPatch(url, body);
+  }
+
+  // TODO: use this after committing a timeRecord
+  public patchTimeEntriesDelete(timeEntryId): Promise<any> {
+    const url = this.getTimeEntriesUrl() + routes.timeEntriesDeletePathSuffix;
+    const body: any = {};
+    body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntryId;
+
+    // further boy properties are not necessary as in /NodeJS/timeEntries/entries the isDeletedInClient property will be set to true
+
+    return this.performHttpPatch(url, body);
+  }
+
   public patchProjectIsDeletedInClient(projectId: string): Promise<any> {
     const url = this.getProjectsUrl();
     const body: any = {};

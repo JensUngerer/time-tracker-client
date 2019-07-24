@@ -69,7 +69,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       this.setTimeEntryIdInUrl(startedTimeEntry.timeEntryId);
       this.isPauseResumeButtonDisabled = false;
     } else {
-      const stoppedTimeEntry: ITimeEntry = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
+      /* const stoppedTimeEntry: ITimeEntry = */
+      this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
       this.isPauseResumeButtonDisabled = true;
     }
   }
@@ -225,7 +226,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (!currentSelectedTimeEntry) {
       return;
     }
-    this.visualizeTimeEntry(currentSelectedTimeEntry);
+    // this.visualizeTimeEntry(currentSelectedTimeEntry);
     if (this.cancelIntervalId) {
       clearInterval(this.cancelIntervalId);
     }
@@ -235,7 +236,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.startVisualizationSetInterval(currentSelectedTimeEntry);
+    // this.startVisualizationSetInterval(currentSelectedTimeEntry);
   }
 
   ngOnInit() {
