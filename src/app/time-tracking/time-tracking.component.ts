@@ -62,16 +62,33 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public taskOptions: ITaskOption[] = [];
 
   public onStartStopButtonClicked() {
+    // always disable as a http-request 'needs some time'
+    this.isStartStopButtonDisabled = true;
+
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
       const taskId = this.timeTrackingTaskSelectionFromControl.value.taskId;
-      const startedTimeEntry: ITimeEntry = this.timeTrackingService.startTimeTracking(taskId);
-      this.setTimeEntryIdInUrl(startedTimeEntry.timeEntryId);
-      this.isPauseResumeButtonDisabled = false;
+
+      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId);
+      startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
+        this.setTimeEntryIdInUrl(resolvedValue.timeEntryId);
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = false;
+      });
+      startedTimeEntryPromise.catch(() => {
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = false;
+      });
     } else {
-      /* const stoppedTimeEntry: ITimeEntry = */
-      this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
-      this.isPauseResumeButtonDisabled = true;
+      const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
+      stopTimeTrackingPromise.then(() => {
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = true;
+      });
+      stopTimeTrackingPromise.catch(() => {
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = true;
+      });
     }
   }
 
@@ -117,14 +134,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
 
   constructor(private userManagementService: UserManagementService,
-              private projectManagementService: ProjectService,
-              private taskManagementService: TaskService,
-              private timeTrackingService: TimeTrackingService,
-              private inMemoryDataService: InMemoryDataService,
-              private helpersService: HelpersService,
-              private formBuilder: FormBuilder,
-              private router: Router,
-              private activatedRoute: ActivatedRoute) {
+    private projectManagementService: ProjectService,
+    private taskManagementService: TaskService,
+    private timeTrackingService: TimeTrackingService,
+    private inMemoryDataService: InMemoryDataService,
+    private helpersService: HelpersService,
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number

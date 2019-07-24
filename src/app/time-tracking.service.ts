@@ -17,7 +17,7 @@ export class TimeTrackingService {
               private helpersService: HelpersService,
               private commitService: CommitService) { }
 
-  public startTimeTracking(taskId: string): ITimeEntry {
+  public startTimeTracking(taskId: string): Promise<ITimeEntry> {
     const timeEntry: ITimeEntry = {
       startTime: new Date(),
       endTime: null,
@@ -35,10 +35,10 @@ export class TimeTrackingService {
       console.log(resolvingObj);
     });
 
-    return timeEntry;
+    return startPromise;
   }
 
-  public stopTimeTracking(timeEntryId: string): ITimeEntry {
+  public stopTimeTracking(timeEntryId: string): Promise<any> {
     // const timeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
     // if (!timeEntry) {
     //   console.error('no corresponding timeEntry found -> cannot stop TimeTracking');
@@ -72,7 +72,7 @@ export class TimeTrackingService {
 
 
     // return timeEntry;
-    return null;
+    return stopPromise;
   }
 
   public startPause(timeEntryId: string){
