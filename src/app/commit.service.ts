@@ -38,6 +38,20 @@ export class CommitService {
     return this.performHttpPatch(url, body);
   }
 
+  public postTimeEntriesPause(timeEntryId: string): Promise<any> {
+    const url = this.getTimeEntriesUrl() + routes.timeEntryPausePathSuffix;
+    const body: any = {};
+
+    body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntryId;
+
+    return new Promise<any>((resolve: (value: any) => void) => {
+      this.httpClient.post(url, body).subscribe((subscriptionValue: any) => {
+        resolve(subscriptionValue);
+      });
+    });
+  }
+
   public postTimeEntries(timeEntry: ITimeEntry): Promise<any> {
     const url = this.getTimeEntriesUrl();
 

@@ -75,44 +75,46 @@ export class TimeTrackingService {
     return stopPromise;
   }
 
-  public startPause(timeEntryId: string){
+  public startPause(timeEntryId: string): Promise<any> {
     if (!timeEntryId) {
       console.error('cannot start Pause because of missing timeEntryId:' + timeEntryId);
       return;
     }
 
-    const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
-    if (!retrievedTimeEntry || !retrievedTimeEntry.pauses) {
-      console.error('could not add pause because of missing timeEntry');
-      return;
-    }
-    const newPause: IPause = {
-        startTime: new Date(),
-        endTime: null,
-        duration: null
-    };
+    // const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
+    // if (!retrievedTimeEntry || !retrievedTimeEntry.pauses) {
+    //   console.error('could not add pause because of missing timeEntry');
+    //   return;
+    // }
+    // const newPause: IPause = {
+    //     startTime: new Date(),
+    //     endTime: null,
+    //     duration: null
+    // };
 
-    retrievedTimeEntry.pauses.push(newPause);
+    // retrievedTimeEntry.pauses.push(newPause);
+    return this.commitService.postTimeEntriesPause(timeEntryId);
   }
 
-  public stopPause(timeEntryId: string) {
+  public stopPause(timeEntryId: string): Promise<any> {
     if (!timeEntryId) {
       console.error('cannot stop Pause because of missing timeEntryId:' + timeEntryId);
       return;
     }
 
-    const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
-    if (!retrievedTimeEntry || !retrievedTimeEntry.pauses || retrievedTimeEntry.pauses.length === 0) {
-      console.error('could not stop pause because of missing timeEntry');
-      return;
-    }
-    const lastIndex = retrievedTimeEntry.pauses.length - 1;
-    const latestPause: IPause = retrievedTimeEntry.pauses[lastIndex];
-    latestPause.endTime = new Date();
+    // const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
+    // if (!retrievedTimeEntry || !retrievedTimeEntry.pauses || retrievedTimeEntry.pauses.length === 0) {
+    //   console.error('could not stop pause because of missing timeEntry');
+    //   return;
+    // }
+    // const lastIndex = retrievedTimeEntry.pauses.length - 1;
+    // const latestPause: IPause = retrievedTimeEntry.pauses[lastIndex];
+    // latestPause.endTime = new Date();
 
-    // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
-    latestPause.duration = this.helpersService.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
-    latestPause.duration = this.helpersService.millisecondsInMinutes(latestPause.duration);
+    // // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
+    // latestPause.duration = this.helpersService.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
+    // latestPause.duration = this.helpersService.millisecondsInMinutes(latestPause.duration);
+    return this.commitService.patchTimeEntriesStop(timeEntryId);
   }
 
   public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {

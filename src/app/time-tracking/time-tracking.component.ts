@@ -107,6 +107,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   }
 
   public onPauseResumeButtonClicked() {
+    this.isPauseResumeButtonDisabled = true;
+    this.isStartStopButtonDisabled = true;
+
     // cancel interval
     if (this.cancelIntervalId) {
       clearInterval(this.cancelIntervalId);
@@ -118,15 +121,24 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (this.pauseResumeButtonLabel === 'Resume') {
       // the 'Pause' button has just been pressed
 
-      this.isStartStopButtonDisabled = true;
-
-      this.timeTrackingService.startPause(currentTimeEntryId);
+      const startPausePromise = this.timeTrackingService.startPause(currentTimeEntryId);
+      startPausePromise.then(() => {
+        this.isPauseResumeButtonDisabled = false;
+      });
+      startPausePromise.catch(()=>{
+        this.isPauseResumeButtonDisabled = false;
+      });
     } else {
       // the 'Resume' button has just been pressed
-
-      this.isStartStopButtonDisabled = false;
-
-      this.timeTrackingService.stopPause(currentTimeEntryId);
+      const stopPromise = this.timeTrackingService.stopPause(currentTimeEntryId);
+      stopPromise.then(()=>{
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = false;
+      });
+      stopPromise.catch(()=>{
+        this.isStartStopButtonDisabled = false;
+        this.isPauseResumeButtonDisabled = false;
+      });
 
       this.activatedRouteEventHandler(null);
     }
