@@ -4,6 +4,7 @@ import { ITimeRecordsDocumentData } from './../../../common/typescript/mongoDB/i
 import routes from './../../../common/typescript/routes.js';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
+import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,37 @@ export class CommitService {
   private readonly httpBaseUrl = 'http://localhost:';
 
   constructor(private httpClient: HttpClient) { }
+
+  private getTimeEntriesUrl(): string {
+    const url = this.httpBaseUrl + routes.port + routes.timeEntries;
+    return url;
+  }
+
+  public getTimeEntries(): Promise<string> {
+    const url = this.getTimeEntriesUrl();
+    return this.httpGet(url);
+  }
+
+  public patchTimeEntriesIsDeletedInClient(timeEntriesId: string): Promise<any> {
+    const url = this.getTimeEntriesUrl();
+    const body: any = {};
+
+    body[routes.httpPatchIdPropertyName] = routes.timeEntriesProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntriesId;
+
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
+    body[routes.httpPatchIdPropertyToUpdateValue] = true;
+
+    return this.performHttpPatch(url, body);
+  }
+
+  public postTimeEntries(timeEntry: ITimeEntry): Promise<any> {
+    const url = this.getTimeEntriesUrl();
+
+    const propertyName = routes.timeEntriesBodyProperty;
+
+    return this.httpPost(propertyName, timeEntry, url);
+  }
 
   private getProjectsUrl(): string {
     const url = this.httpBaseUrl + routes.port + routes.project;

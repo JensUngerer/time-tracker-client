@@ -8,6 +8,7 @@ import { SessionStorageSerializationService } from './session-storage-serializat
 import { IProjectsDocument } from './../../../common/typescript/mongoDB/iProjectsDocument';
 import { ITasksDocument } from './../../../common/typescript/mongoDB/iTasksDocument';
 import { BehaviorSubject } from 'rxjs';
+import { ITimeEntryDocument } from './../../../common/typescript/mongoDB/iTimeEntryDocument';
 
 // https://stackoverflow.com/questions/45898948/angular-4-ngondestroy-in-service-destroy-observable
 @Injectable({
@@ -55,22 +56,34 @@ export class InMemoryDataService implements OnDestroy {
     // retrieve projects (again!) from DB - but only if they are not marked as isDeletedInClient
     const projectsPromise: Promise<string> = this.commitService.getProjects();
     const tasksPromise: Promise<string> = this.commitService.getTasks();
+    const timeEntriesPromise: Promise<string> = this.commitService.getTimeEntries();
+
     projectsPromise.then((projectDocs: string) => {
       this.storage.projects = this.sessionStorageSerializationService.deSerialize<IProjectsDocument[]>(projectDocs);
 
       // retrieve from DB (again)
       tasksPromise.then((taskDocs: string) => {
-        this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs)
-        this.isReady$.next(true);
+        this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs);
+
+        // retrieve timeEntries
+        timeEntriesPromise.then((timeEntryDocs: string) => {
+          this.storage.timeEntries = this.sessionStorageSerializationService.deSerialize<ITimeEntryDocument[]>(timeEntryDocs);
+
+          this.isReady$.next(true);
+        });
+        timeEntriesPromise.catch(() => {
+          console.error('timeEntriesPromises catch');
+          this.isReady$.next(false);
+        });
       });
       tasksPromise.catch(() => {
         console.error('tasksPromise.catch');
-        this.isReady$.next(true);
+        this.isReady$.next(false);
       });
     });
     projectsPromise.catch(() => {
       console.error('projectsPromise.catch');
-      this.isReady$.next(true);
+      this.isReady$.next(false);
     });
   }
 
