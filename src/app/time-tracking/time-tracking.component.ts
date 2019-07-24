@@ -169,13 +169,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
 
-    // init userSelectionDropDown data
-    // const allUsers: IUser[] = this.userManagementService.getUsers();
-    // if (allUsers && allUsers.length > 0 && this.userOptions.length === 0) {
-    //   allUsers.forEach((user: IUser) => {
-    //     this.userOptions.push(new UserOption(user));
-    //   });
-    // }
     // init projectSectionDropDown data
     const allProjects: IProject[] = this.projectManagementService.getProjects();
     if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
