@@ -70,6 +70,14 @@ export class CommitService {
     return url;
   }
 
+  public patchTimeEntriesStopPause(timeEntryId: string): Promise<any> {
+    const url = this.getTimeEntriesUrl() + routes.timeEntryPausePathSuffix;
+    const body: any = {};
+    body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntryId;
+    return this.performHttpPatch(url, body);
+  }
+
   public patchTimeEntriesStop(timeEntryId: string): Promise<any> {
     const url = this.getTimeEntriesUrl() + routes.timeEntriesStopPathSuffix;
     const body: any = {};

@@ -114,7 +114,7 @@ export class TimeTrackingService {
     // // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
     // latestPause.duration = this.helpersService.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
     // latestPause.duration = this.helpersService.millisecondsInMinutes(latestPause.duration);
-    return this.commitService.patchTimeEntriesStop(timeEntryId);
+    return this.commitService.patchTimeEntriesStopPause(timeEntryId);
   }
 
   public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {
