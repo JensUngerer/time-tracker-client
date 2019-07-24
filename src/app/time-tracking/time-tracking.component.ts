@@ -64,6 +64,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
+    this.isPauseResumeButtonDisabled = true;
 
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
