@@ -14,8 +14,8 @@ export class TimeTrackingService {
   private readonly timeEntriesKey = 'timeEntries';
 
   constructor(private inMemoryDataService: InMemoryDataService,
-              private helpersService: HelpersService,
-              private commitService: CommitService) { }
+    private helpersService: HelpersService,
+    private commitService: CommitService) { }
 
   public startTimeTracking(taskId: string): Promise<ITimeEntry> {
     const timeEntry: ITimeEntry = {
@@ -26,10 +26,7 @@ export class TimeTrackingService {
       duration: null,
       pauses: []
     };
-    // OLD:
-    // this.inMemoryDataService.push(this.timeEntriesKey, timeEntry);
 
-    // NEW:
     const startPromise = this.commitService.postTimeEntries(timeEntry);
     startPromise.then((resolvingObj: any) => {
       console.log(resolvingObj);
@@ -39,39 +36,11 @@ export class TimeTrackingService {
   }
 
   public stopTimeTracking(timeEntryId: string): Promise<any> {
-    // const timeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
-    // if (!timeEntry) {
-    //   console.error('no corresponding timeEntry found -> cannot stop TimeTracking');
-    //   return null;
-    // }
-
-
-    // timeEntry.endTime = new Date();
-
-    // const durationInMilliseconds = this.calculateTimeDifferenceWithoutPauses(timeEntry);
-
-    // let durationInMinutes = this.helpersService.millisecondsInMinutes(durationInMilliseconds);
-
-    // if (durationInMinutes === 0) {
-    //   durationInMinutes = 1;
-    // }
-    // timeEntry.duration = durationInMinutes;
     const stopPromise = this.commitService.patchTimeEntriesStop(timeEntryId);
     stopPromise.then((retrievedValue: any) => {
       console.log(retrievedValue);
     });
 
-    // const deletedInClientPatchPromise = this.commitService.patchTimeEntriesIsDeletedInClient(timeEntryId);
-    // deletedInClientPatchPromise.then(()=>{
-
-    // });
-    // deletedInClientPatchPromise.catch(()=>{
-
-    // });
-
-
-
-    // return timeEntry;
     return stopPromise;
   }
 
@@ -81,19 +50,14 @@ export class TimeTrackingService {
       return;
     }
 
-    // const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
-    // if (!retrievedTimeEntry || !retrievedTimeEntry.pauses) {
-    //   console.error('could not add pause because of missing timeEntry');
-    //   return;
-    // }
-    // const newPause: IPause = {
-    //     startTime: new Date(),
-    //     endTime: null,
-    //     duration: null
-    // };
-
-    // retrievedTimeEntry.pauses.push(newPause);
-    return this.commitService.postTimeEntriesPause(timeEntryId);
+    const promise = this.commitService.postTimeEntriesPause(timeEntryId);
+    promise.then((resolvedValue: any) => {
+      console.log(resolvedValue);
+    });
+    promise.catch((rejectionValue: any) => {
+      console.log(rejectionValue);
+    });
+    return promise;
   }
 
   public stopPause(timeEntryId: string): Promise<any> {
@@ -102,19 +66,15 @@ export class TimeTrackingService {
       return;
     }
 
-    // const retrievedTimeEntry = this.inMemoryDataService.getTimeEntryById(timeEntryId);
-    // if (!retrievedTimeEntry || !retrievedTimeEntry.pauses || retrievedTimeEntry.pauses.length === 0) {
-    //   console.error('could not stop pause because of missing timeEntry');
-    //   return;
-    // }
-    // const lastIndex = retrievedTimeEntry.pauses.length - 1;
-    // const latestPause: IPause = retrievedTimeEntry.pauses[lastIndex];
-    // latestPause.endTime = new Date();
+    const promise = this.commitService.patchTimeEntriesStopPause(timeEntryId);
+    promise.then((resolvedValue: any) => {
+      console.log(resolvedValue);
+    });
+    promise.catch((rejectValue: any) => {
+      console.log(rejectValue);
+    });
 
-    // // currently duration (in minutes) is never used, but could be used in the calculation step of the duration of the entire timeEntry
-    // latestPause.duration = this.helpersService.getTimeDifferenceInMilliseconds(latestPause.endTime, latestPause.startTime);
-    // latestPause.duration = this.helpersService.millisecondsInMinutes(latestPause.duration);
-    return this.commitService.patchTimeEntriesStopPause(timeEntryId);
+    return promise;
   }
 
   public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {

@@ -84,7 +84,7 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
     body[routes.httpPatchIdPropertyValue] = timeEntryId;
 
-    // further boy properties are not necessary as in /NodeJS/timeEntries/stop an endTime-timestamp will be set!
+    // further body properties are not necessary as in /NodeJS/timeEntries/stop an endTime-timestamp will be set!
 
     return this.performHttpPatch(url, body);
   }
@@ -96,7 +96,7 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
     body[routes.httpPatchIdPropertyValue] = timeEntryId;
 
-    // further boy properties are not necessary as in /NodeJS/timeEntries/entries the isDeletedInClient property will be set to true
+    // further body properties are not necessary as in /NodeJS/timeEntries/entries the isDeletedInClient property will be set to true
 
     return this.performHttpPatch(url, body);
   }

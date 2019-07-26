@@ -147,14 +147,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
 
   constructor(private userManagementService: UserManagementService,
-    private projectManagementService: ProjectService,
-    private taskManagementService: TaskService,
-    private timeTrackingService: TimeTrackingService,
-    private inMemoryDataService: InMemoryDataService,
-    private helpersService: HelpersService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private activatedRoute: ActivatedRoute) {
+              private projectManagementService: ProjectService,
+              private taskManagementService: TaskService,
+              private timeTrackingService: TimeTrackingService,
+              private inMemoryDataService: InMemoryDataService,
+              private helpersService: HelpersService,
+              private formBuilder: FormBuilder,
+              private router: Router,
+              private activatedRoute: ActivatedRoute) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
