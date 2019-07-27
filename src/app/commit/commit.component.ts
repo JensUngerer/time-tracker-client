@@ -7,6 +7,7 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
 import { ITimeRecordsDocumentData, IExtendedTimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { IDuration } from '../../../../common/typescript/iDuration';
 
 @Component({
   selector: 'mtt-commit',
@@ -60,37 +61,55 @@ export class CommitComponent implements OnInit {
   public onProjectSelectionChanged($event: any) {
     const projectId = $event.value.projectId;
 
-    this.sumForOneProject = this.projectService.summarizeDurationFor(projectId);
+    const durationStructurePromise = this.commitService.getDurationStructure(projectId);
+    durationStructurePromise.then((theDurationStructureStr: string) => {
+      if (!theDurationStructureStr) {
+        return;
+      }
+      const durationStructure: IDuration = JSON.parse(theDurationStructureStr);
 
-    if (this.sumForOneProject) {
-      this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.data.durationStructure.hours,
-        this.sumForOneProject.data.durationStructure.minutes);
-      this.isButtonDisabled = false;
-    } else {
-      this.durationStr = 'no time-entries to sum';
-      this.isButtonDisabled = true;
-    }
+      // DEBUGGING:
+      console.log(durationStructure, null, 4);
+
+      this.durationStr = this.helpersService.getDurationStr(durationStructure.hours, durationStructure.minutes);
+    });
+    durationStructurePromise.catch(() => {
+      console.error('no duration structure retrieved');
+    });
+
+    // this.sumForOneProject = this.projectService.summarizeDurationFor(projectId);
+
+    // if (this.sumForOneProject) {
+    //   this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.data.durationStructure.hours,
+    //     this.sumForOneProject.data.durationStructure.minutes);
+    //   this.isButtonDisabled = false;
+    // } else {
+    //   this.durationStr = 'no time-entries to sum';
+    //   this.isButtonDisabled = true;
+    // }
   }
 
 
   public onCommitClicked(values: any) {
-    if (this.sumForOneProject) {
-      this.commitService.postCommit(this.sumForOneProject.data).then(() => {
+    console.error('TODO: implement!');
+    //   if (this.sumForOneProject) {
+    //     this.commitService.postCommit(this.sumForOneProject.data).then(() => {
 
-        // TODO: implement deleting of timeEntries on server
-        // this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
+    //       // TODO: implement deleting of timeEntries on server
+    //       // this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
 
-        this.durationStr = '';
-        this.formControlProjectDropDown.setValue('');
-      }).catch(() => {
-        console.log('catch');
-        this.durationStr = '';
-        this.formControlProjectDropDown.setValue('');
-      });
-    } else {
-      console.error('commit is not possible');
-      this.durationStr = '';
-      this.formControlProjectDropDown.setValue('');
-    }
+    //       this.durationStr = '';
+    //       this.formControlProjectDropDown.setValue('');
+    //     }).catch(() => {
+    //       console.log('catch');
+    //       this.durationStr = '';
+    //       this.formControlProjectDropDown.setValue('');
+    //     });
+    //   } else {
+    //     console.error('commit is not possible');
+    //     this.durationStr = '';
+    //     this.formControlProjectDropDown.setValue('');
+    //   }
+    // }
   }
 }

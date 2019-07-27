@@ -20,6 +20,11 @@ export class CommitService {
     return url;
   }
 
+  public getDurationStructure(projectId: string): Promise<string> {
+    const url = this.getTimeEntriesUrl() + routes.timeEntriesDurationSumSuffix + '/' + projectId;
+    return this.httpGet(url);
+  }
+
   public getDuration(timeEntryId: string): Promise<string> {
     const url = this.getTimeEntriesUrl() + routes.timeEntriesDurationSuffix + '/' + timeEntryId;
     return this.httpGet(url);
