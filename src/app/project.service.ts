@@ -4,10 +4,8 @@ import { Injectable } from '@angular/core';
 import uuid from 'uuid';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
-import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { HelpersService } from './helpers.service';
 import { IDuration } from '../../../common/typescript/iDuration';
-import { ITimeRecordsDocumentData, IExtendedTimeRecordsDocumentData } from '../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { IDate } from '../../../common/typescript/iDate';
 
 @Injectable({
@@ -64,7 +62,7 @@ export class ProjectService {
     return this.inMemoryDataService.get(this.projectsKey);
   }
 
-  public summarizeDurationFor(projectId: string): IExtendedTimeRecordsDocumentData {
+  public summarizeDurationFor(projectId: string): any {
     const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
     if (!tasksByProjectId || tasksByProjectId.length === 0) {
       console.error('!tasksByProjectId');
@@ -75,12 +73,12 @@ export class ProjectService {
     //   return null;
     // }
 
-    const sumValue: ITimeRecordsDocumentData = {
-      durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
-      dateStructure: this.getDateStructureOfOneProject(tasksByProjectId),
-      _taskIds: this.getTaskIdsOfOneProject(tasksByProjectId),
-      _projectId: projectId
-    };
+    // const sumValue: ITimeRecordsDocumentData = {
+    //   durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
+    //   dateStructure: this.getDateStructureOfOneProject(tasksByProjectId),
+    //   _taskIds: this.getTaskIdsOfOneProject(tasksByProjectId),
+    //   _projectId: projectId
+    // };
 
     // return {
     //   data: sumValue,
