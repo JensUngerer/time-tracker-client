@@ -1,4 +1,3 @@
-import { InMemoryDataService } from './../in-memory-data.service';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
@@ -7,7 +6,6 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
-import { IDuration } from '../../../../common/typescript/iDuration';
 
 @Component({
   selector: 'mtt-commit',
@@ -36,9 +34,8 @@ export class CommitComponent implements OnInit {
   private sumForOneProject: ITimeRecordsDocumentData = null;
 
   constructor(private projectService: ProjectService,
-    private commitService: CommitService,
-    private helpersService: HelpersService,
-    private inMemoryDataService: InMemoryDataService) {
+              private commitService: CommitService,
+              private helpersService: HelpersService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -86,17 +83,6 @@ export class CommitComponent implements OnInit {
     durationStructurePromise.catch(() => {
       console.error('no duration structure retrieved');
     });
-
-    // this.sumForOneProject = this.projectService.summarizeDurationFor(projectId);
-
-    // if (this.sumForOneProject) {
-    //   this.durationStr = this.helpersService.getDurationStr(this.sumForOneProject.data.durationStructure.hours,
-    //     this.sumForOneProject.data.durationStructure.minutes);
-    //   this.isButtonDisabled = false;
-    // } else {
-    //   this.durationStr = 'no time-entries to sum';
-    //   this.isButtonDisabled = true;
-    // }
   }
 
 
@@ -117,25 +103,5 @@ export class CommitComponent implements OnInit {
     } else {
       console.error('cannot commit because of missing duration sum');
     }
-
-    //   if (this.sumForOneProject) {
-    //     this.commitService.postCommit(this.sumForOneProject.data).then(() => {
-
-    //       // TODO: implement deleting of timeEntries on server
-    //       // this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
-
-    //       this.durationStr = '';
-    //       this.formControlProjectDropDown.setValue('');
-    //     }).catch(() => {
-    //       console.log('catch');
-    //       this.durationStr = '';
-    //       this.formControlProjectDropDown.setValue('');
-    //     });
-    //   } else {
-    //     console.error('commit is not possible');
-    //     this.durationStr = '';
-    //     this.formControlProjectDropDown.setValue('');
-    //   }
-    // }
   }
 }
