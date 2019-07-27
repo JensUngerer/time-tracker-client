@@ -79,7 +79,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
       startedTimeEntryPromise.catch(() => {
         console.error('startTimeTracking rejected');
@@ -88,7 +88,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
     } else {
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
@@ -97,7 +97,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = true;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
       stopTimeTrackingPromise.catch(() => {
         console.error('stopTimeTracking rejected');
@@ -106,7 +106,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = true;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
     }
   }
@@ -145,14 +145,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
       startPausePromise.catch(() => {
         console.error('startPause rejected');
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
     } else {
       // the 'Resume' button has just been pressed
@@ -162,7 +162,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
       stopPromise.catch(() => {
         console.error('stopPause rejected');
@@ -170,7 +170,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isPauseResumeButtonDisabled = false;
 
         // reload timeEntries from database
-        this.inMemoryDataService.loadDataFromDb();
+        // this.inMemoryDataService.loadDataFromDb();
       });
 
       // this.activatedRouteEventHandler(null);
