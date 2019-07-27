@@ -25,8 +25,6 @@ import routesConfig from './../../../../common/typescript/routes.js';
 })
 export class TimeTrackingComponent implements OnInit, OnDestroy {
 
-  public static timeEntryIdProperty = 'timeEntryId';
-
   private activatedRouteSubscription: Subscription = null;
 
   private inMemoryDataServiceSubscription: Subscription = null;
@@ -105,13 +103,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
 
   private getTimeEntryIdFromUrl(): string {
-    const retrievedTimeEntryId = this.activatedRoute.snapshot.queryParams[TimeTrackingComponent.timeEntryIdProperty];
+    const retrievedTimeEntryId = this.activatedRoute.snapshot.queryParams[routesConfig.timeEntryIdProperty];
     return retrievedTimeEntryId;
   }
 
   private setTimeEntryIdInUrl(timeEntryId: string) {
     const matrixParams = {};
-    matrixParams[TimeTrackingComponent.timeEntryIdProperty] = timeEntryId;
+    matrixParams[routesConfig.timeEntryIdProperty] = timeEntryId;
 
     // https://stackoverflow.com/questions/43698032/angular-how-to-update-queryparams-without-changing-route
     this.router.navigate([], { queryParams: matrixParams, queryParamsHandling: 'merge' });
