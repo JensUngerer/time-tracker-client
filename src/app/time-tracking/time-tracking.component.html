@@ -23,8 +23,8 @@
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}}
           </button>
         </div>
-        <div class="buttonFlexItem">
-          <div>{{currentTimeEntryDuration}}</div>
+        <div class="buttonFlexItem" *ngIf="currentTimeEntryDuration">
+          <div>Elapsed time (without pauses): {{currentTimeEntryDuration}}</div>
         </div>
         <div class="buttonFlexItem">
           <button class="buttonFlexItem" type="button" (click)="onPauseResumeButtonClicked()" mat-stroke-button

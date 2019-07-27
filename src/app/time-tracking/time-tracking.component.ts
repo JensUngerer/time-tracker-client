@@ -8,14 +8,13 @@ import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
-import { UserManagementService } from '../user-management.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ProjectService } from '../project.service';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-import { IUserOption, UserOption } from './../typescript/userOption';
+import { IUserOption } from './../typescript/userOption';
 import routesConfig from './../../../../common/typescript/routes.js';
 
 @Component({
@@ -27,8 +26,6 @@ import routesConfig from './../../../../common/typescript/routes.js';
 export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public static timeEntryIdProperty = 'timeEntryId';
-
-  private cancelIntervalId: number = null;
 
   private activatedRouteSubscription: Subscription = null;
 
@@ -75,36 +72,25 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
       const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId);
       startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
+        this.currentTimeEntryDuration = '';
+
         this.setTimeEntryIdInUrl(resolvedValue.timeEntryId);
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
-        this.activatedRouteEventHandler(null);
       });
       startedTimeEntryPromise.catch(() => {
         console.error('startTimeTracking rejected');
 
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
-        this.activatedRouteEventHandler(null);
       });
     } else {
-      if (this.cancelIntervalId) {
-        clearInterval(this.cancelIntervalId);
-      }
-
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
       stopTimeTrackingPromise.then(() => {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
 
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
+        this.visualizeTimeEntry(this.getTimeEntryIdFromUrl());
       });
       stopTimeTrackingPromise.catch(() => {
         console.error('stopTimeTracking rejected');
@@ -112,8 +98,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
 
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
+        this.visualizeTimeEntry(this.getTimeEntryIdFromUrl());
       });
     }
   }
@@ -136,33 +121,19 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.isPauseResumeButtonDisabled = true;
     this.isStartStopButtonDisabled = true;
 
-
-
     const currentTimeEntryId = this.getTimeEntryIdFromUrl();
 
     this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
     if (this.pauseResumeButtonLabel === 'Resume') {
       // the 'Pause' button has just been pressed
 
-
-      // cancel interval
-      if (this.cancelIntervalId) {
-        clearInterval(this.cancelIntervalId);
-      }
-
       const startPausePromise = this.timeTrackingService.startPause(currentTimeEntryId);
       startPausePromise.then(() => {
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
       });
       startPausePromise.catch(() => {
         console.error('startPause rejected');
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
       });
     } else {
       // the 'Resume' button has just been pressed
@@ -170,40 +141,24 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       stopPromise.then(() => {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
-
-        this.activatedRouteEventHandler(null);
       });
       stopPromise.catch(() => {
         console.error('stopPause rejected');
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
-
-        // reload timeEntries from database
-        // this.inMemoryDataService.loadDataFromDb();
-
-        this.activatedRouteEventHandler(null);
       });
     }
   }
 
 
   constructor(private projectManagementService: ProjectService,
-    private taskManagementService: TaskService,
-    private timeTrackingService: TimeTrackingService,
-    private inMemoryDataService: InMemoryDataService,
-    private helpersService: HelpersService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private commitService: CommitService) {
-    // init userSelectionFormGroup
+              private taskManagementService: TaskService,
+              private timeTrackingService: TimeTrackingService,
+              private formBuilder: FormBuilder,
+              private router: Router,
+              private activatedRoute: ActivatedRoute,
+              private commitService: CommitService) {
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
-    // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
-    // this.timeTrackingUserSelectionFormControl = new FormControl(''/*, [Validators.pattern(/^(?=.*[a-zA-Z0-9])/)]*/);
-    // controlsConfigObj[this.formControlNameUserSelectionDropDown] = this.timeTrackingUserSelectionFormControl;
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
     controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
@@ -249,14 +204,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
           console.error('no task option for:' + taskId);
         }
       }
-
-      // this.activatedRouteEventHandler(params);
     });
-    // this.inMemoryDataServiceSubscription = this.inMemoryDataService.getIsReady().subscribe((isReadyFlag: boolean) => {
-    //   if (isReadyFlag) {
-    //     // this.activatedRouteEventHandler(null);
-    //   }
-    // });
   }
 
   private visualizeTimeEntry(timeEntryId: string) {
@@ -270,66 +218,10 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     });
   }
 
-  private generateTimeEntryVisualization(): string {
-    // if (!timeEntry) {
-    //   return;
-    // }
-    // let theDuration: number = null;
-    // if (!timeEntry.endTime) {
-    //   const clonedTimeEntry: ITimeEntry = _.clone(timeEntry);
-    //   clonedTimeEntry.endTime = new Date();
-    //   theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
-
-    //   return this.helpersService.getTimeDifferenceString(theDuration);
-    // }
-
-    // theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
-    // return this.helpersService.getTimeDifferenceString(theDuration);
-    return null;
-  }
-
-  private startVisualizationSetInterval(timeEntryId: string) {
-    this.cancelIntervalId = (setInterval(() => {
-      this.visualizeTimeEntry(timeEntryId);
-    }, 1000) as unknown) as number;
-  }
-
-  private activatedRouteEventHandler(params: Params) {
-    let retrievedTimeEntryIdFromUrl = null;
-    if (params) {
-      retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
-    } else {
-      retrievedTimeEntryIdFromUrl = this.getTimeEntryIdFromUrl();
-    }
-    if (!retrievedTimeEntryIdFromUrl) {
-      return;
-    }
-
-    /// const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
-
-    // if (!currentSelectedTimeEntry) {
-    //   return;
-    // }
-    // this.visualizeTimeEntry(currentSelectedTimeEntry);
-    if (this.cancelIntervalId) {
-      clearInterval(this.cancelIntervalId);
-    }
-
-    if (this.pauseResumeButtonLabel === 'Resume') {
-      // as 'Pause' has just been pressed no visualization necessary
-      return;
-    }
-
-    this.startVisualizationSetInterval(retrievedTimeEntryIdFromUrl);
-  }
-
   ngOnInit() {
   }
 
   ngOnDestroy(): void {
-    if (this.cancelIntervalId) {
-      clearInterval(this.cancelIntervalId);
-    }
     if (this.activatedRouteSubscription) {
       this.activatedRouteSubscription.unsubscribe();
     }
