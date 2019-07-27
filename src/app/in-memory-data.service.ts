@@ -65,16 +65,19 @@ export class InMemoryDataService implements OnDestroy {
       tasksPromise.then((taskDocs: string) => {
         this.storage.tasks = this.sessionStorageSerializationService.deSerialize<ITasksDocument[]>(taskDocs);
 
-        // retrieve timeEntries
-        timeEntriesPromise.then((timeEntryDocs: string) => {
-          this.storage.timeEntries = this.sessionStorageSerializationService.deSerialize<ITimeEntryDocument[]>(timeEntryDocs);
+        this.isReady$.next(true);
 
-          this.isReady$.next(true);
-        });
-        timeEntriesPromise.catch(() => {
-          console.error('timeEntriesPromises catch');
-          this.isReady$.next(false);
-        });
+        // comment out of loading the timeEntries -> new approach: all operations on this data-structure is no longer done in the client
+        // retrieve timeEntries
+        // timeEntriesPromise.then((timeEntryDocs: string) => {
+        //   this.storage.timeEntries = this.sessionStorageSerializationService.deSerialize<ITimeEntryDocument[]>(timeEntryDocs);
+
+        //   this.isReady$.next(true);
+        // });
+        // timeEntriesPromise.catch(() => {
+        //   console.error('timeEntriesPromises catch');
+        //   this.isReady$.next(false);
+        // });
       });
       tasksPromise.catch(() => {
         console.error('tasksPromise.catch');
