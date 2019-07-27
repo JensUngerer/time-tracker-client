@@ -31,6 +31,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private activatedRouteSubscription: Subscription = null;
 
+  private inMemoryDataServiceSubscription: Subscription = null;
+
   public currentTimeEntryDuration: string;
 
   public timeTrackingUserSelectionForm: FormGroup = null;
@@ -75,20 +77,36 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.setTimeEntryIdInUrl(resolvedValue.timeEntryId);
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
       startedTimeEntryPromise.catch(() => {
+        console.error('startTimeTracking rejected');
+
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
     } else {
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
       stopTimeTrackingPromise.then(() => {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
       stopTimeTrackingPromise.catch(() => {
+        console.error('stopTimeTracking rejected');
+
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
     }
   }
@@ -125,36 +143,49 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       const startPausePromise = this.timeTrackingService.startPause(currentTimeEntryId);
       startPausePromise.then(() => {
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
-      startPausePromise.catch(()=>{
+      startPausePromise.catch(() => {
+        console.error('startPause rejected');
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
     } else {
       // the 'Resume' button has just been pressed
       const stopPromise = this.timeTrackingService.stopPause(currentTimeEntryId);
-      stopPromise.then(()=>{
+      stopPromise.then(() => {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
-      stopPromise.catch(()=>{
+      stopPromise.catch(() => {
+        console.error('stopPause rejected');
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
+
+        // reload timeEntries from database
+        this.inMemoryDataService.loadDataFromDb();
       });
 
-      this.activatedRouteEventHandler(null);
+      // this.activatedRouteEventHandler(null);
     }
   }
 
 
-  constructor(private userManagementService: UserManagementService,
-              private projectManagementService: ProjectService,
-              private taskManagementService: TaskService,
-              private timeTrackingService: TimeTrackingService,
-              private inMemoryDataService: InMemoryDataService,
-              private helpersService: HelpersService,
-              private formBuilder: FormBuilder,
-              private router: Router,
-              private activatedRoute: ActivatedRoute) {
+  constructor(private projectManagementService: ProjectService,
+    private taskManagementService: TaskService,
+    private timeTrackingService: TimeTrackingService,
+    private inMemoryDataService: InMemoryDataService,
+    private helpersService: HelpersService,
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) {
     // init userSelectionFormGroup
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/30583828/javascript-regex-matching-at-least-one-letter-or-number
@@ -206,61 +237,66 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.activatedRouteEventHandler(params);
+      // this.activatedRouteEventHandler(params);
+    });
+    this.inMemoryDataServiceSubscription = this.inMemoryDataService.getIsReady().subscribe((isReadyFlag: boolean) => {
+      if (isReadyFlag) {
+        // this.activatedRouteEventHandler(null);
+      }
     });
   }
 
-  private visualizeTimeEntry(timeEntry: ITimeEntry) {
-    this.currentTimeEntryDuration = this.generateTimeEntryVisualization(timeEntry);
-  }
+  // private visualizeTimeEntry(timeEntry: ITimeEntry) {
+  //   this.currentTimeEntryDuration = this.generateTimeEntryVisualization(timeEntry);
+  // }
 
-  private generateTimeEntryVisualization(timeEntry: ITimeEntry): string {
-    if (!timeEntry) {
-      return;
-    }
-    let theDuration: number = null;
-    if (!timeEntry.endTime) {
-      const clonedTimeEntry: ITimeEntry = _.clone(timeEntry);
-      clonedTimeEntry.endTime = new Date();
-      theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
+  // private generateTimeEntryVisualization(timeEntry: ITimeEntry): string {
+  //   if (!timeEntry) {
+  //     return;
+  //   }
+  //   let theDuration: number = null;
+  //   if (!timeEntry.endTime) {
+  //     const clonedTimeEntry: ITimeEntry = _.clone(timeEntry);
+  //     clonedTimeEntry.endTime = new Date();
+  //     theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(clonedTimeEntry);
 
-      return this.helpersService.getTimeDifferenceString(theDuration);
-    }
+  //     return this.helpersService.getTimeDifferenceString(theDuration);
+  //   }
 
-    theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
-    return this.helpersService.getTimeDifferenceString(theDuration);
-  }
+  //   theDuration = this.timeTrackingService.calculateTimeDifferenceWithoutPauses(timeEntry);
+  //   return this.helpersService.getTimeDifferenceString(theDuration);
+  // }
 
-  private startVisualizationSetInterval(currentSelectedTimeEntry: ITimeEntry) {
-    this.cancelIntervalId = (setInterval(() => {
-      this.visualizeTimeEntry(currentSelectedTimeEntry);
-    }, 1000) as unknown) as number;
-  }
+  // private startVisualizationSetInterval(currentSelectedTimeEntry: ITimeEntry) {
+  //   this.cancelIntervalId = (setInterval(() => {
+  //     this.visualizeTimeEntry(currentSelectedTimeEntry);
+  //   }, 1000) as unknown) as number;
+  // }
 
-  private activatedRouteEventHandler(params: Params) {
-    let retrievedTimeEntryIdFromUrl = null;
-    if (params) {
-      retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
-    } else {
-      retrievedTimeEntryIdFromUrl = this.getTimeEntryIdFromUrl();
-    }
-    const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
+  // private activatedRouteEventHandler(params: Params) {
+  //   let retrievedTimeEntryIdFromUrl = null;
+  //   if (params) {
+  //     retrievedTimeEntryIdFromUrl = params[TimeTrackingComponent.timeEntryIdProperty];
+  //   } else {
+  //     retrievedTimeEntryIdFromUrl = this.getTimeEntryIdFromUrl();
+  //   }
+  //   const currentSelectedTimeEntry = this.inMemoryDataService.getTimeEntryById(retrievedTimeEntryIdFromUrl);
 
-    if (!currentSelectedTimeEntry) {
-      return;
-    }
-    // this.visualizeTimeEntry(currentSelectedTimeEntry);
-    if (this.cancelIntervalId) {
-      clearInterval(this.cancelIntervalId);
-    }
+  //   if (!currentSelectedTimeEntry) {
+  //     return;
+  //   }
+  //   // this.visualizeTimeEntry(currentSelectedTimeEntry);
+  //   if (this.cancelIntervalId) {
+  //     clearInterval(this.cancelIntervalId);
+  //   }
 
-    if (this.pauseResumeButtonLabel === 'Resume') {
-      // as 'Pause' has just been pressed no visualization necessary
-      return;
-    }
+  //   if (this.pauseResumeButtonLabel === 'Resume') {
+  //     // as 'Pause' has just been pressed no visualization necessary
+  //     return;
+  //   }
 
-    // this.startVisualizationSetInterval(currentSelectedTimeEntry);
-  }
+  //   this.startVisualizationSetInterval(currentSelectedTimeEntry);
+  // }
 
   ngOnInit() {
   }
@@ -271,6 +307,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
     if (this.activatedRouteSubscription) {
       this.activatedRouteSubscription.unsubscribe();
+    }
+    if (this.inMemoryDataServiceSubscription) {
+      this.inMemoryDataServiceSubscription.unsubscribe();
     }
   }
 }

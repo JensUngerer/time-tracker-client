@@ -70,10 +70,10 @@ export class ProjectService {
       console.error('!tasksByProjectId');
       return;
     }
-    const isDataAvailable = this.inMemoryDataService.areTimeEntriesAvailableForProjectId(projectId);
-    if (!isDataAvailable) {
-      return null;
-    }
+    // const isDataAvailable = this.inMemoryDataService.areTimeEntriesAvailableForProjectId(projectId);
+    // if (!isDataAvailable) {
+    //   return null;
+    // }
 
     const sumValue: ITimeRecordsDocumentData = {
       durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
@@ -82,25 +82,30 @@ export class ProjectService {
       _projectId: projectId
     };
 
+    // return {
+    //   data: sumValue,
+    //   timeEntryIds: this.getTimeEntryIdsFor(tasksByProjectId)
+    // };
     return {
-      data: sumValue,
-      timeEntryIds: this.getTimeEntryIdsFor(tasksByProjectId)
+      data: null,
+      timeEntryIds: null
     };
   }
 
   private getTimeEntryIdsFor(tasksByProjectId: ITask[]) {
-    let buffer: string[] = [];
-    tasksByProjectId.forEach((oneTask: ITask) => {
-      const timeEntries = this.inMemoryDataService.getTimeEntriesByTaskId(oneTask.taskId);
-      if (!timeEntries) {
-        return;
-      }
-      const theIds = timeEntries.map((oneTimeEntry: ITimeEntry) => {
-        return oneTimeEntry.timeEntryId;
-      });
-      buffer = buffer.concat(theIds);
-    });
-    return buffer;
+    // let buffer: string[] = [];
+    // tasksByProjectId.forEach((oneTask: ITask) => {
+    //   const timeEntries = this.inMemoryDataService.getTimeEntriesByTaskId(oneTask.taskId);
+    //   if (!timeEntries) {
+    //     return;
+    //   }
+    //   const theIds = timeEntries.map((oneTimeEntry: ITimeEntry) => {
+    //     return oneTimeEntry.timeEntryId;
+    //   });
+    //   buffer = buffer.concat(theIds);
+    // });
+    // return buffer;
+    console.error('implement: getTimeEntryIdsFor');
   }
 
   private getTaskIdsOfOneProject(tasksByProjectId: ITask[]): string[] {
@@ -115,32 +120,32 @@ export class ProjectService {
 
   private summarizeDurationsOfOneTask(singleTask: ITask): number {
     let tasksDurationSum = 0;
-    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
-    if (!timeEntries || timeEntries.length === 0) {
-      console.error('!timeEntries || timeEntries.length === 0');
-      return;
-    }
-    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
-      tasksDurationSum += oneTimeEntry.duration;
-    });
+    // const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    // if (!timeEntries || timeEntries.length === 0) {
+    //   console.error('!timeEntries || timeEntries.length === 0');
+    //   return;
+    // }
+    // timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+    //   tasksDurationSum += oneTimeEntry.duration;
+    // });
     return tasksDurationSum;
   }
 
   private getMinDateValuesOfOneTask(singleTask: ITask): Date {
     let storedTime = new Date().getTime();
     let storedDate = null;
-    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
-    if (!timeEntries || timeEntries.length === 0) {
-      console.error('!timeEntries || timeEntries.length === 0');
-      return;
-    }
-    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
-      const currentStartTime = oneTimeEntry.startTime.getTime();
-      if (currentStartTime < storedTime) {
-        storedTime = currentStartTime;
-        storedDate = oneTimeEntry.startTime;
-      }
-    });
+    // const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    // if (!timeEntries || timeEntries.length === 0) {
+    //   console.error('!timeEntries || timeEntries.length === 0');
+    //   return;
+    // }
+    // timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+    //   const currentStartTime = oneTimeEntry.startTime.getTime();
+    //   if (currentStartTime < storedTime) {
+    //     storedTime = currentStartTime;
+    //     storedDate = oneTimeEntry.startTime;
+    //   }
+    // });
     return storedDate;
   }
 
@@ -148,19 +153,19 @@ export class ProjectService {
     let storedTime = 0;
     let storedDate = null;
 
-    const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
-    if (!timeEntries || timeEntries.length === 0) {
-      console.error('!timeEntries || timeEntries.length === 0');
-      return;
-    }
+    // const timeEntries: ITimeEntry[] = this.inMemoryDataService.getTimeEntriesByTaskId(singleTask.taskId);
+    // if (!timeEntries || timeEntries.length === 0) {
+    //   console.error('!timeEntries || timeEntries.length === 0');
+    //   return;
+    // }
 
-    timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
-      const currentEndTime = oneTimeEntry.endTime.getTime();
-      if (currentEndTime > storedTime) {
-        storedTime = currentEndTime;
-        storedDate = oneTimeEntry.endTime;
-      }
-    });
+    // timeEntries.forEach((oneTimeEntry: ITimeEntry) => {
+    //   const currentEndTime = oneTimeEntry.endTime.getTime();
+    //   if (currentEndTime > storedTime) {
+    //     storedTime = currentEndTime;
+    //     storedDate = oneTimeEntry.endTime;
+    //   }
+    // });
 
     return storedDate;
   }

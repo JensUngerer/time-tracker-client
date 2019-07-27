@@ -76,7 +76,10 @@ export class CommitComponent implements OnInit {
   public onCommitClicked(values: any) {
     if (this.sumForOneProject) {
       this.commitService.postCommit(this.sumForOneProject.data).then(() => {
-        this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
+
+        // TODO: implement deleting of timeEntries on server
+        // this.inMemoryDataService.clearTimeEntries(this.sumForOneProject.timeEntryIds);
+
         this.durationStr = '';
         this.formControlProjectDropDown.setValue('');
       }).catch(() => {

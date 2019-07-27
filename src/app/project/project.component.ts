@@ -73,11 +73,12 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
             return oneTask.taskId;
           });
         }
-        if (taskIds && taskIds.length > 0) {
-          taskIds.forEach((singleTaskId: string) => {
-            this.inMemoryDataService.deleteTimeEntriesByTaskId(singleTaskId);
-          });
-        }
+        // TODO: implement deleting of corresponding timeEntries
+        // if (taskIds && taskIds.length > 0) {
+        //   taskIds.forEach((singleTaskId: string) => {
+        //     this.inMemoryDataService.deleteTimeEntriesByTaskId(singleTaskId);
+        //   });
+        // }
 
         // b) update database with the idDeletedInClient = true flag
         const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);

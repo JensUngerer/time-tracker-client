@@ -174,16 +174,18 @@ export class TaskComponent implements OnInit, OnDestroy {
         deleteTaskPromise.then((resolvedValue: any) => {
           console.log(resolvedValue);
 
+          // TODO: implement
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+          // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
           this.inMemoryDataService.loadDataFromDb();
         });
         deleteTaskPromise.catch((rejectValue: any) => {
           console.error(rejectValue);
 
+          // TODO: implement
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+          // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
           this.inMemoryDataService.loadDataFromDb();
         });
