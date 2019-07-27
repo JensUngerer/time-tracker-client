@@ -163,6 +163,7 @@ export class CommitService {
     return new Promise<any>((resolve: (value: any) => void) => {
       const body: any = {};
       body[propertyName] = data;
+
       const options: any = {
         'Content-Type': 'application/json'
       };

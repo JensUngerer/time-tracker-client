@@ -74,7 +74,10 @@ export class CommitComponent implements OnInit {
       // DEBUGGING:
       // console.log(durationStructure, null, 4);
       this.sumForOneProject = sumForOneProject;
-
+      if (!this.sumForOneProject) {
+        console.error('there is no sum for the project');
+        return;
+      }
 
       this.durationStr = this.helpersService.getDurationStr(sumForOneProject.durationStructure.hours,
         sumForOneProject.durationStructure.minutes);
