@@ -1,5 +1,6 @@
+import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 import { IDeleteDialogData } from './../typescript/iDeleteDialogData';
-import { InMemoryDataService } from './../in-memory-data.service';
+// import { InMemoryDataService } from './../in-memory-data.service';
 import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
@@ -66,48 +67,55 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // a) delete all (not yet committed!) timeEntries
         const projectId = row.id;
-        const correspondingTasks = this.inMemoryDataService.getTasksByProjectId(projectId);
-        let taskIds = [];
-        if (correspondingTasks || correspondingTasks.length > 0) {
-          taskIds = correspondingTasks.map((oneTask: ITask) => {
-            return oneTask.taskId;
+        const correspondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
+        correspondingTasksPromise.then((tasksStr: string) => {
+          const correspondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
+          let taskIds = [];
+          if (correspondingTasks || correspondingTasks.length > 0) {
+            taskIds = correspondingTasks.map((oneTask: ITask) => {
+              return oneTask.taskId;
+            });
+          }
+
+          // b) update database with the idDeletedInClient = true flag
+          const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
+          dbPatchedPromise.then((resolveValue: any) => {
+            console.log(resolveValue);
+
+            // c) refresh the inMemoryData
+            // this.inMemoryDataService.loadDataFromDb();
+
+            // d) will be automatically called?
+            // this.drawTable(true);
           });
-        }
+          dbPatchedPromise.catch((rejectValue: any) => {
+            // should be never called
+            console.error(rejectValue);
+
+            // c) refresh the inMemoryData
+            // this.inMemoryDataService.loadDataFromDb();
+
+            // d) will be automatically called?
+            // this.drawTable(true);
+          });
+        });
+        correspondingTasksPromise.catch(() => {
+          console.error('getCorrespondingTasks rejected');
+        });
+
         // TODO: implement deleting of corresponding timeEntries
         // if (taskIds && taskIds.length > 0) {
         //   taskIds.forEach((singleTaskId: string) => {
         //     this.inMemoryDataService.deleteTimeEntriesByTaskId(singleTaskId);
         //   });
         // }
-
-        // b) update database with the idDeletedInClient = true flag
-        const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
-        dbPatchedPromise.then((resolveValue: any) => {
-          console.log(resolveValue);
-
-          // c) refresh the inMemoryData
-          this.inMemoryDataService.loadDataFromDb();
-
-          // d) will be automatically called?
-          // this.drawTable(true);
-        });
-        dbPatchedPromise.catch((rejectValue: any) => {
-          // should be never called
-          console.error(rejectValue);
-
-          // c) refresh the inMemoryData
-          this.inMemoryDataService.loadDataFromDb();
-
-          // d) will be automatically called?
-          // this.drawTable(true);
-        });
       }
     });
   }
 
   public onSubmit(values: any) {
     const projectName = values[this.formControlNameProjectName];
-    const project: IProject = this.projectService.addProject(projectName);
+    const project: IProject = this.projectService.createProject(projectName);
 
     // store in db ? --> necessary but when deleting mark as isLocallyDeleted as true
     this.commitService.postProject(project);
@@ -120,24 +128,24 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     private commitService: CommitService,
     private router: Router,
     public dialog: MatDialog,
-    private inMemoryDataService: InMemoryDataService) {
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.formControlNameProjectName] = new FormControl('');
 
     this.projectFormGroup = new FormGroup(configObj);
 
-    this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
-      if (isReady) {
-        this.drawTable(true);
-      }
-    });
+    // this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
+    //   if (isReady) {
+    //     this.drawTable(true);
+    //   }
+    // });
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
-    this.drawTable(false);
+    this.drawTable(true);
   }
 
   ngOnDestroy() {
@@ -148,20 +156,25 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private setCloneGridLines() {
     this.gridLines = [];
-    const projects = this.projectService.getProjects();
+    const projectsStrPromise = this.commitService.getProjects();
+    projectsStrPromise.then((projectsStr: string) => {
+      const projects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
+      if (!projects || projects.length === 0) {
+        console.error('no projects to display');
+        return;
+      }
 
-    if (!projects || projects.length === 0) {
-      console.error('no projects to display');
-      return;
-    }
-
-    projects.forEach((oneProject: IProject) => {
-      const gridLine: IGridLine = {
-        name: oneProject.name,
-        id: oneProject.projectId,
-        deleteRow: ''
-      };
-      this.gridLines.push(gridLine);
+      projects.forEach((oneProject: IProject) => {
+        const gridLine: IGridLine = {
+          name: oneProject.name,
+          id: oneProject.projectId,
+          deleteRow: ''
+        };
+        this.gridLines.push(gridLine);
+      });
+    });
+    projectsStrPromise.catch(() => {
+      console.error('getProjects rejected');
     });
   }
 

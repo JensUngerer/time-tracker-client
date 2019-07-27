@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { UserComponent } from './user/user.component';
+// import { HomeComponent } from './home/home.component';
+// import { UserComponent } from './user/user.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';

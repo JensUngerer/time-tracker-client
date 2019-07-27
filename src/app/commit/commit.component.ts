@@ -1,3 +1,4 @@
+import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Component, OnInit, Output } from '@angular/core';
@@ -35,7 +36,8 @@ export class CommitComponent implements OnInit {
 
   constructor(private projectService: ProjectService,
               private commitService: CommitService,
-              private helpersService: HelpersService) {
+              private helpersService: HelpersService,
+              private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -43,12 +45,19 @@ export class CommitComponent implements OnInit {
 
     this.commitFormGroup = new FormGroup(configObj);
 
-    const allProjects = this.projectService.getProjects();
-    if (allProjects && allProjects.length > 0) {
-      allProjects.forEach((project: IProject) => {
-        this.projectOptions.push(new ProjectOption(project));
-      });
-    }
+    const allProjectsPromise = this.commitService.getProjects();
+    allProjectsPromise.then((projectsStr) => {
+      const allProjects: IProject[] = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
+      if (allProjects && allProjects.length > 0) {
+        allProjects.forEach((project: IProject) => {
+          this.projectOptions.push(new ProjectOption(project));
+        });
+      }
+    });
+    allProjectsPromise.catch(() => {
+      console.error('getProjects rejected');
+    });
+
   }
 
   ngOnInit() {

@@ -2,7 +2,7 @@ import { CommitService } from './../commit.service';
 import { HelpersService } from './../helpers.service';
 import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { InMemoryDataService } from './../in-memory-data.service';
+// import { InMemoryDataService } from './../in-memory-data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
 import { TaskService } from './../task.service';
@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
 import { IUserOption } from './../typescript/userOption';
 import routesConfig from './../../../../common/typescript/routes.js';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -28,6 +29,10 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   private activatedRouteSubscription: Subscription = null;
 
   private inMemoryDataServiceSubscription: Subscription = null;
+
+  private allProjectsPromise: Promise<string> = null;
+
+  private allTasksPromise: Promise<string> = null;
 
   public currentTimeEntryDuration: string;
 
@@ -150,12 +155,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
 
   constructor(private projectManagementService: ProjectService,
-              private taskManagementService: TaskService,
-              private timeTrackingService: TimeTrackingService,
-              private formBuilder: FormBuilder,
-              private router: Router,
-              private activatedRoute: ActivatedRoute,
-              private commitService: CommitService) {
+    private taskManagementService: TaskService,
+    private timeTrackingService: TimeTrackingService,
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private commitService: CommitService,
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
@@ -167,41 +173,62 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
 
     // init projectSectionDropDown data
-    const allProjects: IProject[] = this.projectManagementService.getProjects();
-    if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
-      allProjects.forEach((project: IProject) => {
-        this.projectOptions.push(new ProjectOption(project));
-      });
-    }
+    this.allProjectsPromise = this.commitService.getProjects();
+    this.allProjectsPromise.then((projectsStr: string) => {
+      const allProjects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
+      if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
+        allProjects.forEach((project: IProject) => {
+          this.projectOptions.push(new ProjectOption(project));
+        });
+      }
+    });
+    this.allProjectsPromise.catch(() => {
+      console.error('getProjects rejected');
+    });
+
     // init taskSelectionDropDrown data
-    const allTasks: ITask[] = this.taskManagementService.getTasks();
-    if (allTasks && allTasks.length > 0 && this.taskOptions.length === 0) {
-      allTasks.forEach((task: ITask) => {
-        this.taskOptions.push(new TaskOption(task));
-      });
-    }
+    this.allTasksPromise = this.commitService.getTasks();
+    this.allTasksPromise.then((allTasksStr: string) => {
+      const allTasks = sessionStorageSerializationService.deSerialize<ITask[]>(allTasksStr);
+      if (allTasks && allTasks.length > 0 && this.taskOptions.length === 0) {
+        allTasks.forEach((task: ITask) => {
+          this.taskOptions.push(new TaskOption(task));
+        });
+      }
+    });
+    this.allTasksPromise.catch(() => {
+      console.error('get tasks rejected');
+    });
+
 
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
-      if (projectId && taskId) {
-        const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
-          return oneProjectOption.value.projectId === projectId;
-        });
-        if (projectOption) {
-          this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
-        } else {
-          console.error('no project option for: ' + projectId);
+
+      this.allProjectsPromise.finally(() => {
+        if (projectId) {
+          const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+            return oneProjectOption.value.projectId === projectId;
+          });
+          if (projectOption) {
+            this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
+          } else {
+            console.error('no project option for: ' + projectId);
+          }
         }
-        const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
-          return oneTaskOption.value.taskId === taskId;
+        this.allTasksPromise.finally(() => {
+          if (taskId) {
+            const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
+              return oneTaskOption.value.taskId === taskId;
+            });
+            if (taskOption) {
+              this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
+            } else {
+              console.error('no task option for:' + taskId);
+            }
+          }
         });
-        if (taskOption) {
-          this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
-        } else {
-          console.error('no task option for:' + taskId);
-        }
-      }
+      });
     });
   }
 

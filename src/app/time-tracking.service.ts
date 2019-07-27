@@ -2,7 +2,7 @@ import { HelpersService } from './helpers.service';
 import { Injectable } from '@angular/core';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import uuid from 'uuid';
-import { InMemoryDataService } from './in-memory-data.service';
+// import { InMemoryDataService } from './in-memory-data.service';
 import { IPause } from '../../../common/typescript/iPause';
 import { CommitService } from './commit.service';
 
@@ -13,8 +13,7 @@ export class TimeTrackingService {
 
   private readonly timeEntriesKey = 'timeEntries';
 
-  constructor(private inMemoryDataService: InMemoryDataService,
-    private helpersService: HelpersService,
+  constructor(private helpersService: HelpersService,
     private commitService: CommitService) { }
 
   public startTimeTracking(taskId: string): Promise<ITimeEntry> {

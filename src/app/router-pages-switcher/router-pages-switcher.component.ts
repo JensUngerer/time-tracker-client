@@ -1,4 +1,4 @@
-import { InMemoryDataService } from './../in-memory-data.service';
+// import { InMemoryDataService } from './../in-memory-data.service';
 import { RoutingRoutes } from './../routing-routes';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
@@ -15,8 +15,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
   private urlForwardMapping: {[key: string]: string} = {};
   private urlBackwardMapping: {[key: string]: string} = {};
   constructor(private activatedRoute: ActivatedRoute,
-              private router: Router,
-              private inMemoryDataService: InMemoryDataService) {
+              private router: Router) {
                 this.currentUrl$ = this.activatedRoute.url;
                 this.urlBackwardMapping['/' + RoutingRoutes.routes[0]] = null;
 
@@ -46,30 +45,30 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
 
   private routerEventsSubscription: Subscription = null;
   private isReadySubscription: Subscription = null;
-  private isReady = false;
+  // private isReady = false;
 
   ngOnInit() {
     this.routerEventsSubscription = this.router.events.subscribe(() => {
-      if (this.isReady) {
+      // if (this.isReady) {
         this.triggerUrlCheck();
-      }
+      // }
     });
 
-    this.isReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isMemoryDataReady: boolean) => {
-      if (isMemoryDataReady) {
-        console.error('ready');
+    // this.isReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isMemoryDataReady: boolean) => {
+    //   if (isMemoryDataReady) {
+    //     console.error('ready');
 
-        this.isReady = true;
-        this.triggerUrlCheck();
-      } else {
-        console.error('waiting for isMemoryDataReady:' + isMemoryDataReady);
+    //     this.isReady = true;
+    //     this.triggerUrlCheck();
+    //   } else {
+    //     console.error('waiting for isMemoryDataReady:' + isMemoryDataReady);
 
-        this.isForwardButtonDisabled = true;
-        this.isBackwardButtonDisabled = true;
+    //     this.isForwardButtonDisabled = true;
+    //     this.isBackwardButtonDisabled = true;
 
-        this.isReady = false;
-      }
-    });
+    //     this.isReady = false;
+    //   }
+    // });
   }
 
   private triggerUrlCheck() {

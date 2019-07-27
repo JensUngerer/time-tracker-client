@@ -1,5 +1,5 @@
 import { TaskService } from './task.service';
-import { InMemoryDataService } from './in-memory-data.service';
+// import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
 import uuid from 'uuid';
 import { IProject } from '../../../common/typescript/iProject';
@@ -15,80 +15,81 @@ export class ProjectService {
 
   private readonly projectsKey = 'projects';
 
-  constructor(private inMemoryDataService: InMemoryDataService,
+  constructor(/*private inMemoryDataService: InMemoryDataService*/
     private helpersService: HelpersService,
     private taskService: TaskService) { }
 
-  public addProject(projectName: string): IProject {
+  public createProject(projectName: string): IProject {
     const newProject: IProject = {
       name: projectName,
       projectId: uuid.v4()
     };
 
-    this.inMemoryDataService.push(this.projectsKey, newProject);
+    // this.inMemoryDataService.push(this.projectsKey, newProject);
     return newProject;
   }
 
-  public deleteProject(projectId: string) {
-    const allProjects: IProject[] = this.inMemoryDataService.get('projects');
-    if (!allProjects || allProjects.length === 0) {
-      console.error('no projects found!');
-      return;
-    }
-    const projectIndex = allProjects.findIndex((oneProject: IProject) => {
-      return oneProject.projectId === projectId;
-    });
-    if (projectIndex !== -1) {
-      const taskIdsToDelete = this.getTaskIdsToProjectId(projectId);
-      const allTasksInMem = this.inMemoryDataService.get('tasks');
-      taskIdsToDelete.forEach((currentTaskIdToDelete: string) => {
-        const taskIndex = allTasksInMem.findIndex((theTask: ITask) => {
-          return theTask.taskId === currentTaskIdToDelete;
-        });
-        if (taskIndex !== -1) {
-          allTasksInMem.splice(taskIndex, 1);
-        } else {
-          console.error('cannot delete taskId:' + currentTaskIdToDelete);
-        }
-      });
+  // public deleteProject(projectId: string) {
+  //   const allProjects: IProject[] = this.inMemoryDataService.get('projects');
+  //   if (!allProjects || allProjects.length === 0) {
+  //     console.error('no projects found!');
+  //     return;
+  //   }
+  //   const projectIndex = allProjects.findIndex((oneProject: IProject) => {
+  //     return oneProject.projectId === projectId;
+  //   });
+  //   if (projectIndex !== -1) {
+  //     const taskIdsToDelete = this.getTaskIdsToProjectId(projectId);
+  //     const allTasksInMem = this.inMemoryDataService.get('tasks');
+  //     taskIdsToDelete.forEach((currentTaskIdToDelete: string) => {
+  //       const taskIndex = allTasksInMem.findIndex((theTask: ITask) => {
+  //         return theTask.taskId === currentTaskIdToDelete;
+  //       });
+  //       if (taskIndex !== -1) {
+  //         allTasksInMem.splice(taskIndex, 1);
+  //       } else {
+  //         console.error('cannot delete taskId:' + currentTaskIdToDelete);
+  //       }
+  //     });
 
-      allProjects.splice(projectIndex, 1);
-    } else {
-      console.error('cannot delete projectId:' + projectId);
-    }
-  }
+  //     allProjects.splice(projectIndex, 1);
+  //   } else {
+  //     console.error('cannot delete projectId:' + projectId);
+  //   }
+  // }
 
-  public getProjects(): IProject[] {
-    return this.inMemoryDataService.get(this.projectsKey);
-  }
+  // public getProjects(): IProject[] {
+  //   // return this.inMemoryDataService.get(this.projectsKey);
 
-  public summarizeDurationFor(projectId: string): any {
-    const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
-    if (!tasksByProjectId || tasksByProjectId.length === 0) {
-      console.error('!tasksByProjectId');
-      return;
-    }
-    // const isDataAvailable = this.inMemoryDataService.areTimeEntriesAvailableForProjectId(projectId);
-    // if (!isDataAvailable) {
-    //   return null;
-    // }
+  // }
 
-    // const sumValue: ITimeRecordsDocumentData = {
-    //   durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
-    //   dateStructure: this.getDateStructureOfOneProject(tasksByProjectId),
-    //   _taskIds: this.getTaskIdsOfOneProject(tasksByProjectId),
-    //   _projectId: projectId
-    // };
+  // public summarizeDurationFor(projectId: string): any {
+  //   const tasksByProjectId: ITask[] = this.inMemoryDataService.getTasksByProjectId(projectId);
+  //   if (!tasksByProjectId || tasksByProjectId.length === 0) {
+  //     console.error('!tasksByProjectId');
+  //     return;
+  //   }
+  //   // const isDataAvailable = this.inMemoryDataService.areTimeEntriesAvailableForProjectId(projectId);
+  //   // if (!isDataAvailable) {
+  //   //   return null;
+  //   // }
 
-    // return {
-    //   data: sumValue,
-    //   timeEntryIds: this.getTimeEntryIdsFor(tasksByProjectId)
-    // };
-    return {
-      data: null,
-      timeEntryIds: null
-    };
-  }
+  //   // const sumValue: ITimeRecordsDocumentData = {
+  //   //   durationStructure: this.getDurationStructureOfOneProject(tasksByProjectId),
+  //   //   dateStructure: this.getDateStructureOfOneProject(tasksByProjectId),
+  //   //   _taskIds: this.getTaskIdsOfOneProject(tasksByProjectId),
+  //   //   _projectId: projectId
+  //   // };
+
+  //   // return {
+  //   //   data: sumValue,
+  //   //   timeEntryIds: this.getTimeEntryIdsFor(tasksByProjectId)
+  //   // };
+  //   return {
+  //     data: null,
+  //     timeEntryIds: null
+  //   };
+  // }
 
   private getTimeEntryIdsFor(tasksByProjectId: ITask[]) {
     // let buffer: string[] = [];
@@ -241,23 +242,23 @@ export class ProjectService {
     return this.helpersService.getDurationStructure(hours, minutes);
   }
 
-  private getTaskIdsToProjectId(projectId: string): string[] {
-    const allTasksInMemory: ITask[] = this.inMemoryDataService.get('tasks');
-    if (!allTasksInMemory || allTasksInMemory.length === 0) {
-      return [];
-    }
-    const correspondingTasks: ITask[] = allTasksInMemory.filter((oneTask: ITask) => {
-      return oneTask._projectId === projectId;
-    });
-    if (!correspondingTasks || correspondingTasks.length === 0) {
-      return [];
-    }
-    const theTaskIds: string[] = correspondingTasks.map((oneCorrespondingTask: ITask) => {
-      return oneCorrespondingTask.taskId;
-    });
-    if (!theTaskIds || theTaskIds.length === 0) {
-      return [];
-    }
-    return theTaskIds;
-  }
+  // private getTaskIdsToProjectId(projectId: string): string[] {
+  //   const allTasksInMemory: ITask[] = this.inMemoryDataService.get('tasks');
+  //   if (!allTasksInMemory || allTasksInMemory.length === 0) {
+  //     return [];
+  //   }
+  //   const correspondingTasks: ITask[] = allTasksInMemory.filter((oneTask: ITask) => {
+  //     return oneTask._projectId === projectId;
+  //   });
+  //   if (!correspondingTasks || correspondingTasks.length === 0) {
+  //     return [];
+  //   }
+  //   const theTaskIds: string[] = correspondingTasks.map((oneCorrespondingTask: ITask) => {
+  //     return oneCorrespondingTask.taskId;
+  //   });
+  //   if (!theTaskIds || theTaskIds.length === 0) {
+  //     return [];
+  //   }
+  //   return theTaskIds;
+  // }
 }

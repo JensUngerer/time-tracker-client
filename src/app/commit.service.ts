@@ -159,6 +159,11 @@ export class CommitService {
     return this.httpPost(routes.timeRecordBodyProperty, line, url);
   }
 
+  public getTasksByProjectId(projectId: string): Promise<string> {
+    const url = this.getTaskUrl() + '/' + projectId;
+    return this.httpGet(url);
+  }
+
   private httpPost(propertyName: string, data: any, url: string): Promise<any> {
     return new Promise<any>((resolve: (value: any) => void) => {
       const body: any = {};

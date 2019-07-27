@@ -1,3 +1,4 @@
+import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 import { CommitService } from './../commit.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -9,7 +10,7 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
 import routesConfig from './../../../../common/typescript/routes.js';
 import { Subscription, Observable } from 'rxjs';
-import { InMemoryDataService } from '../in-memory-data.service';
+// import { InMemoryDataService } from '../in-memory-data.service';
 import * as _ from 'underscore';
 import { IGridLine } from './../typescript/iGridLine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -44,7 +45,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
 
-    const task: ITask = this.taskService.addTask(newNewTaskName, projectId);
+    const task: ITask = this.taskService.createTask(newNewTaskName, projectId);
 
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
@@ -52,13 +53,13 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
-      this.inMemoryDataService.loadDataFromDb();
+      // this.inMemoryDataService.loadDataFromDb();
 
       // isReady will be triggered!
       // --> this.triggerReDraw(projectId);
     });
     createTaskPromise.catch(() => {
-      this.inMemoryDataService.loadDataFromDb();
+      // this.inMemoryDataService.loadDataFromDb();
 
       // isReady will be triggered!
       // --> this.triggerReDraw(projectId);
@@ -84,9 +85,10 @@ export class TaskComponent implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private commitService: CommitService,
     private activatedRoute: ActivatedRoute,
-    private inMemoryDataService: InMemoryDataService,
+    // private inMemoryDataService: InMemoryDataService,
     public dialog: MatDialog,
-    private router: Router) {
+    private router: Router,
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -96,41 +98,48 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     this.taskFormGroup = new FormGroup(configObj);
 
-    const projects = this.projectService.getProjects();
-    if (!projects || projects.length === 0) {
-      console.error('no projects');
-      return;
-    }
-    projects.forEach((element: IProject) => {
-      this.projectOptions.push(new ProjectOption(element));
-    });
-
-    this.projectChangesSubscription = this.taskFormGroup
-      .controls[this.formControlNameProjectName]
-      .valueChanges
-      .subscribe((theEvent: any) => {
-        this.redrawTableOfProject(theEvent);
-      });
-
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const projectIdFromUrl = params[routesConfig.projectIdProperty];
-
-      const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
-        return oneProjectOption.value.projectId === projectIdFromUrl;
-      });
-      if (!correspondingDropDownMenuEntry) {
-        console.error('!correspondingDropDownMenuEntry');
+    const projectsPromise = this.commitService.getProjects();
+    projectsPromise.then((projectsStr: string) => {
+      const projects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
+      if (!projects || projects.length === 0) {
+        console.error('no projects');
         return;
       }
-      this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
+      projects.forEach((element: IProject) => {
+        this.projectOptions.push(new ProjectOption(element));
+      });
 
-      if (this.isMemoryReadySubscription) {
-        this.isMemoryReadySubscription.unsubscribe();
-      }
-      this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
-        if (isReady) {
-          this.triggerReDraw(projectIdFromUrl);
+      this.projectChangesSubscription = this.taskFormGroup
+        .controls[this.formControlNameProjectName]
+        .valueChanges
+        .subscribe((theEvent: any) => {
+          this.redrawTableOfProject(theEvent);
+        });
+
+      this.activatedRoute.queryParams.subscribe((params: Params) => {
+        const projectIdFromUrl = params[routesConfig.projectIdProperty];
+
+        const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+          return oneProjectOption.value.projectId === projectIdFromUrl;
+        });
+        if (!correspondingDropDownMenuEntry) {
+          console.error('!correspondingDropDownMenuEntry');
+          return;
         }
+        this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
+
+        if (this.isMemoryReadySubscription) {
+          this.isMemoryReadySubscription.unsubscribe();
+        }
+
+        // this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
+        //   if (isReady) {
+        //     this.triggerReDraw(projectIdFromUrl);
+        //   }
+        // });
+      });
+      projectsPromise.catch(() => {
+        console.error('getProjects rejected in task.component');
       });
     });
   }
@@ -178,7 +187,7 @@ export class TaskComponent implements OnInit, OnDestroy {
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
           // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
-          this.inMemoryDataService.loadDataFromDb();
+          // this.inMemoryDataService.loadDataFromDb();
         });
         deleteTaskPromise.catch((rejectValue: any) => {
           console.error(rejectValue);
@@ -187,7 +196,7 @@ export class TaskComponent implements OnInit, OnDestroy {
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
           // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
-          this.inMemoryDataService.loadDataFromDb();
+          // this.inMemoryDataService.loadDataFromDb();
         });
 
         // --> a refresh will be triggered automatically?
@@ -200,20 +209,29 @@ export class TaskComponent implements OnInit, OnDestroy {
   public redrawTableOfProject(selectedProject: IProject) {
     // TODO: FIXME: why two times triggered ??
     this.gridLines = [];
-    const existingCorrespondingTasks = this.inMemoryDataService.getTasksByProjectId(selectedProject.projectId);
-    if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
-      console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
-      return;
-    }
-    existingCorrespondingTasks.forEach((oneTask: ITask) => {
-      const taskForRow: IGridLine = {
-        name: oneTask.name,
-        id: oneTask.taskId,
-        deleteRow: ''
-      };
-      this.gridLines.push(taskForRow);
+    const existingCorrespondingTasksPromise = this.commitService.getTasksByProjectId(selectedProject.projectId);
+
+    existingCorrespondingTasksPromise.then((tasksStr: string) => {
+      const existingCorrespondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
+
+      if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
+        console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
+        return;
+      }
+      existingCorrespondingTasks.forEach((oneTask: ITask) => {
+        const taskForRow: IGridLine = {
+          name: oneTask.name,
+          id: oneTask.taskId,
+          deleteRow: ''
+        };
+        this.gridLines.push(taskForRow);
+      });
+    });
+    existingCorrespondingTasksPromise.catch(()=>{
+      console.error('an rejection when getting tasks');
     });
   }
+
 
   ngOnInit() {
   }
