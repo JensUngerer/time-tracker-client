@@ -6,7 +6,7 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
-import { ITimeRecordsDocumentData, IExtendedTimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { IDuration } from '../../../../common/typescript/iDuration';
 
 @Component({
@@ -33,7 +33,7 @@ export class CommitComponent implements OnInit {
   @Output()
   public isButtonDisabled = false;
 
-  private sumForOneProject: IExtendedTimeRecordsDocumentData = null;
+  private sumForOneProject: ITimeRecordsDocumentData = null;
 
   constructor(private projectService: ProjectService,
     private commitService: CommitService,
@@ -59,6 +59,9 @@ export class CommitComponent implements OnInit {
   }
 
   public onProjectSelectionChanged($event: any) {
+    // while the server get is running do not enable the commit button!
+    this.isButtonDisabled = true;
+
     const projectId = $event.value.projectId;
 
     const durationStructurePromise = this.commitService.getDurationStructure(projectId);
@@ -66,12 +69,16 @@ export class CommitComponent implements OnInit {
       if (!theDurationStructureStr) {
         return;
       }
-      const durationStructure: IDuration = JSON.parse(theDurationStructureStr);
+      const sumForOneProject: ITimeRecordsDocumentData = JSON.parse(theDurationStructureStr);
 
       // DEBUGGING:
-      console.log(durationStructure, null, 4);
+      // console.log(durationStructure, null, 4);
+      this.sumForOneProject = sumForOneProject;
 
-      this.durationStr = this.helpersService.getDurationStr(durationStructure.hours, durationStructure.minutes);
+
+      this.durationStr = this.helpersService.getDurationStr(sumForOneProject.durationStructure.hours,
+        sumForOneProject.durationStructure.minutes);
+      this.isButtonDisabled = false;
     });
     durationStructurePromise.catch(() => {
       console.error('no duration structure retrieved');
@@ -91,7 +98,23 @@ export class CommitComponent implements OnInit {
 
 
   public onCommitClicked(values: any) {
-    console.error('TODO: implement!');
+    if (this.sumForOneProject) {
+      this.durationStr = '';
+      this.formControlProjectDropDown.setValue('');
+
+      // DEBUGGING:
+      // console.log(JSON.stringify(this.sumForOneProject, null, 4));
+      const commitPostPromise = this.commitService.postCommit(this.sumForOneProject);
+      commitPostPromise.then((resolvedValue: any) => {
+        console.log(JSON.stringify(resolvedValue, null, 4));
+      });
+      commitPostPromise.catch((rejectedValue: any) => {
+        console.log(JSON.stringify(rejectedValue, null, 4));
+      });
+    } else {
+      console.error('cannot commit because of missing duration sum');
+    }
+
     //   if (this.sumForOneProject) {
     //     this.commitService.postCommit(this.sumForOneProject.data).then(() => {
 
