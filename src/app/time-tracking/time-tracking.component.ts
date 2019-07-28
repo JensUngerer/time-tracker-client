@@ -10,9 +10,10 @@ import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-import { IUserOption } from './../typescript/userOption';
 import routesConfig from './../../../../common/typescript/routes.js';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
+import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
+import { ITimeEntryOption, TimeEntryOption } from '../typescript/iTimeEntryOption';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -38,8 +39,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public formControlNameUserSelectionDropDown = 'userSelectionDropDown';
 
-  public userOptions: IUserOption[] = [];
-
   public timeTrackingUserSelectionFormControl: AbstractControl = null;
 
   public startStopButtonLabel = 'Start';
@@ -61,6 +60,12 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public timeTrackingTaskSelectionFromControl: FormControl = null;
 
   public taskOptions: ITaskOption[] = [];
+
+  public timeEntryOptions: ITimeEntryOption[] = [];
+
+  public formControlNameTimeEntrySelectionDropDown = 'timeEntrySelectionDropDown';
+
+  public timeTrackingTimeEntrySelectionFromControl: AbstractControl = null;
 
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
@@ -103,7 +108,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       });
     }
   }
-
 
   private getTimeEntryIdFromUrl(): string {
     const retrievedTimeEntryId = this.activatedRoute.snapshot.queryParams[routesConfig.timeEntryIdProperty];
@@ -153,11 +157,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
 
   constructor(private timeTrackingService: TimeTrackingService,
-              private formBuilder: FormBuilder,
-              private router: Router,
-              private activatedRoute: ActivatedRoute,
-              private commitService: CommitService,
-              private sessionStorageSerializationService: SessionStorageSerializationService) {
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private commitService: CommitService,
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
@@ -165,6 +169,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     this.timeTrackingTaskSelectionFromControl = new FormControl('');
     controlsConfigObj[this.formControlNameTaskSelectionDropDown] = this.timeTrackingTaskSelectionFromControl;
+
+    this.timeTrackingTimeEntrySelectionFromControl = new FormControl('');
+    controlsConfigObj[this.formControlNameTimeEntrySelectionDropDown] = this.timeTrackingTimeEntrySelectionFromControl;
 
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
 
@@ -196,7 +203,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       console.error('get tasks rejected');
     });
 
-
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
@@ -214,6 +220,24 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         }
         this.allTasksPromise.finally(() => {
           if (taskId) {
+            // const notCompletedTimeEntriesPromise = this.commitService.getTimeEntriesByTaskId(taskId);
+            // notCompletedTimeEntriesPromise.then((theJsonString: string) => {
+            //   const notCompletedTimeEntries: ITimeEntryDocument[] = this.sessionStorageSerializationService
+            //     .deSerialize<ITimeEntryDocument[]>(theJsonString);
+
+            //   this.timeEntryOptions = [];
+            //   // DEBUGGING:
+            //   // console.log(JSON.stringify(notCompletedTimeEntries, null, 4));
+            //   if (!notCompletedTimeEntries || notCompletedTimeEntries.length === 0) {
+            //     console.error('there are not "open" timeEntries');
+            //     return;
+            //   }
+            //   notCompletedTimeEntries.forEach((oneNotCompletedTimeEntry: ITimeEntryDocument) => {
+            //     this.timeEntryOptions.push(new TimeEntryOption(oneNotCompletedTimeEntry));
+            //   });
+            // });
+
+
             const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
               return oneTaskOption.value.taskId === taskId;
             });
@@ -237,6 +261,15 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       console.error('getDuration rejected with');
       console.error(err);
     });
+  }
+
+  public onTimeEntryChanged($event: any) {
+    // DEBUGGING:
+    console.log($event);
+
+    // const value: ITimeEntryDocument = $event.value;
+    // this.setTimeEntryIdInUrl(value.timeEntryId);
+    // // this.startStopButtonLabel = 'Stop';
   }
 
   ngOnInit() {

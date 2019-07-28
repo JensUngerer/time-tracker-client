@@ -19,6 +19,14 @@
           </mat-select>
         </div>
         <div class="buttonFlexItem">
+            <mat-select placeholder="Open Time-Entries" matInput [formControl]="timeTrackingTimeEntrySelectionFromControl"
+              [required]="false" (selectionChange)="onTimeEntryChanged($event)">
+              <mat-option *ngFor="let timeEntryOption of timeEntryOptions" [value]="timeEntryOption.value">
+                {{timeEntryOption.viewValue}}
+              </mat-option>
+            </mat-select>
+          </div>
+        <div class="buttonFlexItem">
           <button type="button" (click)="onStartStopButtonClicked()" mat-stroke-button
             [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}}
           </button>
