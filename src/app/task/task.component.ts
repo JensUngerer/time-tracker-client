@@ -175,26 +175,33 @@ export class TaskComponent implements OnInit, OnDestroy {
         deleteTaskPromise.then((resolvedValue: any) => {
           // DEBUGGING:
           console.log(resolvedValue);
-
-          // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          this.commitService.deleteTimeEntryByTaskId(taskId);
-
-          const selectedProject = this.findSelectedProject();
-          if (selectedProject) {
-            this.redrawTableOfProject(selectedProject);
-          }
+          this.deleteAndTriggerRedrawAfterwards(taskId);
         });
         deleteTaskPromise.catch((rejectValue: any) => {
+          // DEBUGGING:
+          console.error('rejection:');
           console.error(rejectValue);
 
-          // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          this.commitService.deleteTimeEntryByTaskId(taskId);
-
-          const selectedProject = this.findSelectedProject();
-          if (selectedProject) {
-            this.redrawTableOfProject(selectedProject);
-          }
+          this.deleteAndTriggerRedrawAfterwards(taskId);
         });
+      }
+    });
+  }
+
+  private deleteAndTriggerRedrawAfterwards(taskId: string) {
+    // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
+    const deletePromise = this.commitService.deleteTimeEntryByTaskId(taskId);
+
+    deletePromise.then(() => {
+      const selectedProject = this.findSelectedProject();
+      if (selectedProject) {
+        this.redrawTableOfProject(selectedProject);
+      }
+    });
+    deletePromise.catch(() => {
+      const selectedProject = this.findSelectedProject();
+      if (selectedProject) {
+        this.redrawTableOfProject(selectedProject);
       }
     });
   }
