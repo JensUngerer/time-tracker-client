@@ -24,7 +24,7 @@
           </button>
         </div>
         <div class="buttonFlexItem" *ngIf="currentTimeEntryDuration">
-          <div>Elapsed time (without pauses): {{currentTimeEntryDuration}}</div>
+          <div [innerHTML]="currentTimeEntryDuration"></div>
         </div>
         <div class="buttonFlexItem">
           <button class="buttonFlexItem" type="button" (click)="onPauseResumeButtonClicked()" mat-stroke-button

@@ -3,7 +3,7 @@ import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, Output } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
@@ -30,6 +30,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private allTasksPromise: Promise<string> = null;
 
+  // https://stackoverflow.com/questions/31548311/angular-html-binding
+  @Output()
   public currentTimeEntryDuration: string;
 
   public timeTrackingUserSelectionForm: FormGroup = null;
