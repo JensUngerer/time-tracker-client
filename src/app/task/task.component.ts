@@ -57,6 +57,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
       // isReady will be triggered!
       // --> this.triggerReDraw(projectId);
+      this.triggerReDraw(projectId);
     });
     createTaskPromise.catch(() => {
       // this.inMemoryDataService.loadDataFromDb();
@@ -66,10 +67,15 @@ export class TaskComponent implements OnInit, OnDestroy {
 
       // clear input field
       // this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
+      this.triggerReDraw(projectId);
     });
   }
 
   private triggerReDraw(projectId: string) {
+    if (!projectId) {
+      console.error('cannot draw grid because of missing projectId:' + projectId);
+      return;
+    }
     const currentProject = this.projectOptions.find((aProjectOption: IProjectOption) => {
       return aProjectOption.value.projectId === projectId;
     });
@@ -117,7 +123,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         });
 
       this.activatedRoute.queryParams.subscribe((params: Params) => {
-        const projectIdFromUrl = params[routesConfig.projectIdProperty];
+        const projectIdFromUrl = this.getProjectIdFromUrl(params);
 
         const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
           return oneProjectOption.value.projectId === projectIdFromUrl;
@@ -142,6 +148,19 @@ export class TaskComponent implements OnInit, OnDestroy {
         console.error('getProjects rejected in task.component');
       });
     });
+  }
+
+  private getProjectIdFromUrl(params?: Params): string {
+    let projectIdFromUrl = '';
+    if (params && params[routesConfig.projectIdProperty]) {
+      projectIdFromUrl = params[routesConfig.projectIdProperty];
+    } else {
+      if (this.activatedRoute.snapshot.queryParams && this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty]) {
+        projectIdFromUrl = this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty];
+      }
+    }
+
+    return projectIdFromUrl;
   }
 
   public onTaskRowClicked(line: IGridLine) {
@@ -188,6 +207,10 @@ export class TaskComponent implements OnInit, OnDestroy {
           // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
           // this.inMemoryDataService.loadDataFromDb();
+          const selectedProject = this.findSelectedProject();
+          if (selectedProject) {
+            this.redrawTableOfProject(selectedProject);
+          }
         });
         deleteTaskPromise.catch((rejectValue: any) => {
           console.error(rejectValue);
@@ -197,13 +220,26 @@ export class TaskComponent implements OnInit, OnDestroy {
           // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
 
           // this.inMemoryDataService.loadDataFromDb();
+          const selectedProject = this.findSelectedProject();
+          if (selectedProject) {
+            this.redrawTableOfProject(selectedProject);
+          }
         });
 
         // --> a refresh will be triggered automatically?
       }
     });
+  }
 
-
+  private findSelectedProject(): IProject {
+    const projectIdFromUrl = this.getProjectIdFromUrl(null);
+    const foundProject = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+      return oneProjectOption.value.projectId === projectIdFromUrl;
+    });
+    if (foundProject) {
+      return foundProject.value;
+    }
+    return null;
   }
 
   public redrawTableOfProject(selectedProject: IProject) {
@@ -227,7 +263,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.gridLines.push(taskForRow);
       });
     });
-    existingCorrespondingTasksPromise.catch(()=>{
+    existingCorrespondingTasksPromise.catch(() => {
       console.error('an rejection when getting tasks');
     });
   }
