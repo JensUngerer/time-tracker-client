@@ -5,12 +5,10 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { TaskService } from './../task.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
-import { ProjectService } from '../project.service';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
 import routesConfig from './../../../../common/typescript/routes.js';
 import { Subscription, Observable } from 'rxjs';
-// import { InMemoryDataService } from '../in-memory-data.service';
 import * as _ from 'underscore';
 import { IGridLine } from './../typescript/iGridLine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -50,23 +48,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
 
-
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
-      // this.inMemoryDataService.loadDataFromDb();
-
-      // isReady will be triggered!
-      // --> this.triggerReDraw(projectId);
       this.triggerReDraw(projectId);
     });
     createTaskPromise.catch(() => {
-      // this.inMemoryDataService.loadDataFromDb();
-
-      // isReady will be triggered!
-      // --> this.triggerReDraw(projectId);
-
-      // clear input field
-      // this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
       this.triggerReDraw(projectId);
     });
   }
@@ -88,13 +74,11 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-    private projectService: ProjectService,
-    private commitService: CommitService,
-    private activatedRoute: ActivatedRoute,
-    // private inMemoryDataService: InMemoryDataService,
-    public dialog: MatDialog,
-    private router: Router,
-    private sessionStorageSerializationService: SessionStorageSerializationService) {
+              private commitService: CommitService,
+              private activatedRoute: ActivatedRoute,
+              public dialog: MatDialog,
+              private router: Router,
+              private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -137,12 +121,6 @@ export class TaskComponent implements OnInit, OnDestroy {
         if (this.isMemoryReadySubscription) {
           this.isMemoryReadySubscription.unsubscribe();
         }
-
-        // this.isMemoryReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isReady: boolean) => {
-        //   if (isReady) {
-        //     this.triggerReDraw(projectIdFromUrl);
-        //   }
-        // });
       });
       projectsPromise.catch(() => {
         console.error('getProjects rejected in task.component');
@@ -172,10 +150,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     const taskId = line.id;
 
     const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
-    const queryParams = {
-      // taskId,
-      // projectId
-    };
+    const queryParams = {};
     queryParams[routesConfig.taskIdProperty] = taskId;
     queryParams[routesConfig.projectIdProperty] = projectId;
     this.router.navigate([url], { queryParams });
@@ -183,9 +158,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
 
   public onDeleteRowClicked(line: IGridLine) {
-    // const projectId = this.getSelectedProjectId();
     const taskId = line.id;
-
 
     const dialogData: IDeleteDialogData = {
       line,
@@ -200,13 +173,12 @@ export class TaskComponent implements OnInit, OnDestroy {
       if (isOkButtonPressed) {
         const deleteTaskPromise = this.commitService.deleteTask(taskId);
         deleteTaskPromise.then((resolvedValue: any) => {
+          // DEBUGGING:
           console.log(resolvedValue);
 
-          // TODO: implement
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+          this.commitService.deleteTimeEntryByTaskId(taskId);
 
-          // this.inMemoryDataService.loadDataFromDb();
           const selectedProject = this.findSelectedProject();
           if (selectedProject) {
             this.redrawTableOfProject(selectedProject);
@@ -215,18 +187,14 @@ export class TaskComponent implements OnInit, OnDestroy {
         deleteTaskPromise.catch((rejectValue: any) => {
           console.error(rejectValue);
 
-          // TODO: implement
           // delete all corresponding time-entries (which have not yet been committed, as otherwise they have been deleted before)
-          // this.inMemoryDataService.deleteTimeEntriesByTaskId(taskId);
+          this.commitService.deleteTimeEntryByTaskId(taskId);
 
-          // this.inMemoryDataService.loadDataFromDb();
           const selectedProject = this.findSelectedProject();
           if (selectedProject) {
             this.redrawTableOfProject(selectedProject);
           }
         });
-
-        // --> a refresh will be triggered automatically?
       }
     });
   }
@@ -243,7 +211,6 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   public redrawTableOfProject(selectedProject: IProject) {
-    // TODO: FIXME: why two times triggered ??
     this.gridLines = [];
     const existingCorrespondingTasksPromise = this.commitService.getTasksByProjectId(selectedProject.projectId);
 
