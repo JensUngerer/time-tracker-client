@@ -231,7 +231,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   private visualizeTimeEntry(timeEntryId: string) {
     const durationPromise = this.commitService.getDuration(timeEntryId);
     durationPromise.then((durationStr: string) => {
-      this.currentTimeEntryDuration = durationStr;
+      this.currentTimeEntryDuration = JSON.parse(durationStr);
     });
     durationPromise.catch((err: any) => {
       console.error('getDuration rejected with');
