@@ -1,14 +1,13 @@
 import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 import { IDeleteDialogData } from './../typescript/iDeleteDialogData';
-// import { InMemoryDataService } from './../in-memory-data.service';
 import { Subscription, Observable } from 'rxjs';
 import { ViewPaths } from './../viewPathsEnum';
 import { CommitService } from './../commit.service';
 import { ProjectService } from './../project.service';
-import { Component, OnInit, Output, ViewChild, AfterViewInit, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
-import { MatTableDataSource, MatTable, MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
 import routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';
@@ -61,10 +60,6 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     this.afterDialogCloseSubscription$ = dialogRef.afterClosed();
     this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
       if (isOkButtonPressed) {
-        // TODO: no longer needed as
-        // this.projectService.deleteProject(row.id);
-        // this.drawTable(true);
-
         // a) delete all (not yet committed!) timeEntries
         const projectId = row.id;
         const correspondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
@@ -77,38 +72,45 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
             });
           }
 
-          // b) update database with the idDeletedInClient = true flag
-          const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
-          dbPatchedPromise.then((resolveValue: any) => {
-            console.log(resolveValue);
+          // b) deleting of corresponding timeEntries
+          // c) deleting of tasks
+          if (taskIds && taskIds.length > 0) {
+            let singleTaskIndex = 0;
+            const deletePromiseThenLoop = () => {
+              if (singleTaskIndex < taskIds.length) {
+                const singleTaskId = taskIds[singleTaskIndex];
+                this.commitService.deleteTimeEntryByTaskId(singleTaskId).then(() => {
+                  this.commitService.deleteTask(singleTaskId).then(() => {
+                    singleTaskIndex++;
+                    deletePromiseThenLoop();
+                  });
+                });
+              } else {
+                // do further stuff
+                // d) update database with the idDeletedInClient = true flag
+                const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
+                dbPatchedPromise.then((resolveValue: any) => {
+                  // DEBUGGING:
+                  console.log(resolveValue);
 
-            // c) refresh the inMemoryData
-            // this.inMemoryDataService.loadDataFromDb();
+                  this.drawTable(true);
+                });
+                dbPatchedPromise.catch((rejectValue: any) => {
+                  // DEBUGGING:
+                  // should be never called
+                  console.error(rejectValue);
 
-            // d) will be automatically called?
-            // this.drawTable(true);
-          });
-          dbPatchedPromise.catch((rejectValue: any) => {
-            // should be never called
-            console.error(rejectValue);
-
-            // c) refresh the inMemoryData
-            // this.inMemoryDataService.loadDataFromDb();
-
-            // d) will be automatically called?
-            // this.drawTable(true);
-          });
+                  this.drawTable(true);
+                });
+              }
+            };
+            // initial call
+            deletePromiseThenLoop();
+          }
         });
         correspondingTasksPromise.catch(() => {
           console.error('getCorrespondingTasks rejected');
         });
-
-        // TODO: implement deleting of corresponding timeEntries
-        // if (taskIds && taskIds.length > 0) {
-        //   taskIds.forEach((singleTaskId: string) => {
-        //     this.inMemoryDataService.deleteTimeEntriesByTaskId(singleTaskId);
-        //   });
-        // }
       }
     });
   }

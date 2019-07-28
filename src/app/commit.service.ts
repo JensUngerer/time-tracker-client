@@ -15,6 +15,19 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  public deleteTimeEntryByTaskId(taskId: string) {
+    const url = this.getTimeEntriesUrl() + '/' + routes.deleteTimeEntryByTaskIdSuffix + '/' + taskId;
+    return this.httpDelete(url);
+  }
+
+  private httpDelete(url: string) {
+    return new Promise<any>((resolve: (value: any) => void) => {
+      this.httpClient.delete(url).subscribe((subscriptionResolveValue: any) => {
+        resolve(subscriptionResolveValue);
+      });
+    });
+  }
+
   private getTimeEntriesUrl(): string {
     const url = this.httpBaseUrl + routes.port + routes.timeEntries;
     return url;
