@@ -1,15 +1,11 @@
 import { CommitService } from './../commit.service';
-import { HelpersService } from './../helpers.service';
 import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-// import { InMemoryDataService } from './../in-memory-data.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
-import { TaskService } from './../task.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
-import { ProjectService } from '../project.service';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { Subscription } from 'rxjs';
@@ -154,14 +150,12 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   }
 
 
-  constructor(private projectManagementService: ProjectService,
-    private taskManagementService: TaskService,
-    private timeTrackingService: TimeTrackingService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) {
+  constructor(private timeTrackingService: TimeTrackingService,
+              private formBuilder: FormBuilder,
+              private router: Router,
+              private activatedRoute: ActivatedRoute,
+              private commitService: CommitService,
+              private sessionStorageSerializationService: SessionStorageSerializationService) {
     const controlsConfigObj: { [key: string]: AbstractControl } = {};
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
