@@ -25,7 +25,7 @@ export class NavbarFourComponent implements OnInit {
       this.navItems.push({
         label: route.data.label,
         path: route.path
-      })
+      });
     });
   }
 
