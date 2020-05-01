@@ -263,14 +263,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onTimeEntryChanged($event: any) {
-    // DEBUGGING:
-    console.log($event);
+  // public onTimeEntryChanged($event: any) {
+  //   // DEBUGGING:
+  //   console.log($event);
 
-    // const value: ITimeEntryDocument = $event.value;
-    // this.setTimeEntryIdInUrl(value.timeEntryId);
-    // // this.startStopButtonLabel = 'Stop';
-  }
+  //   // const value: ITimeEntryDocument = $event.value;
+  //   // this.setTimeEntryIdInUrl(value.timeEntryId);
+  //   // // this.startStopButtonLabel = 'Stop';
+  // }
 
   ngOnInit() {
   }

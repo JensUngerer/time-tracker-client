@@ -3,40 +3,76 @@
     <form [formGroup]="timeTrackingUserSelectionForm">
       <div class="buttonFlexContainer">
         <div class="buttonFlexItem">
-          <mat-select placeholder="Project" matInput [formControl]="timeTrackingProjectSelectionFormControl"
-            [required]="true">
-            <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-              {{projectOption.viewValue}}
+          <mat-select
+            placeholder="Project"
+            matInput
+            [formControl]="timeTrackingProjectSelectionFormControl"
+            [required]="true"
+          >
+            <mat-option
+              *ngFor="let projectOption of projectOptions"
+              [value]="projectOption.value"
+            >
+              {{ projectOption.viewValue }}
             </mat-option>
           </mat-select>
         </div>
         <div class="buttonFlexItem">
-          <mat-select placeholder="Task" matInput [formControl]="timeTrackingTaskSelectionFromControl"
-            [required]="true">
-            <mat-option *ngFor="let taskOption of taskOptions" [value]="taskOption.value">
-              {{taskOption.viewValue}}
+          <mat-select
+            placeholder="Task"
+            matInput
+            [formControl]="timeTrackingTaskSelectionFromControl"
+            [required]="true"
+          >
+            <mat-option
+              *ngFor="let taskOption of taskOptions"
+              [value]="taskOption.value"
+            >
+              {{ taskOption.viewValue }}
             </mat-option>
           </mat-select>
         </div>
-        <div class="buttonFlexItem">
+        <!-- <div class="buttonFlexItem">
             <mat-select placeholder="Open Time-Entries" matInput [formControl]="timeTrackingTimeEntrySelectionFromControl"
               [required]="false" (selectionChange)="onTimeEntryChanged($event)">
               <mat-option *ngFor="let timeEntryOption of timeEntryOptions" [value]="timeEntryOption.value">
                 {{timeEntryOption.viewValue}}
               </mat-option>
             </mat-select>
-          </div>
+          </div> -->
         <div class="buttonFlexItem">
-          <button type="button" (click)="onStartStopButtonClicked()" mat-stroke-button
-            [disabled]="!(timeTrackingUserSelectionForm.valid && !isStartStopButtonDisabled)">{{startStopButtonLabel}}
+          <button
+            type="button"
+            (click)="onStartStopButtonClicked()"
+            mat-stroke-button
+            [disabled]="
+              !(
+                timeTrackingUserSelectionForm.valid &&
+                !isStartStopButtonDisabled
+              )
+            "
+          >
+            {{ startStopButtonLabel }}
           </button>
         </div>
         <div class="buttonFlexItem" *ngIf="currentTimeEntryDuration">
           <div [innerHTML]="currentTimeEntryDuration"></div>
         </div>
         <div class="buttonFlexItem">
-          <button class="buttonFlexItem" type="button" (click)="onPauseResumeButtonClicked()" mat-stroke-button
-            [disabled]="!(timeTrackingUserSelectionForm.valid && !isPauseResumeButtonDisabled)">{{pauseResumeButtonLabel}}</button>
+          <button
+            class="buttonFlexItem"
+            type="button"
+            (click)="onPauseResumeButtonClicked()"
+            mat-stroke-button
+            [disabled]="
+              !(
+                timeTrackingUserSelectionForm.valid &&
+                !isPauseResumeButtonDisabled
+              )
+            "
+          >
+            {{ pauseResumeButtonLabel }}
+          </button>
         </div>
       </div>
     </form>
