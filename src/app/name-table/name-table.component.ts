@@ -10,7 +10,7 @@ import { MatTable, MatTableDataSource } from '@angular/material';
 })
 export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
 
-  @ViewChild(MatTable, { static: false })
+  @ViewChild(MatTable)
   public theTable: MatTable<IGridLine>;
 
   @Input()
