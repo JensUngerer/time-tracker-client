@@ -7,7 +7,7 @@ import { ProjectService } from './../project.service';
 import { Component, OnInit, Output, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import routesConfig from './../../../../common/typescript/routes.js';
 import * as _ from 'underscore';

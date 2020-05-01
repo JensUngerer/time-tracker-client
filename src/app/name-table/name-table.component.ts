@@ -1,7 +1,7 @@
 import { IGridLine } from './../typescript/iGridLine';
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { MatTable, MatTableDataSource } from '@angular/material';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'mtt-name-table',
