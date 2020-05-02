@@ -37,6 +37,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ProjectDeleteDialogComponent } from './project-delete-dialog/project-delete-dialog.component';
 import { NameTableComponent } from './name-table/name-table.component';
+import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   entryComponents:[
@@ -55,7 +57,8 @@ import { NameTableComponent } from './name-table/name-table.component';
     CompletedTaskComponent,
     CompletedTimeEntryComponent,
     ProjectDeleteDialogComponent,
-    NameTableComponent
+    NameTableComponent,
+    BookingDeclarationComponent
   ],
   imports: [
     BrowserModule,
@@ -77,7 +80,8 @@ import { NameTableComponent } from './name-table/name-table.component';
     MatTableModule,
     HttpClientModule,
     FontAwesomeModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

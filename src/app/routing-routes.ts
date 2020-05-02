@@ -10,6 +10,7 @@ import { CompletedTimeEntryComponent } from './completed-time-entry/completed-ti
 import * as routesConfig from './../../../common/typescript/routes.js';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
+import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 
 export class RoutingRoutes {
 
@@ -18,6 +19,13 @@ export class RoutingRoutes {
   public static startRoute = ViewPaths.project;
 
   public static routes: Routes = [
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.bookingDeclaration,
+      component: BookingDeclarationComponent,
+      data: {
+        label: ViewLabels.bookingDeclaration
+      }
+    },
     {
       path: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
       component: ProjectComponent,
