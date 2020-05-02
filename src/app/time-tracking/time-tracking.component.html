@@ -56,7 +56,9 @@
           </button>
         </div>
         <div class="buttonFlexItem" *ngIf="currentTimeEntryDuration">
-          <div [innerHTML]="currentTimeEntryDuration"></div>
+          <div class="centeredFlexBoxRow">
+            <div>{{currentTimeEntryDuration}}</div>
+          </div>
         </div>
         <div class="buttonFlexItem">
           <button

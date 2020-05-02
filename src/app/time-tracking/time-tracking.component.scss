@@ -21,3 +21,9 @@
   height: 25px;
   flex: 0 1 25px;
 }
+
+.centeredFlexBoxRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

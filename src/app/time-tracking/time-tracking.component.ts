@@ -3,7 +3,7 @@ import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TimeTrackingService } from './../time-tracking.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy, Output } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, Output, NgZone } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
@@ -14,6 +14,7 @@ import routesConfig from './../../../../common/typescript/routes.js';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { ITimeEntryOption, TimeEntryOption } from '../typescript/iTimeEntryOption';
+import { HelpersService } from '../helpers.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -30,6 +31,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   private allProjectsPromise: Promise<string> = null;
 
   private allTasksPromise: Promise<string> = null;
+
+  private durationVisualizationIntervalId: NodeJS.Timer = null;
 
   // https://stackoverflow.com/questions/31548311/angular-html-binding
   @Output()
@@ -78,7 +81,12 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
       const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId);
       startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
-        this.currentTimeEntryDuration = '';
+        // visualize current duration
+        const oneSecondInMilliseconds = 1000.0;
+        this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
+        this.durationVisualizationIntervalId = setInterval(() => {
+          this.visualizeTimeEntry(resolvedValue.timeEntryId);
+        }, oneSecondInMilliseconds);
 
         this.setTimeEntryIdInUrl(resolvedValue.timeEntryId);
         this.isStartStopButtonDisabled = false;
@@ -90,9 +98,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
       });
+
     } else {
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
       stopTimeTrackingPromise.then(() => {
+        if (this.durationVisualizationIntervalId) {
+          clearInterval(this.durationVisualizationIntervalId);
+        }
+
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
 
@@ -156,7 +169,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   }
 
 
-  constructor(private timeTrackingService: TimeTrackingService,
+  constructor(private helpersService: HelpersService,
+    private timeTrackingService: TimeTrackingService,
     private formBuilder: FormBuilder,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -253,9 +267,19 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   }
 
   private visualizeTimeEntry(timeEntryId: string) {
+    if (!timeEntryId) {
+      this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
+      return;
+    }
+
     const durationPromise = this.commitService.getDuration(timeEntryId);
     durationPromise.then((durationStr: string) => {
-      this.currentTimeEntryDuration = JSON.parse(durationStr);
+      const parsedDuration = JSON.parse(durationStr);
+      if (!parsedDuration) {
+        this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
+      } else {
+        this.currentTimeEntryDuration = parsedDuration;
+      }
     });
     durationPromise.catch((err: any) => {
       console.error('getDuration rejected with');
@@ -273,6 +297,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit() {
+    this.visualizeTimeEntry(null);
   }
 
   ngOnDestroy(): void {
