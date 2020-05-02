@@ -18,7 +18,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
     private router: Router) {
     this.currentUrl$ = this.activatedRoute.url;
 
-    for (let index = 0; index < RoutingRoutes.routes.length - 1; index++) {
+    for (let index = 0; index < RoutingRoutes.routes.length - 2; index++) {
       const oneRoute = RoutingRoutes.routes[index];
       const nextRoute = RoutingRoutes.routes[index + 1];
 
@@ -26,7 +26,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
       this.urlBackwardMapping['/' + nextRoute.path] = '/' + oneRoute.path;
     }
     this.urlBackwardMapping['/' + RoutingRoutes.routes[0].path] = null;
-    this.urlForwardMapping['/' + RoutingRoutes.routes[RoutingRoutes.routes.length-1].path] = null;
+    this.urlForwardMapping['/' + RoutingRoutes.routes[RoutingRoutes.routes.length-2].path] = null;
   }
 
   public isForwardButtonDisabled = true;

@@ -47,20 +47,20 @@ export class RoutingRoutes {
         label: ViewLabels.timeTracking
       }
     },
-    {
-      path: RoutingRoutes.viewsPrefix + 'completedTask',
-      component: CompletedTaskComponent,
-      data: {
-        label: 'Completed-Tasks'
-      }
-    },
-    {
-      path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
-      component: CompletedTimeEntryComponent,
-      data: {
-        label: 'Completed-Time-Entries'
-      }
-    },
+    // {
+    //   path: RoutingRoutes.viewsPrefix + 'completedTask',
+    //   component: CompletedTaskComponent,
+    //   data: {
+    //     label: 'Completed-Tasks'
+    //   }
+    // },
+    // {
+    //   path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
+    //   component: CompletedTimeEntryComponent,
+    //   data: {
+    //     label: 'Completed-Time-Entries'
+    //   }
+    // },
     {
       path: RoutingRoutes.viewsPrefix + 'commit',
       component: CommitComponent,
