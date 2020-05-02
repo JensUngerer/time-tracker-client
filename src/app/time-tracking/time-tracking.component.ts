@@ -31,7 +31,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private allTasksPromise: Promise<string> = null;
 
-  private durationVisualizationIntervalId: NodeJS.Timer = null;
+  private durationVisualizationIntervalId: any = null;
 
   // https://stackoverflow.com/questions/31548311/angular-html-binding
   @Output()

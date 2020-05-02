@@ -43,7 +43,10 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
 
-    const task: ITask = this.taskService.createTask(newNewTaskName, projectId);
+    // TODO: FIXME: get from drop-down
+    const bookingDeclarationId = '';
+
+    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId);
 
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
