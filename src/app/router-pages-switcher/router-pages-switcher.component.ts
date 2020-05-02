@@ -12,33 +12,22 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
   private currentUrl$: Observable<UrlSegment[]> = null;
 
-  private urlForwardMapping: {[key: string]: string} = {};
-  private urlBackwardMapping: {[key: string]: string} = {};
+  private urlForwardMapping: { [key: string]: string } = {};
+  private urlBackwardMapping: { [key: string]: string } = {};
   constructor(private activatedRoute: ActivatedRoute,
-              private router: Router) {
-                this.currentUrl$ = this.activatedRoute.url;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[0]] = null;
+    private router: Router) {
+    this.currentUrl$ = this.activatedRoute.url;
 
-                this.urlForwardMapping['/' + RoutingRoutes.routes[0].path] = '/' + RoutingRoutes.routes[1].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[1].path] = '/' + RoutingRoutes.routes[0].path;
+    for (let index = 0; index < RoutingRoutes.routes.length - 1; index++) {
+      const oneRoute = RoutingRoutes.routes[index];
+      const nextRoute = RoutingRoutes.routes[index + 1];
 
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[1].path] = '/' + RoutingRoutes.routes[2].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[2].path] = '/' + RoutingRoutes.routes[1].path;
-
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[2].path] = '/' + RoutingRoutes.routes[3].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[3].path] = '/' + RoutingRoutes.routes[2].path;
-
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[3].path] = '/' + RoutingRoutes.routes[4].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[4].path] = '/' + RoutingRoutes.routes[3].path;
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[4].path] = '/' + RoutingRoutes.routes[5].path;
-                this.urlBackwardMapping['/' + RoutingRoutes.routes[5].path] = '/' + RoutingRoutes.routes[4].path;
-
-                this.urlForwardMapping['/' + RoutingRoutes.routes[5].path] = null;
-              }
+      this.urlForwardMapping['/' + oneRoute.path] = '/' + nextRoute.path;
+      this.urlBackwardMapping['/' + nextRoute.path] = '/' + oneRoute.path;
+    }
+    this.urlBackwardMapping['/' + RoutingRoutes.routes[0].path] = null;
+    this.urlForwardMapping['/' + RoutingRoutes.routes[RoutingRoutes.routes.length-1].path] = null;
+  }
 
   public isForwardButtonDisabled = true;
   public isBackwardButtonDisabled = true;
@@ -50,7 +39,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routerEventsSubscription = this.router.events.subscribe(() => {
       // if (this.isReady) {
-        this.triggerUrlCheck();
+      this.triggerUrlCheck();
       // }
     });
 
