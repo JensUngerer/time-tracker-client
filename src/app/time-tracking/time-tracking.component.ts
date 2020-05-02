@@ -1,20 +1,19 @@
-import { CommitService } from './../commit.service';
-import { ITaskOption, TaskOption } from './../typescript/taskOption';
-import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { TimeTrackingService } from './../time-tracking.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy, Output, NgZone } from '@angular/core';
-import { FormGroup, AbstractControl, FormControl, FormBuilder } from '@angular/forms';
+import { Component, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
-import { Subscription } from 'rxjs';
-import * as _ from 'underscore';
-import routesConfig from './../../../../common/typescript/routes.js';
-import { SessionStorageSerializationService } from '../session-storage-serialization.service';
-import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
-import { ITimeEntryOption, TimeEntryOption } from '../typescript/iTimeEntryOption';
 import { HelpersService } from '../helpers.service';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
+import { ITimeEntryOption } from '../typescript/iTimeEntryOption';
+import routesConfig from './../../../../common/typescript/routes.js';
+import { CommitService } from './../commit.service';
+import { TimeTrackingService } from './../time-tracking.service';
+import { IProjectOption, ProjectOption } from './../typescript/projectOption';
+import { ITaskOption, TaskOption } from './../typescript/taskOption';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
