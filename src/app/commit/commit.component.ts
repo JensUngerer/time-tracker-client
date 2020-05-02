@@ -110,7 +110,7 @@ export class CommitComponent implements OnInit {
       }
 
       this.durationStr = this.helpersService.getDurationStr(sumForOneProject.durationStructure.hours,
-        sumForOneProject.durationStructure.minutes);
+        sumForOneProject.durationStructure.minutes, sumForOneProject.durationStructure.seconds);
       this.isButtonDisabled = false;
     });
     durationStructurePromise.catch(() => {

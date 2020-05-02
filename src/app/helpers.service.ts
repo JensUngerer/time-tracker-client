@@ -16,8 +16,8 @@ export class HelpersService {
     return aNumber.toString();
   }
 
-  public getDurationStr(hours: number, minutes: number): string {
-    return this.ensureTwoDigits(hours) + ':' + this.ensureTwoDigits(minutes);
+  public getDurationStr(hours: number, minutes: number, seconds: number): string {
+    return this.ensureTwoDigits(hours) + ':' + this.ensureTwoDigits(minutes) + ':' + this.ensureTwoDigits(seconds);
   }
 
   public getDurationStructure(hours: number, minutes: number): IDuration {
@@ -30,10 +30,6 @@ export class HelpersService {
       month: theDate.getMonth() + 1,
       year: theDate.getFullYear()
     };
-  }
-
-  public getFullDurationStr(hours: number, minutes: number, seconds: number) {
-    return this.getDurationStr(hours, minutes) + ':' + this.ensureTwoDigits(seconds);
   }
 
   public getTimeDifferenceInMilliseconds(endTime: Date, startTime: Date): number {
@@ -49,7 +45,7 @@ export class HelpersService {
     theDuration = Math.floor(theDuration / 60);
     const durationInHours = theDuration % 60;
 
-    return this.getFullDurationStr(durationInHours, durationInMinutes, durationInSeconds);
+    return this.getDurationStr(durationInHours, durationInMinutes, durationInSeconds);
   }
 
   public millisecondsInMinutes(durationInMilliseconds): number {
