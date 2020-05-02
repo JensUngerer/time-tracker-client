@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
+import { CommitService } from '../commit.service';
+import { IBookingDeclaration } from './../../../../common/typescript/iBookingDeclaration';
+import uuid from 'uuid';
 
 @Component({
   selector: 'mtt-booking-declaration',
@@ -17,33 +20,47 @@ export class BookingDeclarationComponent implements OnInit {
 
   bookingDeclarationFromGroup: FormGroup = null;
 
-  projects: IProject[] = [
-    {
-      name: 'MyProject',
-      projectId: 'abc'
-    },
-    {
-      name: 'MyProjectTwo',
-      projectId: 'abcde'
-    }
-  ]
+  projects: IProject[] = []
 
   onSubmit(values: any) {
-    // const projectIs = values[this.formControlNameProjectIds];
     const code = values[this.formControlNameCode];
     const description = values[this.formControlNameDescription];
 
-    const selectedProjects: IProject[] = [];
+    // const selectedProjects: IProject[] = [];
+    const _projectIds: string[] = [];
     this.formControlNameProjectIds.forEach((oneProjectFormName: string, projectIndex: number) => {
       const isProjectChecked = values[oneProjectFormName];
       if (isProjectChecked) {
         // store the corresponding project-object
-        selectedProjects.push(this.projects[projectIndex]);
+        const correspondingProject = this.projects[projectIndex];
+        // selectedProjects.push(correspondingProject);
+        _projectIds.push(correspondingProject.projectId)
       }
     });
 
+    const bookingDeclaration: IBookingDeclaration = {
+      _projectIds,
+      code,
+      description,
+      bookingDeclarationId: uuid.v4()
+    };
+
     // DEBUGGING:
-    console.log(values);
+    // console.log(values);
+    // console.log(bookingDeclaration)
+
+    this.resetFormGroup();
+    this.commitService.postBookingDeclaration(bookingDeclaration);
+  }
+
+  private resetFormGroup() {
+    const allControls = this.bookingDeclarationFromGroup.controls;
+    allControls[this.formControlNameCode].setValue('');
+    allControls[this.formControlNameDescription].setValue('');
+
+    this.formControlNameProjectIds.forEach((oneFormControlNameOfAProjectId: string) => {
+      allControls[oneFormControlNameOfAProjectId].setValue(false);
+    });
   }
 
   // https://stackoverflow.com/questions/51094146/angular-assign-custom-validator-to-a-formgroup
@@ -79,7 +96,7 @@ export class BookingDeclarationComponent implements OnInit {
     this.formControlNameDescription
   ];
 
-  constructor() {
+  private setupForm() {
     this.projects.forEach((oneProject: IProject, index: number) => {
       this.formControlNameProjectIds.push('theProjectId_' + index.toString());
     });
@@ -98,7 +115,20 @@ export class BookingDeclarationComponent implements OnInit {
     this.bookingDeclarationFromGroup.setValidators(this.customBookingDeclarationValidator());
   }
 
-  ngOnInit(): void {
+  constructor(private commitService: CommitService) {
   }
 
+  ngOnInit(): void {
+    this.setupForm();
+
+    const getProjectsPromise = this.commitService.getProjects();
+    getProjectsPromise.then((projectsStr: string) => {
+      this.projects = JSON.parse(projectsStr);
+
+      this.setupForm();
+    });
+    getProjectsPromise.catch((error: any) => {
+      console.error(error);
+    });
+  }
 }

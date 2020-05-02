@@ -5,6 +5,7 @@ import routes from './../../../common/typescript/routes.js';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
+import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclaration';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  postBookingDeclaration(bookingDeclaration: IBookingDeclaration) {
+    const url = this.getBookingDeclarationUrl();
+    this.httpPost(routes.bookingDeclarationProperty, bookingDeclaration, url);
+  }
+
   public getTimeEntriesByTaskId(taskId: string) {
     const timeEntryUrl = this.getTimeEntriesUrl() + routes.timeEntriesViaTaskIdSuffix + '/' + taskId;
     return this.httpGet(timeEntryUrl);
@@ -23,6 +29,11 @@ export class CommitService {
   public deleteTimeEntryByTaskId(taskId: string) {
     const url = this.getTimeEntriesUrl() + '/' + routes.deleteTimeEntryByTaskIdSuffix + '/' + taskId;
     return this.httpDelete(url);
+  }
+
+  private getBookingDeclarationUrl(): string {
+    const url = this.httpBaseUrl + routes.port + routes.bookingDeclaration;
+    return url;
   }
 
   private httpDelete(url: string) {
