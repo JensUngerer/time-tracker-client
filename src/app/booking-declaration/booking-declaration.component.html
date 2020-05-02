@@ -10,7 +10,14 @@
             <label>Description:</label><input type="text" [formControlName]="formControlNameDescription">
           </div>
           <div class="innerFormFlexItem">
-            <mat-checkbox [value]="item.projectId" *ngFor="let item of projects; let index = index" [formControlName]="formControlNameProjectIds[index]">{{item.name}}</mat-checkbox>
+            <table>
+              <tr>
+                <th>Project(s)</th>
+              </tr>
+              <tr *ngFor="let item of projects; let index = index">
+                <td><mat-checkbox [value]="item.projectId"  [formControlName]="formControlNameProjectIds[index]">{{item.name}}</mat-checkbox></td>
+              </tr>
+            </table>
           </div>
           <div class="innerFormFlexItem">
             <button type="submit" [disabled]="bookingDeclarationFromGroup.invalid">Add Booking-Declaration</button>
