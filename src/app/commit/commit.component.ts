@@ -34,10 +34,28 @@ export class CommitComponent implements OnInit {
 
   private sumForOneProject: ITimeRecordsDocumentData = null;
 
+  private hasProjectDurationSum(project: IProject): Promise<boolean> {
+    return new Promise<boolean>((resolve: (value: boolean) => void) => {
+      const durationStructurePromise = this.commitService.getDurationStructure(project.projectId);
+      durationStructurePromise.then((theDurationStructureStr: string) => {
+        if (!theDurationStructureStr) {
+          resolve(false);
+          return;
+        }
+        const sumForOneProject: ITimeRecordsDocumentData = JSON.parse(theDurationStructureStr);
+        if (!sumForOneProject) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
+
   constructor(private projectService: ProjectService,
-              private commitService: CommitService,
-              private helpersService: HelpersService,
-              private sessionStorageSerializationService: SessionStorageSerializationService) {
+    private commitService: CommitService,
+    private helpersService: HelpersService,
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.formControlProjectDropDown = new FormControl('');
@@ -50,14 +68,20 @@ export class CommitComponent implements OnInit {
       const allProjects: IProject[] = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
       if (allProjects && allProjects.length > 0) {
         allProjects.forEach((project: IProject) => {
-          this.projectOptions.push(new ProjectOption(project));
+          this.hasProjectDurationSum(project).then((isDurationSumPresent: boolean) => {
+            if (!isDurationSumPresent) {
+              return;
+            }
+            this.projectOptions.push(new ProjectOption(project));
+          }).catch(() => {
+            console.error('rejection of hasProjectDurationSum');
+          });
         });
       }
     });
     allProjectsPromise.catch(() => {
       console.error('getProjects rejected');
     });
-
   }
 
   ngOnInit() {
