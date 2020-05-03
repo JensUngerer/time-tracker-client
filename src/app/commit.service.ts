@@ -16,6 +16,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getBookingDeclarationsBy(projectId: string) {
+    const url = this.getBookingDeclarationUrl() + routes.bookingDeclarationsByProjectIdSuffix + '/' + projectId;
+    return this.httpGet(url);
+  }
+
   postBookingDeclaration(bookingDeclaration: IBookingDeclaration) {
     const url = this.getBookingDeclarationUrl();
     this.httpPost(routes.bookingDeclarationProperty, bookingDeclaration, url);

@@ -16,6 +16,8 @@ import { IDeleteDialogData } from '../typescript/iDeleteDialogData';
 import { ProjectDeleteDialogComponent } from '../project-delete-dialog/project-delete-dialog.component';
 import { ViewPaths } from '../viewPathsEnum';
 import { Router } from '@angular/router';
+import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
+import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescript/bookingDeclarationOption';
 
 @Component({
   selector: 'mtt-task',
@@ -25,7 +27,7 @@ import { Router } from '@angular/router';
 export class TaskComponent implements OnInit, OnDestroy {
 
   private projectChangesSubscription: Subscription = null;
-  private isMemoryReadySubscription: Subscription = null;
+  //private isMemoryReadySubscription: Subscription = null;
   private afterDialogCloseSubscription$: Observable<boolean> = null;
 
   public taskFormGroup: FormGroup = null;
@@ -34,7 +36,11 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public formControlNameProjectName = 'theProjectName';
 
+  public formControlNameBookingDeclaration = 'theBookingDeclaration';
+
   public projectOptions: IProjectOption[] = [];
+
+  public bookingDeclarationOptions: IBookingDeclarationOption[] = [];
 
   public gridLines: IGridLine[] = [];
 
@@ -85,9 +91,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
-
-
     configObj[this.formControlNameTaskName] = new FormControl('');
+    configObj[this.formControlNameBookingDeclaration] = new FormControl('');
 
     this.taskFormGroup = new FormGroup(configObj);
 
@@ -111,7 +116,11 @@ export class TaskComponent implements OnInit, OnDestroy {
 
       this.activatedRoute.queryParams.subscribe((params: Params) => {
         const projectIdFromUrl = this.getProjectIdFromUrl(params);
+        if (!projectIdFromUrl) {
+          return;
+        }
 
+        // a) show the projectId from URL in the drop-down-menu (for it)
         const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
           return oneProjectOption.value.projectId === projectIdFromUrl;
         });
@@ -121,9 +130,22 @@ export class TaskComponent implements OnInit, OnDestroy {
         }
         this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
 
-        if (this.isMemoryReadySubscription) {
-          this.isMemoryReadySubscription.unsubscribe();
-        }
+        // b) get the correlated booking - declarations (which are possible for a unique projectId)
+        const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectIdFromUrl);
+        bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
+          const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
+
+          // DEBUGGING
+          // console.log(parsedBookingDeclarations);
+          parsedBookingDeclarations.forEach((oneBookingDeclaration: IBookingDeclarationsDocument) => {
+            this.bookingDeclarationOptions.push(new BookingDeclarationOption(oneBookingDeclaration));
+          });
+        });
+
+
+        // if (this.isMemoryReadySubscription) {
+        //   this.isMemoryReadySubscription.unsubscribe();
+        // }
       });
       projectsPromise.catch(() => {
         console.error('getProjects rejected in task.component');
@@ -253,8 +275,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     if (this.projectChangesSubscription) {
       this.projectChangesSubscription.unsubscribe();
     }
-    if (this.isMemoryReadySubscription) {
-      this.isMemoryReadySubscription.unsubscribe();
-    }
+    // if (this.isMemoryReadySubscription) {
+    //   this.isMemoryReadySubscription.unsubscribe();
+    // }
   }
 }
