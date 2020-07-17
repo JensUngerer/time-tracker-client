@@ -25,6 +25,7 @@
             "aot": false,
             "assets": [
               "src/favicon.ico",
+              "src/watch-32.ico",
               "src/assets"
             ],
             "styles": [
