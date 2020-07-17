@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "mtt-client"
+  "defaultProject": "mtt-client",
+  "cli": {
+    "analytics": "7146ee7b-9bd7-4314-b54d-dc74ef0da561"
+  }
 }
