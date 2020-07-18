@@ -49,8 +49,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
 
-    // TODO: FIXME: get from drop-down
-    const bookingDeclarationId = '';
+    const bookingDeclarationId = this.taskFormGroup.controls[this.formControlNameBookingDeclaration].value.bookingDeclarationId;
 
     const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId);
 
