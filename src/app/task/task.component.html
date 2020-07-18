@@ -14,9 +14,7 @@
               </mat-option>
             </mat-select>
           </div>
-          <div class="innerFormFlexItem">
-            <label>Task: </label><input type="text" [formControlName]="formControlNameTaskName" [required]="true">
-          </div>
+
           <div class="innerFormFlexItem">
             <mat-select placeholder="Booking-Declaration" matInput [formControlName]="formControlNameBookingDeclaration" [required]="true">
               <mat-option *ngFor="let bookingDeclaration of bookingDeclarationOptions" [value]="bookingDeclaration.value">
@@ -24,6 +22,11 @@
               </mat-option>
             </mat-select>
           </div>
+
+          <div class="innerFormFlexItem">
+            <label>Task: </label><input type="text" [formControlName]="formControlNameTaskName" [required]="true">
+          </div>
+          
           <div class="innerFormFlexItem">
             <button type="submit" [disabled]="taskFormGroup.invalid">Add Task</button>
           </div>
