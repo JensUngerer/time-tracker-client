@@ -18,6 +18,9 @@
           </mat-select>
         </div>
         <div class="buttonFlexItem">
+          <label>Booking: {{bookingDeclarationCode}}</label>
+        </div>
+        <div class="buttonFlexItem">
           <mat-select
             placeholder="Task"
             matInput
@@ -32,14 +35,6 @@
             </mat-option>
           </mat-select>
         </div>
-        <!-- <div class="buttonFlexItem">
-            <mat-select placeholder="Open Time-Entries" matInput [formControl]="timeTrackingTimeEntrySelectionFromControl"
-              [required]="false" (selectionChange)="onTimeEntryChanged($event)">
-              <mat-option *ngFor="let timeEntryOption of timeEntryOptions" [value]="timeEntryOption.value">
-                {{timeEntryOption.viewValue}}
-              </mat-option>
-            </mat-select>
-          </div> -->
         <div class="buttonFlexItem">
           <button
             type="button"
@@ -59,22 +54,6 @@
           <div class="centeredFlexBoxRow">
             <div>{{currentTimeEntryDuration}}</div>
           </div>
-        </div>
-        <div class="buttonFlexItem">
-          <button
-            class="buttonFlexItem"
-            type="button"
-            (click)="onPauseResumeButtonClicked()"
-            mat-stroke-button
-            [disabled]="
-              !(
-                timeTrackingUserSelectionForm.valid &&
-                !isPauseResumeButtonDisabled
-              )
-            "
-          >
-            {{ pauseResumeButtonLabel }}
-          </button>
         </div>
       </div>
     </form>

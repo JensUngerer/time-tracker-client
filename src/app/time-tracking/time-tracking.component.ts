@@ -14,6 +14,7 @@ import { CommitService } from './../commit.service';
 import { TimeTrackingService } from './../time-tracking.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { ITaskOption, TaskOption } from './../typescript/taskOption';
+import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -32,6 +33,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   private allTasksPromise: Promise<string> = null;
 
   private durationVisualizationIntervalId: any = null;
+
+  private allTasks: ITask[];
 
   // https://stackoverflow.com/questions/31548311/angular-html-binding
   @Output()
@@ -68,6 +71,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public formControlNameTimeEntrySelectionDropDown = 'timeEntrySelectionDropDown';
 
   public timeTrackingTimeEntrySelectionFromControl: AbstractControl = null;
+
+  public bookingDeclarationCode = '';
 
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
@@ -205,9 +210,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     // init taskSelectionDropDrown data
     this.allTasksPromise = this.commitService.getTasks();
     this.allTasksPromise.then((allTasksStr: string) => {
-      const allTasks = sessionStorageSerializationService.deSerialize<ITask[]>(allTasksStr);
-      if (allTasks && allTasks.length > 0 && this.taskOptions.length === 0) {
-        allTasks.forEach((task: ITask) => {
+      this.allTasks = sessionStorageSerializationService.deSerialize<ITask[]>(allTasksStr);
+      if (this.allTasks && this.allTasks.length > 0 && this.taskOptions.length === 0) {
+        this.allTasks.forEach((task: ITask) => {
           this.taskOptions.push(new TaskOption(task));
         });
       }
@@ -256,9 +261,35 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
             });
             if (taskOption) {
               this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
+
+              // i) get the correlated booking - declarations (which are possible for a unique projectId)
+              const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectId);
+              bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
+                const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
+
+
+                // ii) currently displayed task:
+                const currentTask = this.allTasks.find((oneTask: ITask) => {
+                  return oneTask.taskId === taskId;
+                });
+
+                // iii) filter by task
+                const filteredBooking = parsedBookingDeclarations.filter((oneBooking: IBookingDeclarationsDocument) => {
+                  return  oneBooking.bookingDeclarationId = currentTask._bookingDeclarationId;
+                });
+                if (!filteredBooking || filteredBooking.length !== 1) {
+                  console.error('not a unique booking id found');
+                  return;
+                }
+                this.bookingDeclarationCode = filteredBooking[0].code;
+
+              });
+
             } else {
               console.error('no task option for:' + taskId);
             }
+
+
           }
         });
       });
