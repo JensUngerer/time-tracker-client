@@ -52,6 +52,8 @@ export class CommitComponent implements OnInit {
   // @Output()
   public isButtonDisabled = false;
 
+  public currentDayOption: IDurationSum;
+
   // private sumForOneProject: ITimeRecordsDocumentData = null;
 
   // private hasProjectDurationSum(project: IProject): Promise<boolean> {
@@ -127,7 +129,7 @@ export class CommitComponent implements OnInit {
   }
 
   public onDaySelectionChanged() {
-
+    this.currentDayOption = this.formControlsMap.DayDropDown.value;
   }
 
   // public onProjectSelectionChanged($event: any) {
