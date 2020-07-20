@@ -86,11 +86,20 @@ export class CommitComponent implements OnInit {
     const promise = this.commitService.getCommitDays();
     promise.then((receivedData) => {
       console.log(receivedData);
-      const parsedData: IDurationSum[] = this.sessionStorageSerializationService.deSerialize(receivedData);
-      const endDate: Date = parsedData[0].day;
+      const parsedDurationSums: IDurationSum[] = this.sessionStorageSerializationService.deSerialize(receivedData);
+      if (!parsedDurationSums || parsedDurationSums.length === 0)  {
+        console.error('no duration sums received');
+        return;
+      }
+
+      parsedDurationSums.forEach((oneDurationSumForOneDay) => {
+        this.dayOptions.push(new CommitOption(oneDurationSumForOneDay));
+      });
+
+      // const endDate: Date = parsedData[0].day;
       // const year = endDate.getFullYear
 
-      console.log(parsedData);
+      // console.log(parsedData);
     });
     // const allProjectsPromise = this.commitService.getProjects();
     // allProjectsPromise.then((projectsStr) => {

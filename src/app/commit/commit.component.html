@@ -30,7 +30,7 @@
               <mat-select (selectionChange)="onDaySelectionChanged($event)"
                 [formControl]="formControlsMap.DayDropDown" [required]="true">
                 <mat-option *ngFor="let dayOption of dayOptions" [value]="dayOption.value">
-                  {{dayOption.viewValue}}
+                  {{dayOption.viewValue | date : 'yyyy-MM-dd' }}
                 </mat-option>
               </mat-select>
             </div>
