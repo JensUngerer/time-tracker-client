@@ -16,6 +16,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getCommitDays() {
+    const url = this.httpBaseUrl + routes.port + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
+    return this.httpGet(url);
+  }
+
   getBookingDeclarationsBy(projectId: string) {
     const url = this.getBookingDeclarationUrl() + routes.bookingDeclarationsByProjectIdSuffix + '/' + projectId;
     return this.httpGet(url);

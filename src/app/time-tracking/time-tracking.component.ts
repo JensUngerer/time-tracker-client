@@ -74,6 +74,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public bookingDeclarationCode = '';
 
+  private currentBookingDeclarationId;
+
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
@@ -83,7 +85,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (this.startStopButtonLabel === 'Stop') {
       const taskId = this.timeTrackingTaskSelectionFromControl.value.taskId;
 
-      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId);
+      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId,
+        this.currentBookingDeclarationId);
       startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
         // visualize current duration
         const oneSecondInMilliseconds = 1000.0;
@@ -282,7 +285,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
                   return;
                 }
                 this.bookingDeclarationCode = filteredBooking[0].code;
-
+                this.currentBookingDeclarationId = filteredBooking[0].bookingDeclarationId;
               });
 
             } else {

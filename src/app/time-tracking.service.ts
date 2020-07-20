@@ -16,8 +16,10 @@ export class TimeTrackingService {
   constructor(private helpersService: HelpersService,
     private commitService: CommitService) { }
 
-  public startTimeTracking(taskId: string): Promise<ITimeEntry> {
+  public startTimeTracking(taskId: string, bookingDeclarationId): Promise<ITimeEntry> {
     const timeEntry: ITimeEntry = {
+      _bookingDeclarationId: bookingDeclarationId,
+      day: null,
       startTime: new Date(),
       endTime: null,
       timeEntryId: uuid.v4(),

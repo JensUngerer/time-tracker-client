@@ -12,21 +12,25 @@
   (the possiblity of writing the timeRecords (automatically) via an API to the booking program
   has not yet been covered....)
 
+  OR
+
+  This view should display
+  a) a drop-down with a specific day
+  b) visualization: a table with two colums: booking id; duration sum
+  c) a commit button (for the data of a specific day)
+   -> time-record will be written / the day - drop - down will be adjusted
 -->
 <div class="container">
   <div class="flexItem">
     <div class="innerContainer">
       <div class="innerFlexItem">
-        <div>Sum to commit: {{durationStr}}</div>
-      </div>
-      <div class="innerFlexItem">
         <form [formGroup]="commitFormGroup" (submit)="onCommitClicked(commitFormGroup.value)">
           <div class="formFlexContainer">
             <div class="formFlexItem">
-              <mat-select (selectionChange)="onProjectSelectionChanged($event)"
-                [formControl]="formControlProjectDropDown" [required]="true">
-                <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-                  {{projectOption.viewValue}}
+              <mat-select (selectionChange)="onDaySelectionChanged($event)"
+                [formControl]="formControlsMap.DayDropDown" [required]="true">
+                <mat-option *ngFor="let dayOption of dayOptions" [value]="dayOption.value">
+                  {{dayOption.viewValue}}
                 </mat-option>
               </mat-select>
             </div>
@@ -36,6 +40,10 @@
           </div>
         </form>
       </div>
+      <!-- <div class="innerFlexItem">
+        <div>Sum to commit: {{durationStr}}</div>
+      </div>
+       -->
     </div>
   </div>
 </div>
