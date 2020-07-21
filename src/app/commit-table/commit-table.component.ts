@@ -35,7 +35,7 @@ export class CommitTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output()
   public deleteRowClicked: EventEmitter<ICommitGridLine> = new EventEmitter<ICommitGridLine>();
 
-  public readonly displayedColumns: string[] = ['bookingCode', 'durationInHours'];
+  public readonly displayedColumns: string[] = ['bookingCode', 'bookingDescription', 'durationInHours'];
 
   // public readonly faTrash = faTrash;
 
