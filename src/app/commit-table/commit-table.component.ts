@@ -2,9 +2,11 @@ import { Component, OnInit, Input, EventEmitter, Output, ViewChild, SimpleChange
 import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ICommit } from '../../../../common/typescript/iCommit';
+import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
 
 interface ICommitGridLine {
-  bookingCode: string;
+  // bookingCode: string;
+  booking: IBookingDeclaration;
   durationInHours: number;
 }
 
@@ -46,11 +48,11 @@ export class CommitTableComponent implements OnInit, OnChanges, OnDestroy {
       this.gridLines = [];
       const durations = this.currentDayOption.durations;
       durations.forEach((oneDuration: ICommit) => {
-        const bookingCode = oneDuration.bookingDeclarationId;
+        // const bookingCode = oneDuration.bookingDeclarationId;
         this.gridLines.push({
-          bookingCode,
+          booking:  oneDuration.booking,
           durationInHours: oneDuration.durationInHours
-        })
+        });
       });
 
       this.dataSource.data = this.gridLines;
