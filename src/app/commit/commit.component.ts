@@ -1,7 +1,7 @@
 import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 import { ProjectService } from './../project.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit, Output, AfterViewInit } from '@angular/core';
 import { FormGroup, AbstractControl, FormControl, ControlContainer } from '@angular/forms';
 import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
@@ -30,7 +30,7 @@ class CommitOption implements ICommitOption {
     './../css/centerVerticalHorizontal.scss'
   ]
 })
-export class CommitComponent implements OnInit {
+export class CommitComponent implements OnInit, AfterViewInit {
 
   public commitFormGroup: FormGroup = null;
 
@@ -52,7 +52,7 @@ export class CommitComponent implements OnInit {
   // @Output()
   public isButtonDisabled = false;
 
-  public currentDayOption: IDurationSum;
+  public selectedOption: IDurationSum;
 
   // private sumForOneProject: ITimeRecordsDocumentData = null;
 
@@ -98,6 +98,8 @@ export class CommitComponent implements OnInit {
         this.dayOptions.push(new CommitOption(oneDurationSumForOneDay));
       });
 
+      this.selectedOption = this.dayOptions[0].value;
+
       // const endDate: Date = parsedData[0].day;
       // const year = endDate.getFullYear
 
@@ -123,13 +125,17 @@ export class CommitComponent implements OnInit {
     //   console.error('getProjects rejected');
     // });
   }
+  ngAfterViewInit(): void {
+    // const firstEntry = this.dayOptions[0];
+    // this.formControlsMap.DayDropDown.setValue(firstEntry);
+  }
 
   ngOnInit() {
 
   }
 
   public onDaySelectionChanged() {
-    this.currentDayOption = this.formControlsMap.DayDropDown.value;
+    this.selectedOption = this.formControlsMap.DayDropDown.value;
   }
 
   // public onProjectSelectionChanged($event: any) {
@@ -164,6 +170,23 @@ export class CommitComponent implements OnInit {
 
 
   public onCommitClicked(values: any) {
+    // delete current entry (visually only)
+    const indexToDelete = this.dayOptions.findIndex((oneDayOption: ICommitOption) => {
+      return oneDayOption.value.day === this.selectedOption.day;
+    });
+    if (indexToDelete === -1) {
+      console.error('cannot delete visually');
+      return;
+    }
+    this.dayOptions.splice(indexToDelete, 1);
+
+    if (indexToDelete < this.dayOptions.length) {
+      this.selectedOption = this.dayOptions[indexToDelete].value;
+    } else {
+      this.selectedOption = null;
+    }
+    // switch to next entry
+
     // if (this.sumForOneProject) {
     //   this.durationStr = '';
     //   this.formControlProjectDropDown.setValue('');

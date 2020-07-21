@@ -46,14 +46,16 @@ export class CommitTableComponent implements OnInit, OnChanges, OnDestroy {
       // DEBUGGING:
       // console.log('resetRows');
       this.gridLines = [];
-      const durations = this.currentDayOption.durations;
-      durations.forEach((oneDuration: ICommit) => {
-        // const bookingCode = oneDuration.bookingDeclarationId;
-        this.gridLines.push({
-          booking:  oneDuration.booking,
-          durationInHours: oneDuration.durationInHours
+      if (this.currentDayOption) {
+        const durations = this.currentDayOption.durations;
+        durations.forEach((oneDuration: ICommit) => {
+          // const bookingCode = oneDuration.bookingDeclarationId;
+          this.gridLines.push({
+            booking:  oneDuration.booking,
+            durationInHours: oneDuration.durationInHours
+          });
         });
-      });
+      }
 
       this.dataSource.data = this.gridLines;
     } else {
@@ -85,7 +87,9 @@ export class CommitTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.currentDayOption && changes.currentDayOption.currentValue) {
+    if (changes &&
+      changes.currentDayOption &&
+      typeof changes.currentDayOption.currentValue !== 'undefined') {
       this.onRedrawTable(true);
     }
   }
