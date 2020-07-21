@@ -266,27 +266,34 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
               this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
 
               // i) get the correlated booking - declarations (which are possible for a unique projectId)
-              const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectId);
-              bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
-                const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
+              // const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy();
+              // bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
+              //   const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
 
 
-                // ii) currently displayed task:
-                const currentTask = this.allTasks.find((oneTask: ITask) => {
-                  return oneTask.taskId === taskId;
-                });
-
-                // iii) filter by task
-                const filteredBooking = parsedBookingDeclarations.filter((oneBooking: IBookingDeclarationsDocument) => {
-                  return  oneBooking.bookingDeclarationId = currentTask._bookingDeclarationId;
-                });
-                if (!filteredBooking || filteredBooking.length !== 1) {
-                  console.error('not a unique booking id found');
-                  return;
-                }
-                this.bookingDeclarationCode = filteredBooking[0].code;
-                this.currentBookingDeclarationId = filteredBooking[0].bookingDeclarationId;
+              // ii) currently displayed task:
+              const currentTask = this.allTasks.find((oneTask: ITask) => {
+                return oneTask.taskId === taskId;
               });
+
+              // iii) filter by task
+              // const filteredBooking = parsedBookingDeclarations.filter((oneBooking: IBookingDeclarationsDocument) => {
+              //   return oneBooking.bookingDeclarationId = currentTask._bookingDeclarationId;
+              // });
+              // if (!filteredBooking || filteredBooking.length !== 1) {
+              //   console.error('not a unique booking id found');
+              //   return;
+              // }
+              this.currentBookingDeclarationId = currentTask._bookingDeclarationId;
+
+              const bookingDocumentPromise = this.commitService.getBookingDeclarationById(this.currentBookingDeclarationId);
+              bookingDocumentPromise.then((receivedBookingRaw: string) => {
+                const parsedDocuments: IBookingDeclarationsDocument[]
+                = this.sessionStorageSerializationService.deSerialize(receivedBookingRaw);
+
+                this.bookingDeclarationCode = parsedDocuments[0].code;
+              });
+              // });
 
             } else {
               console.error('no task option for:' + taskId);
