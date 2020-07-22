@@ -1,15 +1,13 @@
-import { SessionStorageSerializationService } from './../session-storage-serialization.service';
-import { ProjectService } from './../project.service';
-import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { Component, OnInit, Output, AfterViewInit } from '@angular/core';
-import { FormGroup, AbstractControl, FormControl, ControlContainer } from '@angular/forms';
-import { IProject } from '../../../../common/typescript/iProject';
-import { HelpersService } from '../helpers.service';
-import { CommitService } from '../commit.service';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
-import { ICommit } from './../../../../common/typescript/iCommit';
+import { CommitService } from '../commit.service';
+import { HelpersService } from '../helpers.service';
+import { DurationCalculator } from './../../../../common/typescript/helpers/durationCalculator';
 import { IDurationSum } from './../../../../common/typescript/iDurationSum';
-import  { DurationCalculator } from './../../../../common/typescript/helpers/durationCalculator';
+import { ProjectService } from './../project.service';
+import { SessionStorageSerializationService } from './../session-storage-serialization.service';
 
 interface ICommitOption {
   value: IDurationSum;
@@ -39,50 +37,21 @@ export class CommitComponent implements OnInit, AfterViewInit {
 
   public formControlProjectDropDown: AbstractControl = null;
 
-  // public projectOptions: IProjectOption[] = [];
-
   public formControlsMap: { [key: string]: AbstractControl } = {
     DayDropDown: new FormControl('')
   };
 
   public dayOptions: ICommitOption[] = [];
 
-  // @Output()
-  // public durationStr: string = null;
-
-  // @Output()
   public isButtonDisabled = false;
 
   public selectedOption: IDurationSum;
 
-  // private sumForOneProject: ITimeRecordsDocumentData = null;
-
-  // private hasProjectDurationSum(project: IProject): Promise<boolean> {
-  //   return new Promise<boolean>((resolve: (value: boolean) => void) => {
-  //     const durationStructurePromise = this.commitService.getDurationStructure(project.projectId);
-  //     durationStructurePromise.then((theDurationStructureStr: string) => {
-  //       if (!theDurationStructureStr) {
-  //         resolve(false);
-  //         return;
-  //       }
-  //       const sumForOneProject: ITimeRecordsDocumentData = JSON.parse(theDurationStructureStr);
-  //       if (!sumForOneProject) {
-  //         resolve(false);
-  //       } else {
-  //         resolve(true);
-  //       }
-  //     });
-  //   });
-  // }
-
   constructor(private projectService: ProjectService,
-    private commitService: CommitService,
-    private helpersService: HelpersService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) {
+              private commitService: CommitService,
+              private helpersService: HelpersService,
+              private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
-
-    // this.formControlProjectDropDown = new FormControl('');
-    // configObj[this.formControlNameProjectDropDown] = this.formControlProjectDropDown;
 
     this.commitFormGroup = new FormGroup(this.formControlsMap);
 
@@ -100,35 +69,10 @@ export class CommitComponent implements OnInit, AfterViewInit {
       });
 
       this.selectedOption = this.dayOptions[0].value;
-
-      // const endDate: Date = parsedData[0].day;
-      // const year = endDate.getFullYear
-
-      // console.log(parsedData);
     });
-    // const allProjectsPromise = this.commitService.getProjects();
-    // allProjectsPromise.then((projectsStr) => {
-    //   const allProjects: IProject[] = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
-    //   if (allProjects && allProjects.length > 0) {
-    //     allProjects.forEach((project: IProject) => {
-    //       this.hasProjectDurationSum(project).then((isDurationSumPresent: boolean) => {
-    //         if (!isDurationSumPresent) {
-    //           return;
-    //         }
-    //         this.projectOptions.push(new ProjectOption(project));
-    //       }).catch(() => {
-    //         console.error('rejection of hasProjectDurationSum');
-    //       });
-    //     });
-    //   }
-    // });
-    // allProjectsPromise.catch(() => {
-    //   console.error('getProjects rejected');
-    // });
   }
+
   ngAfterViewInit(): void {
-    // const firstEntry = this.dayOptions[0];
-    // this.formControlsMap.DayDropDown.setValue(firstEntry);
   }
 
   ngOnInit() {
@@ -139,35 +83,6 @@ export class CommitComponent implements OnInit, AfterViewInit {
     this.selectedOption = this.formControlsMap.DayDropDown.value;
   }
 
-  // public onProjectSelectionChanged($event: any) {
-  //   // while the server get is running do not enable the commit button!
-  //   this.isButtonDisabled = true;
-
-  //   const projectId = $event.value.projectId;
-
-  //   const durationStructurePromise = this.commitService.getDurationStructure(projectId);
-  //   durationStructurePromise.then((theDurationStructureStr: string) => {
-  //     if (!theDurationStructureStr) {
-  //       return;
-  //     }
-  //     const sumForOneProject: ITimeRecordsDocumentData = JSON.parse(theDurationStructureStr);
-
-  //     // DEBUGGING:
-  //     // console.log(durationStructure, null, 4);
-  //     this.sumForOneProject = sumForOneProject;
-  //     if (!this.sumForOneProject) {
-  //       console.error('there is no sum for the project');
-  //       return;
-  //     }
-
-  //     this.durationStr = this.helpersService.getDurationStr(sumForOneProject.durationStructure.hours,
-  //       sumForOneProject.durationStructure.minutes, sumForOneProject.durationStructure.seconds);
-  //     this.isButtonDisabled = false;
-  //   });
-  //   durationStructurePromise.catch(() => {
-  //     console.error('no duration structure retrieved');
-  //   });
-  // }
   private deleteAndSwitchToNext(currentDayOption: IDurationSum) {
     // delete current entry (visually only)
     const indexToDelete = this.dayOptions.findIndex((oneDayOption: ICommitOption) => {
@@ -223,28 +138,5 @@ export class CommitComponent implements OnInit, AfterViewInit {
     };
     // initial call
     loop();
-
-
-    // });
-
-
-
-
-    // if (this.sumForOneProject) {
-    //   this.durationStr = '';
-    //   this.formControlProjectDropDown.setValue('');
-
-    //   // DEBUGGING:
-    //   // console.log(JSON.stringify(this.sumForOneProject, null, 4));
-    //   const commitPostPromise = this.commitService.postCommit(this.sumForOneProject);
-    //   commitPostPromise.then((resolvedValue: any) => {
-    //     console.log(JSON.stringify(resolvedValue, null, 4));
-    //   });
-    //   commitPostPromise.catch((rejectedValue: any) => {
-    //     console.log(JSON.stringify(rejectedValue, null, 4));
-    //   });
-    // } else {
-    //   console.error('cannot commit because of missing duration sum');
-    // }
   }
 }

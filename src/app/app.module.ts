@@ -24,7 +24,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { LayoutModule } from '@angular/cdk/layout';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
 import { HomeComponent } from './home/home.component';
-// import { UserComponent } from './user/user.component';
 import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pages-switcher.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
@@ -49,7 +48,6 @@ import { CommitTableComponent } from './commit-table/commit-table.component';
     AppComponent,
     NavbarFourComponent,
     HomeComponent,
-    // UserComponent,
     RouterPagesSwitcherComponent,
     TimeTrackingComponent,
     ProjectComponent,
