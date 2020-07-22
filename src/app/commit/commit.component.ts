@@ -7,8 +7,9 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { HelpersService } from '../helpers.service';
 import { CommitService } from '../commit.service';
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
-import  { ICommit } from './../../../../common/typescript/iCommit';
+import { ICommit } from './../../../../common/typescript/iCommit';
 import { IDurationSum } from './../../../../common/typescript/iDurationSum';
+import  { DurationCalculator } from './../../../../common/typescript/helpers/durationCalculator';
 
 interface ICommitOption {
   value: IDurationSum;
@@ -40,7 +41,7 @@ export class CommitComponent implements OnInit, AfterViewInit {
 
   // public projectOptions: IProjectOption[] = [];
 
-  public formControlsMap: {[key: string]: AbstractControl} = {
+  public formControlsMap: { [key: string]: AbstractControl } = {
     DayDropDown: new FormControl('')
   };
 
@@ -89,7 +90,7 @@ export class CommitComponent implements OnInit, AfterViewInit {
     promise.then((receivedData) => {
       console.log(receivedData);
       const parsedDurationSums: IDurationSum[] = this.sessionStorageSerializationService.deSerialize(receivedData);
-      if (!parsedDurationSums || parsedDurationSums.length === 0)  {
+      if (!parsedDurationSums || parsedDurationSums.length === 0) {
         console.error('no duration sums received');
         return;
       }
@@ -167,12 +168,10 @@ export class CommitComponent implements OnInit, AfterViewInit {
   //     console.error('no duration structure retrieved');
   //   });
   // }
-
-
-  public onCommitClicked(values: any) {
+  private deleteAndSwitchToNext(currentDayOption: IDurationSum) {
     // delete current entry (visually only)
     const indexToDelete = this.dayOptions.findIndex((oneDayOption: ICommitOption) => {
-      return oneDayOption.value.day === this.selectedOption.day;
+      return oneDayOption.value.day === currentDayOption.day;
     });
     if (indexToDelete === -1) {
       console.error('cannot delete visually');
@@ -180,12 +179,56 @@ export class CommitComponent implements OnInit, AfterViewInit {
     }
     this.dayOptions.splice(indexToDelete, 1);
 
+    // switch to next entry
     if (indexToDelete < this.dayOptions.length) {
       this.selectedOption = this.dayOptions[indexToDelete].value;
     } else {
       this.selectedOption = null;
     }
-    // switch to next entry
+  }
+
+  public onCommitClicked(values: any) {
+    const currentDayOption = this.selectedOption;
+    const currentDurations = currentDayOption.durations;
+    // trigger writing of a time-record
+    // (this will trigger a PATCH operation
+    // of used time-entries to mark them as isDeletedInClient)
+    // currentDuration.forEach((oneDuration: ICommit) => {
+    let indexInLoop = 0;
+    const loop = () => {
+      if (indexInLoop >= currentDurations.length) {
+        this.deleteAndSwitchToNext(currentDayOption);
+        return;
+      }
+      const durationEntry = currentDurations[indexInLoop];
+      const timeRecordData: ITimeRecordsDocumentData = {
+        _bookingDeclarationId: durationEntry.booking.bookingDeclarationId,
+        _timeEntryIds: durationEntry._timeEntryIds,
+        dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+        durationInHours: durationEntry.durationInHours,
+        durationInMilliseconds: durationEntry.durationSumInMilliseconds,
+        durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(durationEntry.durationSumInMilliseconds)
+      };
+      const postCommitPromise = this.commitService.postCommit(timeRecordData);
+      postCommitPromise.then(() => {
+        indexInLoop++;
+        loop();
+      });
+      postCommitPromise.catch(() => {
+        console.error('posting commit failed:' + JSON.stringify(timeRecordData, null, 4));
+
+        indexInLoop++;
+        loop();
+      });
+    };
+    // initial call
+    loop();
+
+
+    // });
+
+
+
 
     // if (this.sumForOneProject) {
     //   this.durationStr = '';
