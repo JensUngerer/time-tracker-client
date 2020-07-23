@@ -39,6 +39,7 @@ import { NameTableComponent } from './name-table/name-table.component';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { CommitTableComponent } from './commit-table/commit-table.component';
+import { CommitComponent } from './commit/commit.component';
 
 @NgModule({
   entryComponents:[
@@ -58,7 +59,8 @@ import { CommitTableComponent } from './commit-table/commit-table.component';
     ProjectDeleteDialogComponent,
     NameTableComponent,
     BookingDeclarationComponent,
-    CommitTableComponent
+    CommitTableComponent,
+    CommitComponent
   ],
   imports: [
     BrowserModule,

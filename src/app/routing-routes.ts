@@ -11,6 +11,7 @@ import * as routesConfig from './../../../common/typescript/routes.js';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
+import { CommitComponent } from './commit/commit.component';
 
 export class RoutingRoutes {
 
@@ -62,10 +63,17 @@ export class RoutingRoutes {
     //   }
     // },
     {
-      path: RoutingRoutes.viewsPrefix + 'commit',
+      path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
+      component: CommitComponent,
+      data: {
+        label: ViewPaths.commit
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.book,
       component: BookComponent,
       data: {
-        label: 'Commit'
+        label: ViewPaths.book
       }
     },
     {
