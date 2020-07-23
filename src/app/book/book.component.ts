@@ -4,10 +4,10 @@ import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { CommitService } from '../commit.service';
 import { HelpersService } from '../helpers.service';
-import { DurationCalculator } from './../../../../common/typescript/helpers/durationCalculator';
-import { IDurationSum } from './../../../../common/typescript/iDurationSum';
-import { ProjectService } from './../project.service';
-import { SessionStorageSerializationService } from './../session-storage-serialization.service';
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
+import { IDurationSum } from '../../../../common/typescript/iDurationSum';
+import { ProjectService } from '../project.service';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
 interface ICommitOption {
   value: IDurationSum;
@@ -23,13 +23,13 @@ class CommitOption implements ICommitOption {
 
 @Component({
   selector: 'mtt-commit',
-  templateUrl: './commit.component.html',
+  templateUrl: './book.component.html',
   styleUrls: [
-    './commit.component.scss',
+    './book.component.scss',
     './../css/centerVerticalHorizontal.scss'
   ]
 })
-export class CommitComponent implements OnInit, AfterViewInit {
+export class BookComponent implements OnInit, AfterViewInit {
 
   public commitFormGroup: FormGroup = null;
 

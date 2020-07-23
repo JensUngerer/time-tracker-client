@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';
-import { CommitComponent } from './commit/commit.component';
+import { BookComponent } from './book/book.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import * as routesConfig from './../../../common/typescript/routes.js';
@@ -63,7 +63,7 @@ export class RoutingRoutes {
     // },
     {
       path: RoutingRoutes.viewsPrefix + 'commit',
-      component: CommitComponent,
+      component: BookComponent,
       data: {
         label: 'Commit'
       }

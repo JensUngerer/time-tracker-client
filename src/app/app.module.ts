@@ -28,7 +28,7 @@ import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pag
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';
-import { CommitComponent } from './commit/commit.component';
+import { BookComponent } from './book/book.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -52,7 +52,7 @@ import { CommitTableComponent } from './commit-table/commit-table.component';
     TimeTrackingComponent,
     ProjectComponent,
     TaskComponent,
-    CommitComponent,
+    BookComponent,
     CompletedTaskComponent,
     CompletedTimeEntryComponent,
     ProjectDeleteDialogComponent,
