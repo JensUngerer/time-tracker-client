@@ -146,40 +146,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onPauseResumeButtonClicked() {
-    this.isPauseResumeButtonDisabled = true;
-    this.isStartStopButtonDisabled = true;
-
-    const currentTimeEntryId = this.timeEntryId;
-
-    this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
-    if (this.pauseResumeButtonLabel === 'Resume') {
-      // the 'Pause' button has just been pressed
-
-      const startPausePromise = this.timeTrackingService.startPause(currentTimeEntryId);
-      startPausePromise.then(() => {
-        this.isPauseResumeButtonDisabled = false;
-      });
-      startPausePromise.catch(() => {
-        console.error('startPause rejected');
-        this.isPauseResumeButtonDisabled = false;
-      });
-    } else {
-      // the 'Resume' button has just been pressed
-      const stopPromise = this.timeTrackingService.stopPause(currentTimeEntryId);
-      stopPromise.then(() => {
-        this.isStartStopButtonDisabled = false;
-        this.isPauseResumeButtonDisabled = false;
-      });
-      stopPromise.catch(() => {
-        console.error('stopPause rejected');
-        this.isStartStopButtonDisabled = false;
-        this.isPauseResumeButtonDisabled = false;
-      });
-    }
-  }
-
-
   constructor(private helpersService: HelpersService,
     private timeTrackingService: TimeTrackingService,
     private formBuilder: FormBuilder,
