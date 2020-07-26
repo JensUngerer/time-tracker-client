@@ -22,7 +22,7 @@ class CommitOption implements ICommitOption {
 }
 
 @Component({
-  selector: 'mtt-commit',
+  selector: 'mtt-book',
   templateUrl: './book.component.html',
   styleUrls: [
     './book.component.scss',
@@ -69,6 +69,9 @@ export class BookComponent implements OnInit, AfterViewInit {
       });
 
       this.selectedOption = this.dayOptions[0].value;
+    });
+    promise.catch((err: any) => {
+      console.log(err);
     });
   }
 
