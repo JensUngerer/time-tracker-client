@@ -9,12 +9,12 @@ import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { ProjectService } from '../project.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
-interface ICommitOption {
+interface IBookOption {
   value: IDurationSum;
   viewValue: Date;
 }
 
-class CommitOption implements ICommitOption {
+class BookOption implements IBookOption {
   public viewValue: Date;
   constructor(public value: IDurationSum) {
     this.viewValue = value.day;
@@ -41,7 +41,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     DayDropDown: new FormControl('')
   };
 
-  public dayOptions: ICommitOption[] = [];
+  public dayOptions: IBookOption[] = [];
 
   public isButtonDisabled = false;
 
@@ -65,10 +65,12 @@ export class BookComponent implements OnInit, AfterViewInit {
       }
 
       parsedDurationSums.forEach((oneDurationSumForOneDay) => {
-        this.dayOptions.push(new CommitOption(oneDurationSumForOneDay));
+        this.dayOptions.push(new BookOption(oneDurationSumForOneDay));
       });
 
-      this.selectedOption = this.dayOptions[0].value;
+      const valueToSetInDaysDropDown = this.dayOptions[0].value;
+      this.formControlsMap.DayDropDown.setValue(valueToSetInDaysDropDown);
+      this.onDaySelectionChanged();
     });
     promise.catch((err: any) => {
       console.log(err);
@@ -88,7 +90,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   private deleteAndSwitchToNext(currentDayOption: IDurationSum) {
     // delete current entry (visually only)
-    const indexToDelete = this.dayOptions.findIndex((oneDayOption: ICommitOption) => {
+    const indexToDelete = this.dayOptions.findIndex((oneDayOption: IBookOption) => {
       return oneDayOption.value.day === currentDayOption.day;
     });
     if (indexToDelete === -1) {
@@ -99,14 +101,15 @@ export class BookComponent implements OnInit, AfterViewInit {
 
     // switch to next entry
     if (indexToDelete < this.dayOptions.length) {
-      this.selectedOption = this.dayOptions[indexToDelete].value;
+      this.formControlsMap.DayDropDown.setValue(this.dayOptions[indexToDelete].value);
     } else {
-      this.selectedOption = null;
+      this.formControlsMap.DayDropDown.setValue(null);
     }
+    this.onDaySelectionChanged();
   }
 
   public onCommitClicked(values: any) {
-    const currentDayOption = this.selectedOption;
+    const currentDayOption = this.formControlsMap.DayDropDown.value;
     const currentDurations = currentDayOption.durations;
     // trigger writing of a time-record
     // (this will trigger a PATCH operation

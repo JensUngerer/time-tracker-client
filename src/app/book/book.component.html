@@ -1,55 +1,43 @@
-<!--
-  This view should display
-  a) a drop-down to select the current booking (declaration) id
-  b) visualization: a date as start (of uncommited time-entries)
-  c) visualization: a data as end (of uncommited time-entries)
-  d) visualization (at least): a table with day and a duration sum
-  (for the specific booking-id)
-  e) a commit button, that the lines of the table will be written
-  (each in the timeRecords - collection) / the user "confirms" that she / he
-  has just entered the timeRecords-equivalent in the corresponding booking
-  program
-  (the possiblity of writing the timeRecords (automatically) via an API to the booking program
-  has not yet been covered....)
-
-  OR
-
-  This view should display
-  a) a drop-down with a specific day
-  b) visualization: a table with two colums: booking id; duration sum
-  c) a commit button (for the data of a specific day)
-   -> time-record will be written / the day - drop - down will be adjusted
--->
 <div class="container">
   <div class="flexItem">
     <div class="innerContainer">
       <div class="innerFlexItem">
-        <form [formGroup]="commitFormGroup" (submit)="onCommitClicked(commitFormGroup.value)">
+        <form
+          [formGroup]="commitFormGroup"
+          (submit)="onCommitClicked(commitFormGroup.value)"
+        >
           <div class="formFlexContainer">
             <div class="formFlexItem">
-              <mat-select [ngModel]="selectedOption" (selectionChange)="onDaySelectionChanged($event)"
-                [formControl]="formControlsMap.DayDropDown" [required]="true">
-                <mat-option *ngFor="let dayOption of dayOptions" [value]="dayOption.value">
-                  <!-- <span class="daySelectionFlexBox">
-                    <span class="daySelectionFlexItem">{{dayOption.viewValue | date : 'yyyy-MM-dd' }}</span>
-                  </span> -->
-                  {{dayOption.viewValue | date : 'yyyy-MM-dd' }}
+              <mat-select
+                (selectionChange)="onDaySelectionChanged($event)"
+                [formControl]="formControlsMap.DayDropDown"
+                [required]="true"
+              >
+                <mat-option
+                  *ngFor="let dayOption of dayOptions"
+                  [value]="dayOption.value"
+                >
+                  {{ dayOption.viewValue | date: "yyyy-MM-dd" }}
                 </mat-option>
               </mat-select>
             </div>
             <div class="formFlexItem">
-              <mtt-book-table [currentDayOption]="selectedOption"></mtt-book-table>
+              <mtt-book-table
+                [currentDayOption]="selectedOption"
+              ></mtt-book-table>
             </div>
             <div class="commit-button-container">
-              <button class="commit-button" type="submit" [disabled]="commitFormGroup.invalid || isButtonDisabled">Commit</button>
+              <button
+                class="commit-button"
+                type="submit"
+                [disabled]="commitFormGroup.invalid || isButtonDisabled"
+              >
+                Commit
+              </button>
             </div>
           </div>
         </form>
       </div>
-      <!-- <div class="innerFlexItem">
-        <div>Sum to commit: {{durationStr}}</div>
-      </div>
-       -->
     </div>
   </div>
 </div>
