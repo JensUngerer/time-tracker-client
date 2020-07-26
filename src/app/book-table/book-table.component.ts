@@ -51,7 +51,7 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
         durations.forEach((oneDuration: ICommit) => {
           // const bookingCode = oneDuration.bookingDeclarationId;
           this.gridLines.push({
-            booking:  oneDuration.booking,
+            booking:  oneDuration.basis,
             durationInHours: oneDuration.durationInHours
           });
         });

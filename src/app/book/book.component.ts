@@ -1,13 +1,15 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
+import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
+import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { CommitService } from '../commit.service';
 import { HelpersService } from '../helpers.service';
-import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
-import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { ProjectService } from '../project.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
+import { ICommitBase } from './../../../../common/typescript/iCommitBase';
 
 interface IBookOption {
   value: IDurationSum;
@@ -110,7 +112,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   public onCommitClicked(values: any) {
     const currentDayOption = this.formControlsMap.DayDropDown.value;
-    const currentDurations = currentDayOption.durations;
+    const currentDurations: ICommitBase[] = currentDayOption.durations;
     // trigger writing of a time-record
     // (this will trigger a PATCH operation
     // of used time-entries to mark them as isDeletedInClient)
@@ -123,7 +125,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       }
       const durationEntry = currentDurations[indexInLoop];
       const timeRecordData: ITimeRecordsDocumentData = {
-        _bookingDeclarationId: durationEntry.booking.bookingDeclarationId,
+        _bookingDeclarationId: (durationEntry.basis as IBookingDeclaration).bookingDeclarationId,
         _timeEntryIds: durationEntry._timeEntryIds,
         dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
         durationInHours: durationEntry.durationInHours,

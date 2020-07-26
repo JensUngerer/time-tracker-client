@@ -71,7 +71,7 @@ export class CommitComponent implements OnInit {
       this.formGroup.controls[this.formGroupControlNames[0]].setValue(this.dayOptions[0].value);
     });
     durationSumsPromise.catch(() => {
-
+      console.error('no durations received');
     });
   }
 
