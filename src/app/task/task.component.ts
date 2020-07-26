@@ -25,6 +25,7 @@ import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescri
   styleUrls: ['./task.component.scss', './../css/centerVerticalHorizontal.scss']
 })
 export class TaskComponent implements OnInit, OnDestroy {
+  private projectId: string;
 
   private projectChangesSubscription: Subscription = null;
   //private isMemoryReadySubscription: Subscription = null;
@@ -118,6 +119,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         if (!projectIdFromUrl) {
           return;
         }
+        this.projectId = projectIdFromUrl;
 
         // a) show the projectId from URL in the drop-down-menu (for it)
         const correspondingDropDownMenuEntry = this.projectOptions.find((oneProjectOption: IProjectOption) => {
@@ -130,16 +132,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.taskFormGroup.controls[this.formControlNameProjectName].setValue(correspondingDropDownMenuEntry.value);
 
         // b) get the correlated booking - declarations (which are possible for a unique projectId)
-        const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectIdFromUrl);
-        bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
-          const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
-
-          // DEBUGGING
-          // console.log(parsedBookingDeclarations);
-          parsedBookingDeclarations.forEach((oneBookingDeclaration: IBookingDeclarationsDocument) => {
-            this.bookingDeclarationOptions.push(new BookingDeclarationOption(oneBookingDeclaration));
-          });
-        });
+        this.setCorrelatedBooking(projectIdFromUrl);
 
 
         // if (this.isMemoryReadySubscription) {
@@ -150,6 +143,24 @@ export class TaskComponent implements OnInit, OnDestroy {
         console.error('getProjects rejected in task.component');
       });
     });
+  }
+
+  private setCorrelatedBooking(projectId: string) {
+      const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectId);
+      bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
+        const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
+
+        // DEBUGGING
+        // console.log(parsedBookingDeclarations);
+        parsedBookingDeclarations.forEach((oneBookingDeclaration: IBookingDeclarationsDocument) => {
+          this.bookingDeclarationOptions.push(new BookingDeclarationOption(oneBookingDeclaration));
+        });
+      });
+  }
+
+  public onProjectSelectionChanged() {
+    this.projectId = this.taskFormGroup.controls[this.formControlNameProjectName].value.projectId;
+    this.setCorrelatedBooking(this.projectId);
   }
 
   private getProjectIdFromUrl(params?: Params): string {
@@ -166,7 +177,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   public onTaskRowClicked(line: IGridLine) {
-    const projectId = this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty];
+    const projectId = this.projectId;
     if (!projectId) {
       console.error('cannot switch to commit-view as missing projectId:' + projectId);
       return;
@@ -231,7 +242,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   private findSelectedProject(): IProject {
-    const projectIdFromUrl = this.getProjectIdFromUrl(null);
+    const projectIdFromUrl = this.projectId;
     const foundProject = this.projectOptions.find((oneProjectOption: IProjectOption) => {
       return oneProjectOption.value.projectId === projectIdFromUrl;
     });

@@ -1,34 +1,65 @@
 <div class="container">
   <div class="flexItem">
     <div>
-      <mtt-name-table columnName="Task-Name" [gridLines]="gridLines" (nameCellClicked)="onTaskRowClicked($event)"
-        (deleteRowClicked)="onDeleteRowClicked($event)"></mtt-name-table>
+      <mtt-name-table
+        columnName="Task-Name"
+        [gridLines]="gridLines"
+        (nameCellClicked)="onTaskRowClicked($event)"
+        (deleteRowClicked)="onDeleteRowClicked($event)"
+      ></mtt-name-table>
     </div>
     <div>
-      <form [formGroup]="taskFormGroup" (submit)="onSubmit(taskFormGroup.value)">
+      <form
+        [formGroup]="taskFormGroup"
+        (submit)="onSubmit(taskFormGroup.value)"
+      >
         <div class="innerFormFlexContainer">
           <div class="innerFormFlexItem">
-            <mat-select placeholder="Project" matInput [formControlName]="formControlNameProjectName" [required]="true">
-              <mat-option *ngFor="let projectOption of projectOptions" [value]="projectOption.value">
-                {{projectOption.viewValue}}
+            <mat-select
+              placeholder="Project"
+              matInput
+              [formControlName]="formControlNameProjectName"
+              (selectionChange)="onProjectSelectionChanged()"
+              [required]="true"
+            >
+              <mat-option
+                *ngFor="let projectOption of projectOptions"
+                [value]="projectOption.value"
+              >
+                {{ projectOption.viewValue }}
               </mat-option>
             </mat-select>
           </div>
 
           <div class="innerFormFlexItem">
-            <mat-select placeholder="Booking-Declaration" matInput [formControlName]="formControlNameBookingDeclaration" [required]="true">
-              <mat-option *ngFor="let bookingDeclaration of bookingDeclarationOptions" [value]="bookingDeclaration.value">
-                {{bookingDeclaration.viewValue}}
+            <mat-select
+              placeholder="Booking-Declaration"
+              matInput
+              [formControlName]="formControlNameBookingDeclaration"
+              [required]="true"
+            >
+              <mat-option
+                *ngFor="let bookingDeclaration of bookingDeclarationOptions"
+                [value]="bookingDeclaration.value"
+              >
+                {{ bookingDeclaration.viewValue }}
               </mat-option>
             </mat-select>
           </div>
 
           <div class="innerFormFlexItem">
-            <label>Task: </label><input type="text" [formControlName]="formControlNameTaskName" [required]="true">
+            <label>Task: </label
+            ><input
+              type="text"
+              [formControlName]="formControlNameTaskName"
+              [required]="true"
+            />
           </div>
-          
+
           <div class="innerFormFlexItem">
-            <button type="submit" [disabled]="taskFormGroup.invalid">Add Task</button>
+            <button type="submit" [disabled]="taskFormGroup.invalid">
+              Add Task
+            </button>
           </div>
         </div>
       </form>
