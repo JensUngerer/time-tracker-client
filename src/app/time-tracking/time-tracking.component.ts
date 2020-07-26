@@ -78,6 +78,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private currentBookingDeclarationId;
 
+  public onTaskChange() {
+    const task = this.timeTrackingUserSelectionForm
+    .controls[this.formControlNameTaskSelectionDropDown]
+    .value;
+    this.setBookingCode(task);
+  }
+
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
@@ -137,19 +144,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.visualizeTimeEntry(this.timeEntryId);
       });
     }
-  }
-
-  private getTimeEntryIdFromUrl(): string {
-    const retrievedTimeEntryId = this.activatedRoute.snapshot.queryParams[routesConfig.timeEntryIdProperty];
-    return retrievedTimeEntryId;
-  }
-
-  private setTimeEntryId(timeEntryId: string) {
-    const matrixParams = {};
-    matrixParams[routesConfig.timeEntryIdProperty] = timeEntryId;
-
-    // https://stackoverflow.com/questions/43698032/angular-how-to-update-queryparams-without-changing-route
-    this.router.navigate([], { queryParams: matrixParams, queryParamsHandling: 'merge' });
   }
 
   public onPauseResumeButtonClicked() {
@@ -294,16 +288,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
               //   console.error('not a unique booking id found');
               //   return;
               // }
-              this.currentBookingDeclarationId = currentTask._bookingDeclarationId;
-
-              const bookingDocumentPromise = this.commitService.getBookingDeclarationById(this.currentBookingDeclarationId);
-              bookingDocumentPromise.then((receivedBookingRaw: string) => {
-                const parsedDocuments: IBookingDeclarationsDocument[]
-                = this.sessionStorageSerializationService.deSerialize(receivedBookingRaw);
-
-                this.bookingDeclarationCode = parsedDocuments[0].code;
-              });
+              
               // });
+              this.setBookingCode(currentTask);
 
             } else {
               console.error('no task option for:' + taskId);
@@ -313,6 +300,18 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
           }
         });
       });
+    });
+  }
+
+  private setBookingCode(task: ITask) {
+    this.currentBookingDeclarationId = task._bookingDeclarationId;
+
+    const bookingDocumentPromise = this.commitService.getBookingDeclarationById(this.currentBookingDeclarationId);
+    bookingDocumentPromise.then((receivedBookingRaw: string) => {
+      const parsedDocuments: IBookingDeclarationsDocument[]
+      = this.sessionStorageSerializationService.deSerialize(receivedBookingRaw);
+
+      this.bookingDeclarationCode = parsedDocuments[0].code;
     });
   }
 

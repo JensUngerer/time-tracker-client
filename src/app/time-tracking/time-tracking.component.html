@@ -26,6 +26,7 @@
             matInput
             [formControl]="timeTrackingTaskSelectionFromControl"
             [required]="true"
+            (selectionChange)="onTaskChange()"
           >
             <mat-option
               *ngFor="let taskOption of taskOptions"
