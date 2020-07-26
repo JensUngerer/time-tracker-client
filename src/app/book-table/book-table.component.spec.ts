@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CommitTableComponent } from './commit-table.component';
+import { BookTableComponent } from './book-table.component';
 
 describe('CommitTableComponent', () => {
-  let component: CommitTableComponent;
-  let fixture: ComponentFixture<CommitTableComponent>;
+  let component: BookTableComponent;
+  let fixture: ComponentFixture<BookTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CommitTableComponent ]
+      declarations: [ BookTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CommitTableComponent);
+    fixture = TestBed.createComponent(BookTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

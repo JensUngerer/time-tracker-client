@@ -11,11 +11,11 @@ interface ICommitGridLine {
 }
 
 @Component({
-  selector: 'mtt-commit-table',
-  templateUrl: './commit-table.component.html',
-  styleUrls: ['./commit-table.component.scss']
+  selector: 'mtt-book-table',
+  templateUrl: './book-table.component.html',
+  styleUrls: ['./book-table.component.scss']
 })
-export class CommitTableComponent implements OnInit, OnChanges, OnDestroy {
+export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input()
   currentDayOption: IDurationSum;
