@@ -15,7 +15,7 @@ export class SessionStorageSerializationService {
   public deSerialize<T>(dataStr: string): T {
     // c.f.: https://stackoverflow.com/questions/9194372/why-does-json-stringify-screw-up-my-datetime-object
     const dateTimeReceiver = (key: any, value: any) => {
-      if (key === 'startTime' || key === 'endTime') {
+      if (key === 'startTime' || key === 'endTime' || key === 'day') {
         return new Date(value);
       } else {
         return value;

@@ -16,6 +16,10 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getDurationSumsForTasks() {
+    const url = this.httpBaseUrl + routes.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
+    return this.httpGet(url);
+  }
 
   getCommitDays() {
     const url = this.httpBaseUrl + routes.port + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
