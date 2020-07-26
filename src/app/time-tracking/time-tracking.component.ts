@@ -36,6 +36,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private allTasks: ITask[];
 
+  private timeEntryId: string;
+
   // https://stackoverflow.com/questions/31548311/angular-html-binding
   @Output()
   public currentTimeEntryDuration: string;
@@ -80,13 +82,20 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
     this.isPauseResumeButtonDisabled = true;
+    const task = this.timeTrackingTaskSelectionFromControl.value;
+    if (!task) {
+      console.error('there is no task selected');
+      return;
+    }
+    const taskId = task.taskId;
+    const currentBookingDeclarationId = task._bookingDeclarationId;
+
 
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
-      const taskId = this.timeTrackingTaskSelectionFromControl.value.taskId;
 
-      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId,
-        this.currentBookingDeclarationId);
+      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId, 
+        currentBookingDeclarationId);
       startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
         // visualize current duration
         const oneSecondInMilliseconds = 1000.0;
@@ -95,7 +104,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
           this.visualizeTimeEntry(resolvedValue.timeEntryId);
         }, oneSecondInMilliseconds);
 
-        this.setTimeEntryIdInUrl(resolvedValue.timeEntryId);
+        // this.setTimeEntryId(resolvedValue.timeEntryId);
+        this.timeEntryId = resolvedValue.timeEntryId;
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = false;
       });
@@ -107,7 +117,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       });
 
     } else {
-      const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.getTimeEntryIdFromUrl());
+      const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.timeEntryId);
       stopTimeTrackingPromise.then(() => {
         if (this.durationVisualizationIntervalId) {
           clearInterval(this.durationVisualizationIntervalId);
@@ -116,7 +126,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
 
-        this.visualizeTimeEntry(this.getTimeEntryIdFromUrl());
+        this.visualizeTimeEntry(this.timeEntryId);
       });
       stopTimeTrackingPromise.catch(() => {
         console.error('stopTimeTracking rejected');
@@ -124,7 +134,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
         this.isStartStopButtonDisabled = false;
         this.isPauseResumeButtonDisabled = true;
 
-        this.visualizeTimeEntry(this.getTimeEntryIdFromUrl());
+        this.visualizeTimeEntry(this.timeEntryId);
       });
     }
   }
@@ -134,7 +144,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     return retrievedTimeEntryId;
   }
 
-  private setTimeEntryIdInUrl(timeEntryId: string) {
+  private setTimeEntryId(timeEntryId: string) {
     const matrixParams = {};
     matrixParams[routesConfig.timeEntryIdProperty] = timeEntryId;
 
@@ -146,7 +156,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.isPauseResumeButtonDisabled = true;
     this.isStartStopButtonDisabled = true;
 
-    const currentTimeEntryId = this.getTimeEntryIdFromUrl();
+    const currentTimeEntryId = this.timeEntryId;
 
     this.pauseResumeButtonLabel = (this.pauseResumeButtonLabel === 'Pause') ? 'Resume' : 'Pause';
     if (this.pauseResumeButtonLabel === 'Resume') {
