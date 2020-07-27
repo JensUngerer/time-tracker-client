@@ -166,7 +166,7 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.projectIdProperty;
     body[routes.httpPatchIdPropertyValue] = projectId;
 
-    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabled;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
     return this.performHttpPatch(url, body);
@@ -192,7 +192,7 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.taskIdProperty;
     body[routes.httpPatchIdPropertyValue] = taskId;
 
-    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDeletedInClientProperty;
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabled;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
     return this.performHttpPatch(url, body);
