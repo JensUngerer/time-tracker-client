@@ -48,7 +48,16 @@
           </div>
 
           <div class="innerFormFlexItem">
-            <label>Task: </label
+            <label>Task Number: </label
+            ><input
+              type="text"
+              [formControlName]="formControlNameTaskNumber"
+              [required]="true"
+            />
+          </div>
+
+          <div class="innerFormFlexItem">
+            <label>Task Name: </label
             ><input
               type="text"
               [formControlName]="formControlNameTaskName"

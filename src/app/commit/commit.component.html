@@ -18,6 +18,20 @@
                 </mat-option>
               </mat-select>
             </div>
+            <div class="formFlexItem">
+              <mtt-commit-table
+                [currentDayOption]="currentDayOption"
+              ></mtt-commit-table>
+            </div>
+            <!-- <div class="commit-button-container">
+              <button
+                class="commit-button"
+                type="submit"
+                [disabled]="formGroup.invalid || isButtonDisabled"
+              >
+                Commit
+              </button>
+            </div> -->
           </div>
         </form>
       </div>

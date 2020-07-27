@@ -3,9 +3,10 @@ import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { CommitService } from '../commit.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITasksDurationSum } from './../../../../common/typescript/iTasksDurationSum'
+import { ICommitTask } from '../../../../common/typescript/iCommitTasks';
 
 interface ICommitOption {
-  value: any;
+  value: ITasksDurationSum;
   viewValue: Date;
 }
 
@@ -22,6 +23,7 @@ class CommitOption implements ICommitOption {
   styleUrls: ['./../book/book.component.scss']
 })
 export class CommitComponent implements OnInit {
+  currentDayOption: ITasksDurationSum;
 
   formControlName = '';
   formGroup: FormGroup = null;
@@ -69,6 +71,7 @@ export class CommitComponent implements OnInit {
       });
 
       this.formGroup.controls[this.formGroupControlNames[0]].setValue(this.dayOptions[0].value);
+      this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
     });
     durationSumsPromise.catch(() => {
       console.error('no durations received');
@@ -79,6 +82,7 @@ export class CommitComponent implements OnInit {
     // DEBUGGING:
     // console.log($event);
     // console.log(new Error().stack)
+    this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
   }
 
 }

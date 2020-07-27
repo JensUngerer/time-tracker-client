@@ -12,8 +12,9 @@ export class TaskService {
 
   // constructor(private inMemoryDataService: InMemoryDataService) { }
 
-  public createTask(taskName: string, projectId: string, bookingDeclarationId: string): ITask {
+  public createTask(taskName: string, projectId: string, bookingDeclarationId: string, taskNumber: string): ITask {
     const newTask: ITask = {
+      number: taskNumber,
       name: taskName,
       taskId: uuid.v4(),
       _projectId: projectId,

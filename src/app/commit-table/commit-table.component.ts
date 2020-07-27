@@ -1,24 +1,23 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, SimpleChanges, OnChanges, OnDestroy } from '@angular/core';
-import { IDurationSum } from '../../../../common/typescript/iDurationSum';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { ICommit } from '../../../../common/typescript/iCommit';
-import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
+import { Component, OnInit, SimpleChanges, EventEmitter, Output, Input, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
+import { ICommitTask } from './../../../../common/typescript/iCommitTasks';
+import { ICommitGridLine } from '../book-table/book-table.component';
+import { ITasksDurationSum } from '../../../../common/typescript/iTasksDurationSum';
+import { ITask } from '../../../../common/typescript/iTask';
 
-export interface ICommitGridLine {
-  // bookingCode: string;
-  booking: IBookingDeclaration;
+interface ITaskCommitGridLine  {
+  task: ITask;
   durationInHours: number;
 }
 
 @Component({
-  selector: 'mtt-book-table',
-  templateUrl: './book-table.component.html',
-  styleUrls: ['./book-table.component.scss']
+  selector: 'mtt-commit-table',
+  templateUrl: './commit-table.component.html',
+  styleUrls: ['./../book-table/book-table.component.scss']
 })
-export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
-
+export class CommitTableComponent implements OnInit {
   @Input()
-  currentDayOption: IDurationSum;
+  currentDayOption: ITasksDurationSum;
 
   @ViewChild(MatTable)
   public theTable: MatTable<ICommitGridLine>;
@@ -27,7 +26,7 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
   public columnName: string = null;
 
   // @Input()
-  public gridLines: ICommitGridLine[] = [];
+  public gridLines: ITaskCommitGridLine[] = [];
 
   @Output()
   public nameCellClicked: EventEmitter<ICommitGridLine> = new EventEmitter<ICommitGridLine>();
@@ -35,11 +34,11 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output()
   public deleteRowClicked: EventEmitter<ICommitGridLine> = new EventEmitter<ICommitGridLine>();
 
-  public readonly displayedColumns: string[] = ['bookingCode', 'bookingDescription', 'durationInHours'];
+  public readonly displayedColumns: string[] = ['taskNumber', 'taskName', 'durationInHours'];
 
   // public readonly faTrash = faTrash;
 
-  public readonly dataSource: MatTableDataSource<ICommitGridLine> = null;
+  public readonly dataSource: MatTableDataSource<ITaskCommitGridLine> = null;
 
   private onRedrawTable(areRowsReset: boolean) {
     if (areRowsReset) {
@@ -48,10 +47,9 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
       this.gridLines = [];
       if (this.currentDayOption) {
         const durations = this.currentDayOption.durations;
-        durations.forEach((oneDuration: ICommit) => {
-          // const bookingCode = oneDuration.bookingDeclarationId;
+        durations.forEach((oneDuration: ICommitTask) => {
           this.gridLines.push({
-            booking:  oneDuration.basis,
+            task:  oneDuration.basis,
             durationInHours: oneDuration.durationInHours
           });
         });
@@ -66,15 +64,6 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
       this.theTable.renderRows();
     }
   }
-
-  // public onNameCellClicked(row: ICommitGridLine) {
-  //   this.nameCellClicked.emit(row);
-  // }
-
-  // public onDeleteRowClicked(row: ICommitGridLine) {
-  //   this.deleteRowClicked.emit(row);
-  // }
-
   constructor() {
     this.dataSource = new MatTableDataSource(this.gridLines);
   }
@@ -93,5 +82,4 @@ export class BookTableComponent implements OnInit, OnChanges, OnDestroy {
       this.onRedrawTable(true);
     }
   }
-
 }

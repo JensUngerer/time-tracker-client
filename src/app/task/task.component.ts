@@ -33,6 +33,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public taskFormGroup: FormGroup = null;
 
+  public formControlNameTaskNumber = 'theTaskNumber';
+
   public formControlNameTaskName = 'theTaskName';
 
   public formControlNameProjectName = 'theProjectName';
@@ -52,10 +54,13 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const bookingDeclarationId = this.taskFormGroup.controls[this.formControlNameBookingDeclaration].value.bookingDeclarationId;
 
-    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId);
+    const taskNumber = values[this.formControlNameTaskNumber];
+
+    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId, taskNumber);
 
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
+    this.taskFormGroup.controls[this.formControlNameTaskNumber].setValue('');
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
@@ -93,6 +98,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     configObj[this.formControlNameProjectName] = new FormControl('');
     configObj[this.formControlNameTaskName] = new FormControl('');
     configObj[this.formControlNameBookingDeclaration] = new FormControl('');
+    configObj[this.formControlNameTaskNumber] = new FormControl();
 
     this.taskFormGroup = new FormGroup(configObj);
 
