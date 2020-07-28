@@ -2,7 +2,10 @@
   <div class="flexItem">
     <div class="innerContainer">
       <div class="innerFlexItem">
-        <form [formGroup]="formGroup">
+        <form
+          [formGroup]="formGroup"
+          (submit)="onCommitClicked(formGroup.value)"
+        >
           <div class="formFlexContainer">
             <div class="formFlexItem">
               <mat-select
@@ -23,7 +26,7 @@
                 [currentDayOption]="currentDayOption"
               ></mtt-commit-table>
             </div>
-            <!-- <div class="commit-button-container">
+            <div class="commit-button-container">
               <button
                 class="commit-button"
                 type="submit"
@@ -31,7 +34,7 @@
               >
                 Commit
               </button>
-            </div> -->
+            </div>
           </div>
         </form>
       </div>

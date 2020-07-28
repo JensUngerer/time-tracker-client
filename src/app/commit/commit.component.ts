@@ -85,4 +85,9 @@ export class CommitComponent implements OnInit {
     this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
   }
 
+  onCommitClicked($event) {
+    const currentDayOption = this.formGroup[this.formGroupControlNames[0]].value;
+    const currentDurations: ITasksDurationSum[] = currentDayOption.durations;
+
+  }
 }

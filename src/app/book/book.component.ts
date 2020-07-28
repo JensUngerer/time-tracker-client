@@ -10,6 +10,8 @@ import { HelpersService } from '../helpers.service';
 import { ProjectService } from '../project.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ICommitBase } from './../../../../common/typescript/iCommitBase';
+import { PostTimeEntryService } from '../post-time-entry.service';
+import { ITasksDurationSum } from '../../../../common/typescript/iTasksDurationSum';
 
 interface IBookOption {
   value: IDurationSum;
@@ -49,10 +51,9 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   public selectedOption: IDurationSum;
 
-  constructor(private projectService: ProjectService,
-              private commitService: CommitService,
-              private helpersService: HelpersService,
-              private sessionStorageSerializationService: SessionStorageSerializationService) {
+  constructor(private postTimeEntryService: PostTimeEntryService,
+    private commitService: CommitService,
+    private sessionStorageSerializationService: SessionStorageSerializationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.commitFormGroup = new FormGroup(this.formControlsMap);
@@ -116,35 +117,22 @@ export class BookComponent implements OnInit, AfterViewInit {
     // trigger writing of a time-record
     // (this will trigger a PATCH operation
     // of used time-entries to mark them as isDeletedInClient)
-    // currentDuration.forEach((oneDuration: ICommit) => {
-    let indexInLoop = 0;
-    const loop = () => {
-      if (indexInLoop >= currentDurations.length) {
+    this.postTimeEntryService.post(currentDurations, currentDayOption,
+      (currentDayOption: IDurationSum) => {
         this.deleteAndSwitchToNext(currentDayOption);
-        return;
-      }
-      const durationEntry = currentDurations[indexInLoop];
-      const timeRecordData: ITimeRecordsDocumentData = {
-        _bookingDeclarationId: (durationEntry.basis as IBookingDeclaration).bookingDeclarationId,
-        _timeEntryIds: durationEntry._timeEntryIds,
-        dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
-        durationInHours: durationEntry.durationInHours,
-        durationInMilliseconds: durationEntry.durationSumInMilliseconds,
-        durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(durationEntry.durationSumInMilliseconds)
-      };
-      const postCommitPromise = this.commitService.postCommit(timeRecordData);
-      postCommitPromise.then(() => {
-        indexInLoop++;
-        loop();
-      });
-      postCommitPromise.catch(() => {
-        console.error('posting commit failed:' + JSON.stringify(timeRecordData, null, 4));
+      },
+      (commitBase: ICommitBase) => {
+        const timeRecordData: ITimeRecordsDocumentData = {
+          _bookingDeclarationId: (commitBase.basis as IBookingDeclaration).bookingDeclarationId,
+          _timeEntryIds: commitBase._timeEntryIds,
+          dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+          durationInHours: commitBase.durationInHours,
+          durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          _taskId: null
+        };
 
-        indexInLoop++;
-        loop();
-      });
-    };
-    // initial call
-    loop();
+        return timeRecordData;
+      })
   }
 }
