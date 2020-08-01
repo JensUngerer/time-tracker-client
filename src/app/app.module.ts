@@ -41,6 +41,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { BookTableComponent } from './book-table/book-table.component';
 import { CommitComponent } from './commit/commit.component';
 import { CommitTableComponent } from './commit-table/commit-table.component';
+import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 
 @NgModule({
   entryComponents:[
@@ -62,7 +63,8 @@ import { CommitTableComponent } from './commit-table/commit-table.component';
     BookingDeclarationComponent,
     BookTableComponent,
     CommitComponent,
-    CommitTableComponent
+    CommitTableComponent,
+    CommitOrBookComponent
   ],
   imports: [
     BrowserModule,

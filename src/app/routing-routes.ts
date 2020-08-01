@@ -12,6 +12,7 @@ import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { CommitComponent } from './commit/commit.component';
+import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 
 export class RoutingRoutes {
 
@@ -64,9 +65,10 @@ export class RoutingRoutes {
     // },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
-      component: CommitComponent,
+      component: CommitOrBookComponent,
       data: {
-        label: ViewPaths.commit
+        label: ViewPaths.commit,
+        isTaskBased: true
       }
     },
     {
