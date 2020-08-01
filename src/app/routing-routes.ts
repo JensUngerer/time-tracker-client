@@ -75,7 +75,8 @@ export class RoutingRoutes {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
       component: BookComponent,
       data: {
-        label: ViewPaths.book
+        label: ViewPaths.book,
+        isBookingBase: true
       }
     },
     {

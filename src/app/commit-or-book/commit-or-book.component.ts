@@ -41,8 +41,9 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     'daySelect'
   ];
 
-  // @Input()
-  public dayOptions: ICommitOrBookOption[] = [];
+  dayOptions: ICommitOrBookOption[] = [];
+
+  isButtonDisabled = false;
 
   constructor(private route: ActivatedRoute,
               private commitService: CommitService,
@@ -59,6 +60,10 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
       this.isAlreadyInitialized = true;
       this.initializeTaskBaseDaySelect();
     }
+    if (this.isBookingBased && !this.isAlreadyInitialized) {
+      this.isAlreadyInitialized = true;
+      this.initializeBookingBasedDaySelect();
+    }
   }
 
   private createFormGroup() {
@@ -71,10 +76,6 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
 
   private initializeDaySelect() {
     this.formGroup.controls[this.formGroupControlNames[0]].setValue(this.dayOptions[0].value);
-  }
-
-  private initializeDataTable() {
-    this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
   }
 
   private initializeTaskBaseDaySelect() {
@@ -99,10 +100,32 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
       });
 
       this.initializeDaySelect();
-      this.initializeDataTable();
+      this.onDaySelectionChanged();
     });
     durationSumsPromise.catch(() => {
       console.error('no durations received');
+    });
+  }
+
+  private initializeBookingBasedDaySelect() {
+    const promise = this.commitService.getCommitDays();
+    promise.then((receivedData) => {
+      console.log(receivedData);
+      const parsedDurationSums: IDurationSumBase[] = this.sessionStorageSerializationService.deSerialize(receivedData);
+      if (!parsedDurationSums || parsedDurationSums.length === 0) {
+        console.error('no duration sums received');
+        return;
+      }
+
+      parsedDurationSums.forEach((oneDurationSumForOneDay) => {
+        this.dayOptions.push(new ICommitOrBookOption(oneDurationSumForOneDay));
+      });
+
+      this.initializeDaySelect();
+      this.onDaySelectionChanged();
+    });
+    promise.catch((err: any) => {
+      console.log(err);
     });
   }
 
@@ -111,6 +134,10 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     if (this.isTaskBased  && !this.isAlreadyInitialized) {
       this.isAlreadyInitialized = true;
       this.initializeTaskBaseDaySelect();
+    }
+    if (this.isBookingBased && !this.isAlreadyInitialized) {
+      this.isAlreadyInitialized = true;
+      this.initializeBookingBasedDaySelect();
     }
   }
 
@@ -125,6 +152,10 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
 
   onSubmit(formValues: any) {
 
+  }
+
+  onDaySelectionChanged($event?: any) {
+    this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
   }
 
 }
