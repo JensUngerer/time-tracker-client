@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  flex: 1 1 100%;
+  flex-direction: column;
+}
+
+.innerContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.innerFlexItem {
+  flex: 0 1 auto;
+}
+
+.formFlexContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.formFlexItem {
+  flex: 0 1 auto;
+}
+
+::ng-deep .mat-select-value {
+  text-align: center !important;
+}
+
+.commit-button-container {
+  display: flex;
+  flex: 1 1 100%;
+  justify-content: center;
+}
+
+.commit-button {
+  flex: 1 1 100%;
+}

@@ -31,7 +31,7 @@ class ICommitOrBookOption {
 @Component({
   selector: 'mtt-commit-or-book',
   templateUrl: './commit-or-book.component.html',
-  styleUrls: ['./../book/book.component.scss']
+  styleUrls: ['./commit-or-book.component.scss']
 })
 export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
   private routeDataSubscription: Subscription;

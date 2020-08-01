@@ -1,18 +1,13 @@
 import { Routes } from '@angular/router';
-// import { HomeComponent } from './home/home.component';
-// import { UserComponent } from './user/user.component';
-import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
+
+import * as routesConfig from './../../../common/typescript/routes.js';
+import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
+import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';
-import { BookComponent } from './book/book.component';
-import { CompletedTaskComponent } from './completed-task/completed-task.component';
-import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
-import * as routesConfig from './../../../common/typescript/routes.js';
+import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
-import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
-import { CommitComponent } from './commit/commit.component';
-import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 
 export class RoutingRoutes {
 
@@ -68,8 +63,7 @@ export class RoutingRoutes {
       component: CommitOrBookComponent,
       data: {
         label: ViewPaths.commit,
-        isTaskBased: true,
-        // isAlreadyInitialized: false
+        isTaskBased: true
       }
     },
     {
@@ -77,8 +71,7 @@ export class RoutingRoutes {
       component: CommitOrBookComponent,
       data: {
         label: ViewPaths.book,
-        isBookingBased: true,
-        // isAlreadyInitialized: false
+        isBookingBased: true
       }
     },
     {
