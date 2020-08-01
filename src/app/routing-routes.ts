@@ -68,15 +68,17 @@ export class RoutingRoutes {
       component: CommitOrBookComponent,
       data: {
         label: ViewPaths.commit,
-        isTaskBased: true
+        isTaskBased: true,
+        // isAlreadyInitialized: false
       }
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
-      component: BookComponent,
+      component: CommitOrBookComponent,
       data: {
         label: ViewPaths.book,
-        isBookingBase: true
+        isBookingBased: true,
+        // isAlreadyInitialized: false
       }
     },
     {

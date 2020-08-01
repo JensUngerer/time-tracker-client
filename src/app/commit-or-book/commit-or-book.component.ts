@@ -78,15 +78,13 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     this.formGroup.controls[this.formGroupControlNames[0]].setValue(this.dayOptions[0].value);
   }
 
-  private initializeTaskBaseDaySelect() {
-    const durationSumsPromise = this.commitService.getDurationSumsForTasks();
-    
-    durationSumsPromise.then((receivedDurationSums: string) => {
+  private handleInComingDaySelectPromise(daySelectPromise: Promise<string>, errorMessage: string) {
+    daySelectPromise.then((receivedDurationSums: string) => {
       const parsedSums: IDurationSumBase[] = this.sessionStorageSerializationService.deSerialize(receivedDurationSums);
       
       if (!parsedSums ||
           parsedSums.length === 0) {
-        console.error('no duration sums for tasks received');
+        console.error(errorMessage);
         return;
       }
       
@@ -102,35 +100,24 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
       this.initializeDaySelect();
       this.onDaySelectionChanged();
     });
-    durationSumsPromise.catch(() => {
-      console.error('no durations received');
+    daySelectPromise.catch(() => {
+      console.error('promise rejected for day select options (duration sums)');
     });
+  }
+
+  private initializeTaskBaseDaySelect() {
+    const durationSumsPromise = this.commitService.getDurationSumsForTasks();
+    this.handleInComingDaySelectPromise(durationSumsPromise, 'no duration sums for tasks received');
   }
 
   private initializeBookingBasedDaySelect() {
     const promise = this.commitService.getCommitDays();
-    promise.then((receivedData) => {
-      console.log(receivedData);
-      const parsedDurationSums: IDurationSumBase[] = this.sessionStorageSerializationService.deSerialize(receivedData);
-      if (!parsedDurationSums || parsedDurationSums.length === 0) {
-        console.error('no duration sums received');
-        return;
-      }
-
-      parsedDurationSums.forEach((oneDurationSumForOneDay) => {
-        this.dayOptions.push(new ICommitOrBookOption(oneDurationSumForOneDay));
-      });
-
-      this.initializeDaySelect();
-      this.onDaySelectionChanged();
-    });
-    promise.catch((err: any) => {
-      console.log(err);
-    });
+    this.handleInComingDaySelectPromise(promise, 'no duration sums for booking received');
   }
 
   private initializeWithRouteData(receivedRouteData: Data) {
     this.isTaskBased = receivedRouteData.isTaskBased;
+    this.isBookingBased = receivedRouteData.isBookingBased;
     if (this.isTaskBased  && !this.isAlreadyInitialized) {
       this.isAlreadyInitialized = true;
       this.initializeTaskBaseDaySelect();
