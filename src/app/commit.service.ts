@@ -203,9 +203,9 @@ export class CommitService {
     return this.httpPost(routes.projectBodyProperty, project, url);
   }
 
-  public postCommit(line: ITimeRecordsDocumentData): Promise<any> {
+  public postCommit(collectionName: string, line: ITimeRecordsDocumentData): Promise<any> {
     const url = this.httpBaseUrl + routes.port + routes.timeRecord;
-    return this.httpPost(routes.timeRecordBodyProperty, line, url);
+    return this.httpPost(routes.timeRecordBodyProperty, line, url, collectionName);
   }
 
   public getTasksByProjectId(projectId: string): Promise<string> {
@@ -213,11 +213,13 @@ export class CommitService {
     return this.httpGet(url);
   }
 
-  private httpPost(propertyName: string, data: any, url: string): Promise<any> {
+  private httpPost(propertyName: string, data: any, url: string, collectionName?: string): Promise<any> {
     return new Promise<any>((resolve: (value: any) => void) => {
       const body: any = {};
       body[propertyName] = data;
-
+      if (collectionName) {
+        body[routes.collectionNamePropertyName] = collectionName;
+      }
       const options: any = {
         'Content-Type': 'application/json'
       };

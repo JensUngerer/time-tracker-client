@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
+import { ICommitBase } from '../../../../common/typescript/iCommitBase';
+import { ITask } from '../../../../common/typescript/iTask';
+import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { CommitService } from '../commit.service';
+import { PostTimeEntryService } from '../post-time-entry.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
-import { ITasksDurationSum } from './../../../../common/typescript/iTasksDurationSum'
-import { ICommitTask } from '../../../../common/typescript/iCommitTasks';
+import { ITasksDurationSum } from './../../../../common/typescript/iTasksDurationSum';
+import routes from './../../../../common/typescript/routes.js';
 
 interface ICommitOption {
   value: ITasksDurationSum;
@@ -39,7 +45,8 @@ export class CommitComponent implements OnInit {
     // }
   ];
 
-  constructor(private commitService: CommitService,
+  constructor(private postTimeEntryService: PostTimeEntryService,
+              private commitService: CommitService,
               private sessionStorageSerializationService: SessionStorageSerializationService) {
   }
 
@@ -85,9 +92,34 @@ export class CommitComponent implements OnInit {
     this.currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
   }
 
-  onCommitClicked($event) {
-    const currentDayOption = this.formGroup.controls[this.formGroupControlNames[0]].value;
-    const currentDurations: ITasksDurationSum[] = currentDayOption.durations;
+  private deleteAndSwitchToNext(currentDayOption: ITasksDurationSum) {
 
+  }
+
+  onCommitClicked($event) {
+    const currentDayOption: ITasksDurationSum = this.formGroup.controls[this.formGroupControlNames[0]].value;
+    // const currentDurations: ITasksDurationSum = currentDayOption.value.durations;
+    // const tasksDurationSum: ITasksDurationSum = currentDayOption.value;
+    const durations: ICommitBase[] = currentDayOption.durations;
+  
+  
+    this.postTimeEntryService.post(routes.commitTimeRecordsCollectionName, durations, currentDayOption,
+      (currentDayOption: ITasksDurationSum) => {
+        this.deleteAndSwitchToNext(currentDayOption);
+      },
+      (commitBase: ICommitBase) => {
+        const timeRecordData: ITimeRecordsDocumentData = {
+          _bookingDeclarationId: null,
+          _timeEntryIds: commitBase._timeEntryIds,
+          dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+          durationInHours: commitBase.durationInHours,
+          durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          _taskId: (commitBase.basis as ITask).taskId,
+          // collectionName: routes.commitTimeRecordsCollectionName
+        };
+
+        return timeRecordData;
+      });
   }
 }

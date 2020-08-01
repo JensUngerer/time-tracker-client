@@ -13,7 +13,8 @@ export class PostTimeEntryService {
 
   constructor(private commitService: CommitService) { }
 
- post(currentDurations: ICommitBase[], 
+ post(collectionName: string,
+  currentDurations: ICommitBase[], 
   currentDayOption: IDurationSum | ITasksDurationSum, 
   deleteAndSwitchToNext: (currentDayOption: IDurationSum | ITasksDurationSum) => void,
   createTimeRecordData: (commitBase: ICommitBase) => ITimeRecordsDocumentData ) {
@@ -26,7 +27,7 @@ export class PostTimeEntryService {
       const durationEntry = currentDurations[indexInLoop];
       
       const timeRecordData: ITimeRecordsDocumentData = createTimeRecordData(durationEntry);
-      const postCommitPromise = this.commitService.postCommit(timeRecordData);
+      const postCommitPromise = this.commitService.postCommit(collectionName, timeRecordData);
       postCommitPromise.then(() => {
         indexInLoop++;
         loop();

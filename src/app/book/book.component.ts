@@ -6,12 +6,10 @@ import { IBookingDeclaration } from '../../../../common/typescript/iBookingDecla
 import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { CommitService } from '../commit.service';
-import { HelpersService } from '../helpers.service';
-import { ProjectService } from '../project.service';
+import { PostTimeEntryService } from '../post-time-entry.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ICommitBase } from './../../../../common/typescript/iCommitBase';
-import { PostTimeEntryService } from '../post-time-entry.service';
-import { ITasksDurationSum } from '../../../../common/typescript/iTasksDurationSum';
+import routes from './../../../../common/typescript/routes.js';
 
 interface IBookOption {
   value: IDurationSum;
@@ -117,7 +115,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     // trigger writing of a time-record
     // (this will trigger a PATCH operation
     // of used time-entries to mark them as isDeletedInClient)
-    this.postTimeEntryService.post(currentDurations, currentDayOption,
+    this.postTimeEntryService.post(routes.timeRecordsCollectionName, currentDurations, currentDayOption,
       (currentDayOption: IDurationSum) => {
         this.deleteAndSwitchToNext(currentDayOption);
       },
@@ -129,10 +127,11 @@ export class BookComponent implements OnInit, AfterViewInit {
           durationInHours: commitBase.durationInHours,
           durationInMilliseconds: commitBase.durationSumInMilliseconds,
           durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
-          _taskId: null
+          _taskId: null,
+          // collectionName: routes.timeRecordsCollectionName
         };
 
         return timeRecordData;
-      })
+      });
   }
 }
