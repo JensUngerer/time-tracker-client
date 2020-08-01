@@ -6,6 +6,15 @@ import { SessionStorageSerializationService } from '../session-storage-serializa
 import { ActivatedRoute, Data } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { ITasksDurationSum } from '../../../../common/typescript/iTasksDurationSum';
+import { ICommitBase } from '../../../../common/typescript/iCommitBase';
+import { PostTimeEntryService } from '../post-time-entry.service';
+import routes from './../../../../common/typescript/routes.js';
+import { ITimeRecordsDocumentData } from '../../../../common/typescript/mongoDB/iTimeRecordsDocument';
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
+import { ITask } from '../../../../common/typescript/iTask';
+import { IDurationSum } from '../../../../common/typescript/iDurationSum';
+import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
 
 interface ICommitOrBookOption {
   value: IDurationSumBase;
@@ -45,7 +54,8 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
 
   isButtonDisabled = false;
 
-  constructor(private route: ActivatedRoute,
+  constructor(private postTimeEntryService: PostTimeEntryService,
+              private route: ActivatedRoute,
               private commitService: CommitService,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
   
@@ -87,10 +97,7 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
         console.error(errorMessage);
         return;
       }
-      
-      // DEBUGGING:
-      // console.log(parsedSums);
-      // const durations = parsedSums.durations;
+
       parsedSums.forEach((oneParsedSum: IDurationSumBase) => {
         this.dayOptions.push(
             new ICommitOrBookOption(oneParsedSum)
@@ -132,13 +139,80 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     this.routeDataSubscription = this.route.data.pipe(tap(this.initializeWithRouteData.bind(this))).subscribe();
   }
 
+  private deleteAndSwitchToNext(currentDayOption: IDurationSumBase) {
+    // delete current entry (visually only)
+    const indexToDelete = this.dayOptions.findIndex((oneDayOption: ICommitOrBookOption) => {
+      return oneDayOption.value.day === currentDayOption.day;
+    });
+    if (indexToDelete === -1) {
+      console.error('cannot delete visually');
+      return;
+    }
+    this.dayOptions.splice(indexToDelete, 1);
+
+    // switch to next entry
+    if (indexToDelete < this.dayOptions.length) {
+      this.formGroup.controls[this.formGroupControlNames[0]].setValue(this.dayOptions[indexToDelete].value);
+    } else {
+      this.formGroup.controls[this.formGroupControlNames[0]].setValue(null);
+    }
+    this.onDaySelectionChanged();
+  }
+
+  private submitTaskedBased(currentDayOption: IDurationSumBase, durations: ICommitBase[]) {
+    this.postTimeEntryService.post(routes.commitTimeRecordsCollectionName, durations, currentDayOption as ITasksDurationSum,
+      (currentDayOption: ITasksDurationSum) => {
+        this.deleteAndSwitchToNext(currentDayOption);
+      },
+      (commitBase: ICommitBase) => {
+        const timeRecordData: ITimeRecordsDocumentData = {
+          _bookingDeclarationId: null,
+          _timeEntryIds: commitBase._timeEntryIds,
+          dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+          durationInHours: commitBase.durationInHours,
+          durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          _taskId: (commitBase.basis as ITask).taskId,
+        };
+
+        return timeRecordData;
+      });
+  }
+
+  private submitBookingBased(currentDayOption: IDurationSumBase, currentDurations: ICommitBase[]) {
+    this.postTimeEntryService.post(routes.timeRecordsCollectionName, currentDurations, currentDayOption as IDurationSum,
+      (currentDayOption: IDurationSum) => {
+        this.deleteAndSwitchToNext(currentDayOption);
+      },
+      (commitBase: ICommitBase) => {
+        const timeRecordData: ITimeRecordsDocumentData = {
+          _bookingDeclarationId: (commitBase.basis as IBookingDeclaration).bookingDeclarationId,
+          _timeEntryIds: commitBase._timeEntryIds,
+          dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+          durationInHours: commitBase.durationInHours,
+          durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          _taskId: null,
+        };
+
+        return timeRecordData;
+      });
+  }
+
   ngOnInit(): void {
     this.createFormGroup();
     this.initializeComponentViaRouteData();
   }
 
   onSubmit(formValues: any) {
-
+    const currentDayOption: IDurationSumBase = this.formGroup.controls[this.formGroupControlNames[0]].value;
+    const durations: ICommitBase[] = currentDayOption.durations;
+    if (this.isTaskBased) {
+      this.submitTaskedBased(currentDayOption, durations);
+    }
+    if (this.isBookingBased) {
+      this.submitBookingBased(currentDayOption, durations);
+    }
   }
 
   onDaySelectionChanged($event?: any) {
