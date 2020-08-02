@@ -19,14 +19,13 @@
               </mat-select>
             </div>
             <div class="formFlexItem">
-              <mtt-commit-table
-                *ngIf="isTaskBased"
+              <mtt-commit-or-book-table
+                [isTaskBased]="isTaskBased"
+                [isBookingBased]="isBookingBased"
+                [columnNames]="columnNames"
                 [currentDayOption]="currentDayOption"
-              ></mtt-commit-table>
-              <mtt-book-table
-                *ngIf="isBookingBased"
-                [currentDayOption]="currentDayOption"
-              ></mtt-book-table>
+              >
+              </mtt-commit-or-book-table>
             </div>
             <div class="commit-button-container">
               <button

@@ -1,16 +1,16 @@
 <div *ngIf="dataSource && dataSource.data && dataSource.data.length > 0">
     <table #projectsTable mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="taskNumber">
-        <th mat-header-cell *matHeaderCellDef>Task Number</th>
+      <ng-container matColumnDef="identifer">
+        <th mat-header-cell *matHeaderCellDef>{{identiferColumnName}}</th>
         <td mat-cell *matCellDef="let line">
-          {{ line.task.number}}
+          {{ line.identifer}}
         </td>
       </ng-container>
       <!---->
-      <ng-container matColumnDef="taskName">
-        <th mat-header-cell *matHeaderCellDef>Taks Description</th>
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> {{descriptionColumnName}}</th>
         <td mat-cell *matCellDef="let line">
-          {{ line.task.name}}
+          {{ line.description}}
         </td>
       </ng-container>
       <ng-container matColumnDef="durationInHours">
@@ -25,3 +25,4 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
+  

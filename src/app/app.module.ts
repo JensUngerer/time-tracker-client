@@ -20,10 +20,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BookTableComponent } from './book-table/book-table.component';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
+import { CommitOrBookTableComponent } from './commit-or-book-table/commit-or-book-table.component';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
-import { CommitTableComponent } from './commit-table/commit-table.component';
 import { CompletedTaskComponent } from './completed-task/completed-task.component';
 import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import { HomeComponent } from './home/home.component';
@@ -54,9 +53,8 @@ import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
     ProjectDeleteDialogComponent,
     NameTableComponent,
     BookingDeclarationComponent,
-    BookTableComponent,
-    CommitTableComponent,
-    CommitOrBookComponent
+    CommitOrBookComponent,
+    CommitOrBookTableComponent
   ],
   imports: [
     BrowserModule,

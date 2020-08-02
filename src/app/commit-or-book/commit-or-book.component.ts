@@ -15,6 +15,7 @@ import { DurationCalculator } from '../../../../common/typescript/helpers/durati
 import { ITask } from '../../../../common/typescript/iTask';
 import { IDurationSum } from '../../../../common/typescript/iDurationSum';
 import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
+import { IColumnNames } from '../commit-or-book-table/commit-or-book-table.component';
 
 interface ICommitOrBookOption {
   value: IDurationSumBase;
@@ -53,6 +54,8 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
   dayOptions: ICommitOrBookOption[] = [];
 
   isButtonDisabled = false;
+
+  columnNames: IColumnNames = null;
 
   constructor(private postTimeEntryService: PostTimeEntryService,
               private route: ActivatedRoute,
@@ -127,10 +130,18 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     this.isBookingBased = receivedRouteData.isBookingBased;
     if (this.isTaskBased  && !this.isAlreadyInitialized) {
       this.isAlreadyInitialized = true;
+      this.columnNames = {
+        description: 'Task Name',
+        identifer: 'Task Number'
+      };
       this.initializeTaskBaseDaySelect();
     }
     if (this.isBookingBased && !this.isAlreadyInitialized) {
       this.isAlreadyInitialized = true;
+      this.columnNames = {
+        description: 'Booking Description',
+        identifer: 'Booking Code'
+      };
       this.initializeBookingBasedDaySelect();
     }
   }
