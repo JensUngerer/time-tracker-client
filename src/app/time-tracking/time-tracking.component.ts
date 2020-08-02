@@ -74,7 +74,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public timeTrackingTimeEntrySelectionFromControl: AbstractControl = null;
 
-  public bookingDeclarationCode = '';
+  public bookingDeclarationDescription = '';
 
   private currentBookingDeclarationId;
 
@@ -82,7 +82,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     const task = this.timeTrackingUserSelectionForm
     .controls[this.formControlNameTaskSelectionDropDown]
     .value;
-    this.setBookingCode(task);
+    this.setBookingDescription(task);
   }
 
   public onStartStopButtonClicked() {
@@ -256,7 +256,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
               // }
               
               // });
-              this.setBookingCode(currentTask);
+              this.setBookingDescription(currentTask);
 
             } else {
               console.error('no task option for:' + taskId);
@@ -269,7 +269,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     });
   }
 
-  private setBookingCode(task: ITask) {
+  private setBookingDescription(task: ITask) {
     this.currentBookingDeclarationId = task._bookingDeclarationId;
 
     const bookingDocumentPromise = this.commitService.getBookingDeclarationById(this.currentBookingDeclarationId);
@@ -277,7 +277,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       const parsedDocuments: IBookingDeclarationsDocument[]
       = this.sessionStorageSerializationService.deSerialize(receivedBookingRaw);
 
-      this.bookingDeclarationCode = parsedDocuments[0].code;
+      this.bookingDeclarationDescription = parsedDocuments[0].description;
     });
   }
 
