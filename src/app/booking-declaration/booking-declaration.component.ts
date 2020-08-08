@@ -3,7 +3,7 @@ import { FormGroup, AbstractControl, FormControl, Validators, ValidatorFn, Valid
 import { IProject } from '../../../../common/typescript/iProject';
 import { CommitService } from '../commit.service';
 import { IBookingDeclaration } from './../../../../common/typescript/iBookingDeclaration';
-import uuid from 'uuid';
+import  { v4 } from 'uuid';
 
 @Component({
   selector: 'mtt-booking-declaration',
@@ -42,7 +42,7 @@ export class BookingDeclarationComponent implements OnInit {
       _projectIds,
       code,
       description,
-      bookingDeclarationId: uuid.v4()
+      bookingDeclarationId: v4()
     };
 
     // DEBUGGING:

@@ -1,7 +1,7 @@
 import { TaskService } from './task.service';
 // import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { HelpersService } from './helpers.service';
@@ -22,7 +22,7 @@ export class ProjectService {
   public createProject(projectName: string): IProject {
     const newProject: IProject = {
       name: projectName,
-      projectId: uuid.v4()
+      projectId: v4()
     };
 
     // this.inMemoryDataService.push(this.projectsKey, newProject);

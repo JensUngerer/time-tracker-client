@@ -1,7 +1,7 @@
 import { HelpersService } from './helpers.service';
 import { Injectable } from '@angular/core';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 // import { InMemoryDataService } from './in-memory-data.service';
 import { IPause } from '../../../common/typescript/iPause';
 import { CommitService } from './commit.service';
@@ -22,7 +22,7 @@ export class TimeTrackingService {
       day: null,
       startTime: new Date(),
       endTime: null,
-      timeEntryId: uuid.v4(),
+      timeEntryId: v4(),
       _taskId: taskId,
       duration: null,
       pauses: []

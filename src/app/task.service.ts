@@ -1,7 +1,7 @@
 // import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
 import { ITask } from '../../../common/typescript/iTask';
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class TaskService {
     const newTask: ITask = {
       number: taskNumber,
       name: taskName,
-      taskId: uuid.v4(),
+      taskId: v4(),
       _projectId: projectId,
       _bookingDeclarationId: bookingDeclarationId
     };
