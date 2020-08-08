@@ -171,7 +171,7 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   private submitTaskedBased(currentDayOption: IDurationSumBase, durations: ICommitBase[]) {
-    this.postTimeEntryService.post(routes.commitTimeRecordsCollectionName, durations, currentDayOption as ITasksDurationSum,
+    return this.postTimeEntryService.post(routes.commitTimeRecordsCollectionName, durations, currentDayOption as ITasksDurationSum,
       (currentDayOption: ITasksDurationSum) => {
         this.deleteAndSwitchToNext(currentDayOption);
       },
@@ -191,7 +191,7 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   private submitBookingBased(currentDayOption: IDurationSumBase, currentDurations: ICommitBase[]) {
-    this.postTimeEntryService.post(routes.timeRecordsCollectionName, currentDurations, currentDayOption as IDurationSum,
+    return this.postTimeEntryService.post(routes.timeRecordsCollectionName, currentDurations, currentDayOption as IDurationSum,
       (currentDayOption: IDurationSum) => {
         this.deleteAndSwitchToNext(currentDayOption);
       },
@@ -219,10 +219,18 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
     const currentDayOption: IDurationSumBase = this.formGroup.controls[this.formGroupControlNames[0]].value;
     const durations: ICommitBase[] = currentDayOption.durations;
     if (this.isTaskBased) {
-      this.submitTaskedBased(currentDayOption, durations);
+      const submitTaskBasedPromise = this.submitTaskedBased(currentDayOption, durations);
+      submitTaskBasedPromise.then((lastPostCommitResult: string) => {
+        const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
+        console.log(lastPostCommitResultParsed);
+      });
     }
     if (this.isBookingBased) {
-      this.submitBookingBased(currentDayOption, durations);
+      const submitBookingBasedPromise = this.submitBookingBased(currentDayOption, durations);
+      submitBookingBasedPromise.then((lastPostCommitResult: string) => {
+        const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
+        console.log(lastPostCommitResultParsed);
+      });
     }
   }
 

@@ -13,33 +13,38 @@ export class PostTimeEntryService {
 
   constructor(private commitService: CommitService) { }
 
- post(collectionName: string,
-  currentDurations: ICommitBase[], 
-  currentDayOption: IDurationSum | ITasksDurationSum, 
-  deleteAndSwitchToNext: (currentDayOption: IDurationSum | ITasksDurationSum) => void,
-  createTimeRecordData: (commitBase: ICommitBase) => ITimeRecordsDocumentData ) {
-    let indexInLoop = 0;
-    const loop = () => {
-      if (indexInLoop >= currentDurations.length) {
-        deleteAndSwitchToNext(currentDayOption);
-        return;
-      }
-      const durationEntry = currentDurations[indexInLoop];
-      
-      const timeRecordData: ITimeRecordsDocumentData = createTimeRecordData(durationEntry);
-      const postCommitPromise = this.commitService.postCommit(collectionName, timeRecordData);
-      postCommitPromise.then(() => {
-        indexInLoop++;
-        loop();
-      });
-      postCommitPromise.catch(() => {
-        console.error('posting commit failed:' + JSON.stringify(timeRecordData, null, 4));
+  post(collectionName: string,
+    currentDurations: ICommitBase[],
+    currentDayOption: IDurationSum | ITasksDurationSum,
+    deleteAndSwitchToNext: (currentDayOption: IDurationSum | ITasksDurationSum) => void,
+    createTimeRecordData: (commitBase: ICommitBase) => ITimeRecordsDocumentData) {
+    let lastPostCommitResult = null;
+    return new Promise<string>((resolve: (value?: string) => void) => {
+      let indexInLoop = 0;
+      const loop = () => {
+        if (indexInLoop >= currentDurations.length) {
+          deleteAndSwitchToNext(currentDayOption);
+          resolve(lastPostCommitResult);
+          return;
+        }
+        const durationEntry = currentDurations[indexInLoop];
 
-        indexInLoop++;
-        loop();
-      });
-    };
-    // initial call
-    loop();
+        const timeRecordData: ITimeRecordsDocumentData = createTimeRecordData(durationEntry);
+        const postCommitPromise = this.commitService.postCommit(collectionName, timeRecordData);
+        postCommitPromise.then((postCommitResult: string) => {
+          lastPostCommitResult = postCommitResult;
+          indexInLoop++;
+          loop();
+        });
+        postCommitPromise.catch(() => {
+          console.error('posting commit failed:' + JSON.stringify(timeRecordData, null, 4));
+
+          indexInLoop++;
+          loop();
+        });
+      };
+      // initial call
+      loop();
+    });
   }
 }
