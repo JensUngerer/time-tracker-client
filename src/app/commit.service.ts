@@ -7,13 +7,23 @@ import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclaration';
 import { environment } from './../environments/environment';
+import { SessionStorageSerializationService } from './session-storage-serialization.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommitService {
 
-  constructor(private httpClient: HttpClient) { }
+  private readonly httpOptions: any = {
+    headers: {
+      'Content-Type': 'text/plain'
+    },
+    reportProgress: true,
+    responseType: 'text'
+  };
+
+  constructor(private httpClient: HttpClient,
+              private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
   getDurationSumsForTasks() {
     const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
@@ -165,15 +175,16 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.projectIdProperty;
     body[routes.httpPatchIdPropertyValue] = projectId;
 
-    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabled;
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabledProperty;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
     return this.performHttpPatch(url, body);
   }
 
   private performHttpPatch(url: string, body: any): Promise<any> {
+    const serializedBody = this.sessionStorageSerializationService.serialize(body);
     return new Promise<any>((resolve: (value: any) => void) => {
-      this.httpClient.patch(url, body).subscribe((subscriptionReturnValue: any) => {
+      this.httpClient.patch(url, serializedBody, this.httpOptions).subscribe((subscriptionReturnValue: any) => {
         resolve(subscriptionReturnValue);
       });
     });
@@ -219,10 +230,8 @@ export class CommitService {
       if (collectionName) {
         body[routes.collectionNamePropertyName] = collectionName;
       }
-      const options: any = {
-        'Content-Type': 'application/json'
-      };
-      this.httpClient.post(url, body, options).subscribe((subscriptionValue: any) => {
+      const stringifiedBody = this.sessionStorageSerializationService.serialize<any>(body);
+      this.httpClient.post(url, stringifiedBody, this.httpOptions).subscribe((subscriptionValue: any) => {
         resolve(subscriptionValue);
       });
     });
@@ -240,14 +249,8 @@ export class CommitService {
 
   private httpGet(url: string): Promise<string> {
     return new Promise<string>((resolve: (values: string) => void, reject: (value: any) => void) => {
-      const options: any = {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        reportProgress: true,
-        responseType: 'text'
-      };
-      this.httpClient.get(url, options).subscribe((subscriptionReceivedData: any) => {
+
+      this.httpClient.get(url, this.httpOptions).subscribe((subscriptionReceivedData: any) => {
         resolve(subscriptionReceivedData);
       });
     });

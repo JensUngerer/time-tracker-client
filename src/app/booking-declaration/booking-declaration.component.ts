@@ -4,6 +4,7 @@ import { IProject } from '../../../../common/typescript/iProject';
 import { CommitService } from '../commit.service';
 import { IBookingDeclaration } from './../../../../common/typescript/iBookingDeclaration';
 import  { v4 } from 'uuid';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
 @Component({
   selector: 'mtt-booking-declaration',
@@ -115,7 +116,8 @@ export class BookingDeclarationComponent implements OnInit {
     this.bookingDeclarationFromGroup.setValidators(this.customBookingDeclarationValidator());
   }
 
-  constructor(private commitService: CommitService) {
+  constructor(private commitService: CommitService,
+              private sessionStorageSerializationService: SessionStorageSerializationService) {
   }
 
   ngOnInit(): void {
@@ -123,7 +125,7 @@ export class BookingDeclarationComponent implements OnInit {
 
     const getProjectsPromise = this.commitService.getProjects();
     getProjectsPromise.then((projectsStr: string) => {
-      this.projects = JSON.parse(projectsStr);
+      this.projects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
 
       this.setupForm();
     });

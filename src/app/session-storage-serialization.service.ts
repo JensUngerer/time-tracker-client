@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IStorageData } from '../../../common/typescript/iStorageData';
+import { Serialization } from './../../../common/typescript/helpers/serialization';
 
 @Injectable({
   providedIn: 'root'
@@ -9,29 +9,10 @@ export class SessionStorageSerializationService {
   constructor() { }
 
   public serialize<T>(data: T): string {
-    return JSON.stringify(data);
+    return Serialization.serialize<T>(data);
   }
 
   public deSerialize<T>(dataStr: string): T {
-    // c.f.: https://stackoverflow.com/questions/9194372/why-does-json-stringify-screw-up-my-datetime-object
-    const dateTimeReceiver = (key: any, value: any) => {
-      if (key === 'startTime' || key === 'endTime' || key === 'day') {
-        return new Date(value);
-      } else {
-        return value;
-      }
-    };
-    // https://stackoverflow.com/questions/4511705/how-to-parse-json-to-receive-a-date-object-in-javascript
-    // const dateTimeReceiver = (key: any, value: any) => {
-    //   let a;
-    //   if (typeof value === 'string') {
-    //     a = /\/Date\((\d*)\)\//.exec(value);
-    //     if (a) {
-    //       return new Date(+a[1]);
-    //     }
-    //   }
-    //   return value;
-    // };
-    return JSON.parse(dataStr, dateTimeReceiver);
+    return Serialization.deSerialize<T>(dataStr);
   }
 }

@@ -61,55 +61,70 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     this.afterDialogCloseSubscription$.subscribe((isOkButtonPressed: boolean) => {
       if (isOkButtonPressed) {
         // a) delete all (not yet committed!) timeEntries
-        const projectId = row.id;
-        const correspondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
-        correspondingTasksPromise.then((tasksStr: string) => {
-          const correspondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
-          let taskIds = [];
-          if (correspondingTasks || correspondingTasks.length > 0) {
-            taskIds = correspondingTasks.map((oneTask: ITask) => {
-              return oneTask.taskId;
-            });
-          }
+        // const projectId = row.id;
+        // const correspondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
+        // correspondingTasksPromise.then((tasksStr: string) => {
+        //   const correspondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
+        //   let taskIds = [];
+        //   if (correspondingTasks || correspondingTasks.length > 0) {
+        //     taskIds = correspondingTasks.map((oneTask: ITask) => {
+        //       return oneTask.taskId;
+        //     });
+        //   }
 
-          // b) deleting of corresponding timeEntries
-          // c) deleting of tasks
-          if (taskIds && taskIds.length > 0) {
-            let singleTaskIndex = 0;
-            const deletePromiseThenLoop = () => {
-              if (singleTaskIndex < taskIds.length) {
-                const singleTaskId = taskIds[singleTaskIndex];
-                this.commitService.deleteTimeEntryByTaskId(singleTaskId).then(() => {
-                  this.commitService.deleteTask(singleTaskId).then(() => {
-                    singleTaskIndex++;
-                    deletePromiseThenLoop();
-                  });
-                });
-              } else {
-                // do further stuff
-                // d) update database with the idDeletedInClient = true flag
-                const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
-                dbPatchedPromise.then((resolveValue: any) => {
-                  // DEBUGGING:
-                  console.log(resolveValue);
+        //   // b) deleting of corresponding timeEntries
+        //   // c) deleting of tasks
+        //   if (taskIds && taskIds.length > 0) {
+        //     let singleTaskIndex = 0;
+        //     const deletePromiseThenLoop = () => {
+        //       if (singleTaskIndex < taskIds.length) {
+        //         const singleTaskId = taskIds[singleTaskIndex];
+        //         this.commitService.deleteTimeEntryByTaskId(singleTaskId).then(() => {
+        //           this.commitService.deleteTask(singleTaskId).then(() => {
+        //             singleTaskIndex++;
+        //             deletePromiseThenLoop();
+        //           });
+        //         });
+        //       } else {
+        //         // do further stuff
+        //         // d) update database with the idDeletedInClient = true flag
+        //         const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
+        //         dbPatchedPromise.then((resolveValue: any) => {
+        //           // DEBUGGING:
+        //           console.log(resolveValue);
 
-                  this.drawTable(true);
-                });
-                dbPatchedPromise.catch((rejectValue: any) => {
-                  // DEBUGGING:
-                  // should be never called
-                  console.error(rejectValue);
+        //           this.drawTable(true);
+        //         });
+        //         dbPatchedPromise.catch((rejectValue: any) => {
+        //           // DEBUGGING:
+        //           // should be never called
+        //           console.error(rejectValue);
 
-                  this.drawTable(true);
-                });
-              }
-            };
-            // initial call
-            deletePromiseThenLoop();
-          }
+        //           this.drawTable(true);
+        //         });
+        //       }
+        //     };
+        //     // initial call
+        //     deletePromiseThenLoop();
+        //   }
+        // });
+        // correspondingTasksPromise.catch(() => {
+        //   console.error('getCorrespondingTasks rejected');
+        // });
+
+        const dbPatchedPromise: Promise<any> = this.commitService.patchProjectIsDeletedInClient(row.id);
+        dbPatchedPromise.then((resolveValue: any) => {
+          // DEBUGGING:
+          console.log(resolveValue);
+
+          this.drawTable(true);
         });
-        correspondingTasksPromise.catch(() => {
-          console.error('getCorrespondingTasks rejected');
+        dbPatchedPromise.catch((rejectValue: any) => {
+          // DEBUGGING:
+          // should be never called
+          console.error(rejectValue);
+
+          this.drawTable(true);
         });
       }
     });
@@ -120,10 +135,21 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     const project: IProject = this.projectService.createProject(projectName);
 
     // store in db ? --> necessary but when deleting mark as isLocallyDeleted as true
-    this.commitService.postProject(project);
-
+    const postProjectPromise = this.commitService.postProject(project);
     this.projectFormGroup.controls[this.formControlNameProjectName].setValue('');
-    this.drawTable(true);
+
+    postProjectPromise.then((retrievedResponse: string) => {
+      // DEBUGGING:
+      // console.log(retrievedResponse);
+      // const parsedResponse = this.sessionStorageSerializationService.deSerialize<IProject>(retrievedResponse);
+      // console.log(JSON.stringify(parsedResponse, null, 4));
+
+      this.drawTable(true);
+    });
+    postProjectPromise.catch(() => {
+      this.drawTable(true);
+    })
+
   }
 
   constructor(private projectService: ProjectService,
