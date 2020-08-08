@@ -101,9 +101,10 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
 
-      const startedTimeEntryPromise: Promise<ITimeEntry> = this.timeTrackingService.startTimeTracking(taskId, 
+      const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId, 
         currentBookingDeclarationId);
-      startedTimeEntryPromise.then((resolvedValue: ITimeEntry) => {
+      startedTimeEntryPromise.then((rawTimeEntry: string) => {
+        const resolvedValue: ITimeEntry = this.sessionStorageSerializationService.deSerialize<ITimeEntry>(rawTimeEntry);
         // visualize current duration
         const oneSecondInMilliseconds = 1000.0;
         this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
@@ -289,7 +290,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     const durationPromise = this.commitService.getDuration(timeEntryId);
     durationPromise.then((durationStr: string) => {
-      const parsedDuration = JSON.parse(durationStr);
+      const parsedDuration = this.sessionStorageSerializationService.deSerialize<string>(durationStr);
       if (!parsedDuration) {
         this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
       } else {
