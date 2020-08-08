@@ -6,23 +6,22 @@ import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclaration';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommitService {
 
-  private readonly httpBaseUrl = 'http://localhost:';
-
   constructor(private httpClient: HttpClient) { }
 
   getDurationSumsForTasks() {
-    const url = this.httpBaseUrl + routes.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
+    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
     return this.httpGet(url);
   }
 
   getCommitDays() {
-    const url = this.httpBaseUrl + routes.port + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
+    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
     return this.httpGet(url);
   }
 
@@ -52,7 +51,7 @@ export class CommitService {
   }
 
   private getBookingDeclarationUrl(): string {
-    const url = this.httpBaseUrl + routes.port + routes.bookingDeclaration;
+    const url = environment.httpBaseUrl + environment.port + routes.bookingDeclaration;
     return url;
   }
 
@@ -65,7 +64,7 @@ export class CommitService {
   }
 
   private getTimeEntriesUrl(): string {
-    const url = this.httpBaseUrl + routes.port + routes.timeEntries;
+    const url = environment.httpBaseUrl + environment.port + routes.timeEntries;
     return url;
   }
 
@@ -120,12 +119,12 @@ export class CommitService {
   }
 
   private getProjectsUrl(): string {
-    const url = this.httpBaseUrl + routes.port + routes.project;
+    const url = environment.httpBaseUrl + environment.port + routes.project;
     return url;
   }
 
   private getTaskUrl(): string {
-    const url = this.httpBaseUrl + routes.port + routes.task;
+    const url = environment.httpBaseUrl + environment.port + routes.task;
     return url;
   }
 
@@ -204,7 +203,7 @@ export class CommitService {
   }
 
   public postCommit(collectionName: string, line: ITimeRecordsDocumentData): Promise<any> {
-    const url = this.httpBaseUrl + routes.port + routes.timeRecord;
+    const url = environment.httpBaseUrl + environment.port + routes.timeRecord;
     return this.httpPost(routes.timeRecordBodyProperty, line, url, collectionName);
   }
 
@@ -230,7 +229,7 @@ export class CommitService {
   }
 
   public getTasks(): Promise<string> {
-    const url = this.httpBaseUrl + routes.port + routes.task;
+    const url = environment.httpBaseUrl + environment.port + routes.task;
     return this.httpGet(url);
   }
 
