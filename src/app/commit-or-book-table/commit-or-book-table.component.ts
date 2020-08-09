@@ -12,6 +12,7 @@ export interface IColumnNames {
 }
 
 export interface ICommitOrBookGridLine {
+  identifierUrl: string;
   identifer: string;
   description: string;
   durationInHours: number;
@@ -64,15 +65,19 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
         durations.forEach((oneDuration: ICommitBase) => {
           let identifer = '';
           let description = '';
+          let identifierUrl = '';
           if (this.isTaskBased) {
             identifer = (oneDuration.basis as ITask).number;
+            identifierUrl = ''; //(oneDuration.basis as ITask).number;
             description = (oneDuration.basis as ITask).name;
           } else if (this.isBookingBased) {
             identifer = (oneDuration.basis as IBookingDeclaration).code;
+            identifierUrl = '';
             description = (oneDuration.basis as IBookingDeclaration).description;
           }
 
           this.gridLines.push({
+            identifierUrl,
             identifer,
             description,
             durationInHours: oneDuration.durationInHours

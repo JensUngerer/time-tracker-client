@@ -142,6 +142,8 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
 
       projects.forEach((oneProject: IProject) => {
         const gridLine: IGridLine = {
+          codeOrNumberUrl: '',
+          codeOrNumber: '',
           name: oneProject.name,
           id: oneProject.projectId,
           deleteRow: ''

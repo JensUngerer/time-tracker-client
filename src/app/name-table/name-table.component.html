@@ -1,5 +1,16 @@
 <div *ngIf="dataSource && dataSource.data && dataSource.data.length > 0">
     <table #projectsTable mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="codeOrNumber">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="pointerCursor" mat-cell *matCellDef="let line">
+          <span *ngIf="line.codeOrNumberUrl">
+            <a [href]="line.codeOrNumberUrl">{{line.codeOrNumber}}</a>
+          </span>
+          <span *ngIf="!line.codeOrNumberUrl">
+            {{line.codeOrNumber}}
+          </span>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>{{columnName}}</th>
         <td class="pointerCursor" mat-cell *matCellDef="let line" (click)="onNameCellClicked(line)">{{line.name}}

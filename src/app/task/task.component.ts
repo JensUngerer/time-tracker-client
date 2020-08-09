@@ -271,6 +271,8 @@ export class TaskComponent implements OnInit, OnDestroy {
       }
       existingCorrespondingTasks.forEach((oneTask: ITask) => {
         const taskForRow: IGridLine = {
+          codeOrNumberUrl: '',
+          codeOrNumber: oneTask.number,
           name: oneTask.name,
           id: oneTask.taskId,
           deleteRow: ''

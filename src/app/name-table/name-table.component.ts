@@ -25,7 +25,7 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   public deleteRowClicked: EventEmitter<IGridLine> = new EventEmitter<IGridLine>();
 
-  public readonly displayedColumns: string[] = ['name', 'deleteRow'];
+  public readonly displayedColumns: string[] = ['codeOrNumber', 'name', 'deleteRow'];
 
   public readonly faTrash = faTrash;
 
