@@ -204,7 +204,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     const dialogData: IDeleteDialogData = {
       line,
       headerText: 'Delete task:',
-      contentText: 'Plus all corresponding (not committed!!!) timeEntries?'
+      contentText: ''
     };
     const dialogRef: MatDialogRef<ProjectDeleteDialogComponent, boolean> = this.dialog.open(ProjectDeleteDialogComponent, {
       data: dialogData
