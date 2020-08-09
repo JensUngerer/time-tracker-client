@@ -202,7 +202,7 @@ export class CommitService {
     body[routes.httpPatchIdPropertyName] = routes.taskIdProperty;
     body[routes.httpPatchIdPropertyValue] = taskId;
 
-    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabled;
+    body[routes.httpPatchIdPropertyToUpdateName] = routes.isDisabledProperty;
     body[routes.httpPatchIdPropertyToUpdateValue] = true;
 
     return this.performHttpPatch(url, body);
