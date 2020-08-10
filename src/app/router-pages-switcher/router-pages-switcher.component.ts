@@ -1,22 +1,22 @@
-// import { InMemoryDataService } from './../in-memory-data.service';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatStepper } from '@angular/material/stepper';
+import { ActivatedRoute, Route, Router, RouterEvent } from '@angular/router';
+import { Subscription } from 'rxjs';
+
 import { RoutingRoutes } from './../routing-routes';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'mtt-router-pages-switcher',
   templateUrl: './router-pages-switcher.component.html',
   styleUrls: ['./router-pages-switcher.component.scss', './../css/centerVerticalHorizontal.scss']
 })
-export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
-  private currentUrl$: Observable<UrlSegment[]> = null;
+export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('stepper') stepper: MatStepper;
 
   private urlForwardMapping: { [key: string]: string } = {};
   private urlBackwardMapping: { [key: string]: string } = {};
-  constructor(private activatedRoute: ActivatedRoute,
-    private router: Router) {
-    this.currentUrl$ = this.activatedRoute.url;
+  constructor(private router: Router) {
 
     for (let index = 0; index < RoutingRoutes.routes.length - 2; index++) {
       const oneRoute = RoutingRoutes.routes[index];
@@ -26,38 +26,46 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
       this.urlBackwardMapping['/' + nextRoute.path] = '/' + oneRoute.path;
     }
     this.urlBackwardMapping['/' + RoutingRoutes.routes[0].path] = null;
-    this.urlForwardMapping['/' + RoutingRoutes.routes[RoutingRoutes.routes.length-2].path] = null;
+    this.urlForwardMapping['/' + RoutingRoutes.routes[RoutingRoutes.routes.length - 2].path] = null;
+
+    for (let index = 0; index < RoutingRoutes.routes.length - 1; index++) {
+      const element = RoutingRoutes.routes[index];
+      const configObj = {};
+      configObj[index] = new FormControl('');
+      this.formGroups.push(new FormGroup(configObj));
+    }
+  }
+  ngAfterViewInit(): void {
+    this.router.events
+      .subscribe((e: RouterEvent) => {
+        if (!e || !e.url) {
+          return;
+        }
+        const currentIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
+          return e.url.includes(oneRoutingRoute.path);
+        });
+        if (currentIndex < 0) {
+          console.error('cannot set selectedIndex of stepper');
+          return;
+        }
+
+        this.stepper.selectedIndex = currentIndex;
+      });
   }
 
   public isForwardButtonDisabled = true;
   public isBackwardButtonDisabled = true;
 
+  formGroups: FormGroup[] = [];
+  routingRoutes = RoutingRoutes.routes;
+
   private routerEventsSubscription: Subscription = null;
   private isReadySubscription: Subscription = null;
-  // private isReady = false;
 
   ngOnInit() {
     this.routerEventsSubscription = this.router.events.subscribe(() => {
-      // if (this.isReady) {
       this.triggerUrlCheck();
-      // }
     });
-
-    // this.isReadySubscription = this.inMemoryDataService.getIsReady().subscribe((isMemoryDataReady: boolean) => {
-    //   if (isMemoryDataReady) {
-    //     console.error('ready');
-
-    //     this.isReady = true;
-    //     this.triggerUrlCheck();
-    //   } else {
-    //     console.error('waiting for isMemoryDataReady:' + isMemoryDataReady);
-
-    //     this.isForwardButtonDisabled = true;
-    //     this.isBackwardButtonDisabled = true;
-
-    //     this.isReady = false;
-    //   }
-    // });
   }
 
   private triggerUrlCheck() {
@@ -74,12 +82,12 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
     return this.urlBackwardMapping[currentUrl] ? false : true;
   }
 
-  public onForwardButtonClicked() {
+  private onForwardButtonClicked() {
     const prefix = this.getPrefixOfRouterUrl();
     this.router.navigate([this.urlForwardMapping[prefix]]);
   }
 
-  public onBackwardButtonClicked() {
+  private onBackwardButtonClicked() {
     const prefix = this.getPrefixOfRouterUrl();
     this.router.navigate([this.urlBackwardMapping[prefix]]);
   }
@@ -100,6 +108,12 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy {
       return prefix;
     }
     return '';
+  }
+
+  onAnimationDone() {
+    const currentEntryIndex = this.stepper.selectedIndex;
+    const currentRoute = RoutingRoutes.routes[currentEntryIndex];
+    this.router.navigate([currentRoute.path]);
   }
 
   ngOnDestroy(): void {

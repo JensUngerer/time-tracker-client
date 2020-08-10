@@ -4,5 +4,29 @@
   justify-content: center;
 }
 .theInnerFlexItem {
-  flex: 1 1 100%,
+  flex: 1 1 100%;
+}
+
+$buttonColor: blue;
+$buttonColorSelected: red;
+
+// https://stackoverflow.com/questions/54574435/angular-material-stepper-change-icon-color?rq=1
+::ng-deep .mat-step-header .mat-step-icon-selected {
+  background-color: $buttonColorSelected !important;
+  color: $buttonColorSelected !important;
+}
+
+::ng-deep .mat-step-icon-state-done {
+  background-color: $buttonColor !important;
+  color: $buttonColor !important;
+}
+
+::ng-deep .mat-step-icon-state-edit {
+  background-color: $buttonColor !important;
+  color: $buttonColor !important;
+}
+
+::ng-deep .mat-step-icon-state-number {
+  background-color: $buttonColor !important;
+  color: $buttonColor !important;
 }

@@ -77,6 +77,9 @@ export class RoutingRoutes {
     {
       path: '',
       redirectTo: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
-      pathMatch: 'full'
+      pathMatch: 'full',
+      data: {
+        label: ''
+      }
     }];
 }

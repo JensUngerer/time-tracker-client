@@ -33,6 +33,7 @@ import { ProjectComponent } from './project/project.component';
 import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pages-switcher.component';
 import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
+import { MatStepperModule } from '@angular/material/stepper';
 
 // https://stackoverflow.com/questions/38209713/how-to-make-a-responsive-nav-bar-using-angular-material-2
 // https://material.angular.io/guide/getting-started
@@ -77,7 +78,8 @@ import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
     HttpClientModule,
     FontAwesomeModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatStepperModule
   ],
   providers: [],
   bootstrap: [AppComponent]
