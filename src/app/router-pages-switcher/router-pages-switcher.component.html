@@ -11,15 +11,35 @@
           [stepControl]="oneFormGroup"
           [label]="routingRoutes[index].data.label"
         >
-          <ng-template matStepperIcon="edit">
-            <mat-icon>none</mat-icon>
-          </ng-template>
-          <ng-template matStepperIcon="number">
-            <mat-icon>none</mat-icon>
-          </ng-template>
-          <ng-template matStepperIcon="selected">
-            <mat-icon>none</mat-icon>
-          </ng-template>
+          <form [formGroup]="oneFormGroup">
+            <ng-template matStepperIcon="edit">
+              <mat-icon>none</mat-icon>
+            </ng-template>
+            <ng-template matStepperIcon="number">
+              <mat-icon>none</mat-icon>
+            </ng-template>
+            <ng-template matStepperIcon="selected">
+              <mat-icon>none</mat-icon>
+            </ng-template>
+            <div class="buttonFlexContainer">
+              <button
+                class="buttonFlexItem"
+                *ngIf="!isBackwardButtonDisabled"
+                mat-button
+                matStepperPrevious
+              >
+                <mat-icon>navigate_before</mat-icon>
+              </button>
+              <button
+                class="buttonFlexItem"
+                *ngIf="!isForwardButtonDisabled"
+                mat-button
+                matStepperNext
+              >
+                <mat-icon>navigate_next</mat-icon>
+              </button>
+            </div>
+          </form>
         </mat-step>
       </mat-horizontal-stepper>
     </div>

@@ -30,3 +30,13 @@ $buttonColorSelected: red;
   background-color: $buttonColor !important;
   color: $buttonColor !important;
 }
+
+.buttonFlexContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.buttonFlexItem {
+  flex: 0 1 auto;
+}

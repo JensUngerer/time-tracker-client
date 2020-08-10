@@ -62,7 +62,7 @@ export class RoutingRoutes {
       path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
       component: CommitOrBookComponent,
       data: {
-        label: ViewPaths.commit,
+        label: ViewLabels.commit,
         isTaskBased: true
       }
     },
@@ -70,7 +70,7 @@ export class RoutingRoutes {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
       component: CommitOrBookComponent,
       data: {
-        label: ViewPaths.book,
+        label: ViewLabels.book,
         isBookingBased: true
       }
     },
