@@ -14,8 +14,13 @@ import { RoutingRoutes } from './../routing-routes';
 export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('stepper') stepper: MatStepper;
 
+  staticFormGroup  = new FormGroup({});
+
+  private currentRealIndex: number;
+
   private urlForwardMapping: { [key: string]: string } = {};
   private urlBackwardMapping: { [key: string]: string } = {};
+  private currentUrl = '';
   constructor(private router: Router) {
 
     for (let index = 0; index < RoutingRoutes.routes.length - 2; index++) {
@@ -34,35 +39,104 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
       configObj[index] = new FormControl('');
       this.formGroups.push(new FormGroup(configObj));
     }
-  }
-  ngAfterViewInit(): void {
+
+
     this.router.events
-      .subscribe((e: RouterEvent) => {
-        if (!e || !e.url) {
-          return;
-        }
-        const currentIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
+    .subscribe((e: RouterEvent) => {
+      if (!e || !e.url || this.currentUrl === e.url) {
+        return;
+      } else {
+        this.currentUrl = e.url;
+      }
+      this.isLoading = true;
+      if (typeof this.currentRealIndex === 'undefined') {
+        const currentRealIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
           return e.url.includes(oneRoutingRoute.path);
         });
-        if (currentIndex < 0) {
+        if (currentRealIndex < 0) {
           console.error('cannot set selectedIndex of stepper');
           return;
-        }
+         }
+         this.currentRealIndex = currentRealIndex;
+         this.createCurrentIndices(this.currentRealIndex);
+      }
+      
 
-        this.stepper.selectedIndex = currentIndex;
-      });
+      this.setCurrentIndex(this.currentRealIndex);
+      this.isLoading = false;
+    });
+  }
+
+  ngAfterViewInit(): void {
+      // // this.isLoading = true;
+      // this.createCurrentIndices(1);
+      // this.setCurrentIndex(1)
+      // // this.isLoading = false;
+  }
+
+  private setCurrentIndex(currentRealIndex: number) {
+    const displayedIndex = this.realIndexToDisplayedIndexMap[currentRealIndex];
+    // this.isLoading = false;
+
+    if (this.stepper) {
+      this.stepper.selectedIndex = displayedIndex;
+    }
+
+  }
+
+  private createCurrentIndices(currentRealIndex: number)  {
+    this.realIndexToDisplayedIndexMap = [];
+    this.displayedIndexToRealIndexMap = [];
+    if (currentRealIndex <= 1) {
+      this.realIndexToDisplayedIndexMap[0] = 0;
+      this.displayedIndexToRealIndexMap[0] = 0;
+      this.realIndexToDisplayedIndexMap[1] = 1;
+      this.displayedIndexToRealIndexMap[1] = 1;
+      this.realIndexToDisplayedIndexMap[2] = 2;
+      this.displayedIndexToRealIndexMap[2] = 2;
+    } else if (currentRealIndex >= 2 && currentRealIndex < RoutingRoutes.routes.length - 2) {
+      this.realIndexToDisplayedIndexMap[currentRealIndex - 1] = 0;
+      this.realIndexToDisplayedIndexMap[currentRealIndex] = 1;
+      this.realIndexToDisplayedIndexMap[currentRealIndex + 1] = 2;
+
+      this.displayedIndexToRealIndexMap[0] = currentRealIndex - 1;
+      this.displayedIndexToRealIndexMap[1] = currentRealIndex;
+      this.displayedIndexToRealIndexMap[2] = currentRealIndex  +1 ;
+
+      // this.displayedIndexToRealIndexMap[this.realIndexToDisplayedIndexMap[currentRealIndex]] = 1;
+      // this.displayedIndexToRealIndexMap[this.realIndexToDisplayedIndexMap[currentRealIndex + 1]] = 2;
+
+      // this.displayedIndexToRealIndexMap[0] = currentRealIndex -1;
+      // this.realIndexToDisplayedIndexMap[currentRealIndex] = 1;
+      // this.displayedIndexToRealIndexMap[1] = currentRealIndex;
+      // this.realIndexToDisplayedIndexMap[currentRealIndex + 1] = 2;
+      // this.displayedIndexToRealIndexMap[2] = currentRealIndex + 1;
+    } else {
+      this.realIndexToDisplayedIndexMap[currentRealIndex - 2] = 0;
+      this.displayedIndexToRealIndexMap[0] = currentRealIndex -2;
+      this.realIndexToDisplayedIndexMap[currentRealIndex - 1] = 1;
+      this.displayedIndexToRealIndexMap[1] = currentRealIndex -1;
+      this.realIndexToDisplayedIndexMap[currentRealIndex] = 2;
+      this.displayedIndexToRealIndexMap[2] = currentRealIndex;
+    }
+
   }
 
   public isForwardButtonDisabled = true;
   public isBackwardButtonDisabled = true;
 
+  isLoading = true;
   formGroups: FormGroup[] = [];
   routingRoutes = RoutingRoutes.routes;
+  displayedIndexes: number[] = [0, 1, 2];
+  displayedIndexToRealIndexMap: {[displayedIndex: number]: number} = {};
+  realIndexToDisplayedIndexMap: {[displayedIndex: number]: number} = {};
 
   private routerEventsSubscription: Subscription = null;
   private isReadySubscription: Subscription = null;
 
   ngOnInit() {
+
     this.routerEventsSubscription = this.router.events.subscribe(() => {
       this.triggerUrlCheck();
     });
@@ -111,8 +185,13 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
   }
 
   onAnimationDone() {
-    const currentEntryIndex = this.stepper.selectedIndex;
-    const currentRoute = RoutingRoutes.routes[currentEntryIndex];
+    const currentDisplayedEntryIndex = this.stepper.selectedIndex;
+    this.currentRealIndex = this.displayedIndexToRealIndexMap [currentDisplayedEntryIndex];
+    this.createCurrentIndices(this.currentRealIndex);
+    // this.
+    // this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
+
+    const currentRoute = RoutingRoutes.routes[this.currentRealIndex];
     this.router.navigate([currentRoute.path]);
   }
 

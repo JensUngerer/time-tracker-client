@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="flexItem">
     <div class="theInnerFlexContainer">
       <mat-horizontal-stepper
@@ -7,11 +7,11 @@
         #stepper
       >
         <mat-step
-          *ngFor="let oneFormGroup of formGroups; let index = index"
-          [stepControl]="oneFormGroup"
-          [label]="routingRoutes[index].data.label"
+          *ngFor="let oneDisplayedIndex of displayedIndexes"
+          [stepControl]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup"
+          [label]="routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]].data.label : ''"
         >
-          <form [formGroup]="oneFormGroup">
+          <form [formGroup]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup">
             <ng-template matStepperIcon="edit">
               <mat-icon>none</mat-icon>
             </ng-template>
