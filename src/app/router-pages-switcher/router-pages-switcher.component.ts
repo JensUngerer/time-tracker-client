@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
-import { ActivatedRoute, Route, Router, RouterEvent } from '@angular/router';
+import { Route, Router, RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { RoutingRoutes } from './../routing-routes';
@@ -11,12 +11,14 @@ import { RoutingRoutes } from './../routing-routes';
   templateUrl: './router-pages-switcher.component.html',
   styleUrls: ['./router-pages-switcher.component.scss', './../css/centerVerticalHorizontal.scss']
 })
-export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterViewInit {
+export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   @ViewChild('stepper') stepper: MatStepper;
 
-  staticFormGroup  = new FormGroup({});
+  staticFormGroup = new FormGroup({});
 
   private currentRealIndex: number;
+
+  private performRouterEventSubscription: Subscription;
 
   private urlForwardMapping: { [key: string]: string } = {};
   private urlBackwardMapping: { [key: string]: string } = {};
@@ -39,52 +41,62 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
       configObj[index] = new FormControl('');
       this.formGroups.push(new FormGroup(configObj));
     }
-
-
-    this.router.events
-    .subscribe((e: RouterEvent) => {
-      if (!e || !e.url || this.currentUrl === e.url) {
-        return;
-      } else {
-        this.currentUrl = e.url;
-      }
-      this.isLoading = true;
-      if (typeof this.currentRealIndex === 'undefined') {
-        const currentRealIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
-          return e.url.includes(oneRoutingRoute.path);
-        });
-        if (currentRealIndex < 0) {
-          console.error('cannot set selectedIndex of stepper');
-          return;
-         }
-         this.currentRealIndex = currentRealIndex;
-         this.createCurrentIndices(this.currentRealIndex);
-      }
-      
-
-      this.setCurrentIndex(this.currentRealIndex);
-      this.isLoading = false;
-    });
   }
 
   ngAfterViewInit(): void {
-      // // this.isLoading = true;
-      // this.createCurrentIndices(1);
-      // this.setCurrentIndex(1)
-      // // this.isLoading = false;
+      if (this.performRouterEventSubscription) {
+        this.performRouterEventSubscription.unsubscribe();
+      }
+      this.performRouterEventSubscription = this.router.events
+        .subscribe(this.performRouteEvent.bind(this));
+  }
+
+  private performRouteEvent(e: RouterEvent) {
+    this.triggerUrlCheck();
+    this.initIndices(e);
+  }
+
+  private initIndices(e: RouterEvent) {
+    if (!e || !e.url || this.currentUrl === e.url) {
+      return;
+    } else {
+      this.currentUrl = e.url;
+    }
+    if (typeof this.currentRealIndex === 'undefined') {
+      let currentRealIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
+        return e.url.includes(oneRoutingRoute.path);
+      });
+      if (currentRealIndex < 0) {
+        console.error('cannot set selectedIndex of stepper');
+        return;
+      }
+      if (currentRealIndex === RoutingRoutes.routes.length - 1) {
+        // redirection
+        const searchString = RoutingRoutes.routes[currentRealIndex].redirectTo;
+        const indexOfProject = RoutingRoutes.routes.findIndex((oneRoutingRouteToRedirect: Route) => {
+          return oneRoutingRouteToRedirect.path === searchString;
+        });
+        currentRealIndex = indexOfProject;
+      }
+      this.currentRealIndex = currentRealIndex;
+      this.createCurrentIndices(this.currentRealIndex);
+    }
+
+
+    if (this.stepper) {
+      this.setCurrentIndex(this.currentRealIndex);
+    }
   }
 
   private setCurrentIndex(currentRealIndex: number) {
     const displayedIndex = this.realIndexToDisplayedIndexMap[currentRealIndex];
-    // this.isLoading = false;
 
     if (this.stepper) {
       this.stepper.selectedIndex = displayedIndex;
     }
-
   }
 
-  private createCurrentIndices(currentRealIndex: number)  {
+  private createCurrentIndices(currentRealIndex: number) {
     this.realIndexToDisplayedIndexMap = [];
     this.displayedIndexToRealIndexMap = [];
     if (currentRealIndex <= 1) {
@@ -101,21 +113,12 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
 
       this.displayedIndexToRealIndexMap[0] = currentRealIndex - 1;
       this.displayedIndexToRealIndexMap[1] = currentRealIndex;
-      this.displayedIndexToRealIndexMap[2] = currentRealIndex  +1 ;
-
-      // this.displayedIndexToRealIndexMap[this.realIndexToDisplayedIndexMap[currentRealIndex]] = 1;
-      // this.displayedIndexToRealIndexMap[this.realIndexToDisplayedIndexMap[currentRealIndex + 1]] = 2;
-
-      // this.displayedIndexToRealIndexMap[0] = currentRealIndex -1;
-      // this.realIndexToDisplayedIndexMap[currentRealIndex] = 1;
-      // this.displayedIndexToRealIndexMap[1] = currentRealIndex;
-      // this.realIndexToDisplayedIndexMap[currentRealIndex + 1] = 2;
-      // this.displayedIndexToRealIndexMap[2] = currentRealIndex + 1;
+      this.displayedIndexToRealIndexMap[2] = currentRealIndex + 1;
     } else {
       this.realIndexToDisplayedIndexMap[currentRealIndex - 2] = 0;
-      this.displayedIndexToRealIndexMap[0] = currentRealIndex -2;
+      this.displayedIndexToRealIndexMap[0] = currentRealIndex - 2;
       this.realIndexToDisplayedIndexMap[currentRealIndex - 1] = 1;
-      this.displayedIndexToRealIndexMap[1] = currentRealIndex -1;
+      this.displayedIndexToRealIndexMap[1] = currentRealIndex - 1;
       this.realIndexToDisplayedIndexMap[currentRealIndex] = 2;
       this.displayedIndexToRealIndexMap[2] = currentRealIndex;
     }
@@ -125,22 +128,13 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
   public isForwardButtonDisabled = true;
   public isBackwardButtonDisabled = true;
 
-  isLoading = true;
   formGroups: FormGroup[] = [];
   routingRoutes = RoutingRoutes.routes;
   displayedIndexes: number[] = [0, 1, 2];
-  displayedIndexToRealIndexMap: {[displayedIndex: number]: number} = {};
-  realIndexToDisplayedIndexMap: {[displayedIndex: number]: number} = {};
+  displayedIndexToRealIndexMap: { [displayedIndex: number]: number } = {};
+  realIndexToDisplayedIndexMap: { [displayedIndex: number]: number } = {};
 
-  private routerEventsSubscription: Subscription = null;
   private isReadySubscription: Subscription = null;
-
-  ngOnInit() {
-
-    this.routerEventsSubscription = this.router.events.subscribe(() => {
-      this.triggerUrlCheck();
-    });
-  }
 
   private triggerUrlCheck() {
     const prefix = this.getPrefixOfRouterUrl();
@@ -186,7 +180,7 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
 
   onAnimationDone() {
     const currentDisplayedEntryIndex = this.stepper.selectedIndex;
-    this.currentRealIndex = this.displayedIndexToRealIndexMap [currentDisplayedEntryIndex];
+    this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
     this.createCurrentIndices(this.currentRealIndex);
     // this.
     // this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
@@ -196,7 +190,12 @@ export class RouterPagesSwitcherComponent implements OnInit, OnDestroy, AfterVie
   }
 
   ngOnDestroy(): void {
-    this.routerEventsSubscription.unsubscribe();
-    this.isReadySubscription.unsubscribe();
+    // this.routerEventsSubscription.unsubscribe();
+    if (this.performRouterEventSubscription) {
+      this.performRouterEventSubscription.unsubscribe();
+    }
+    if (this.isReadySubscription) {
+      this.isReadySubscription.unsubscribe();
+    }
   }
 }
