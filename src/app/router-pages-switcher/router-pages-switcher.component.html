@@ -11,7 +11,8 @@
           [stepControl]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup"
           [label]="routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]].data.label : ''"
         >
-          <form [formGroup]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup">
+          <form
+           [formGroup]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup">
             <ng-template matStepperIcon="edit">
               <mat-icon>none</mat-icon>
             </ng-template>

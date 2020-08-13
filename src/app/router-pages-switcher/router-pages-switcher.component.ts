@@ -14,6 +14,7 @@ import { RoutingRoutes } from './../routing-routes';
 export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   @ViewChild('stepper') stepper: MatStepper;
 
+  private static threeIndicesToDisplay = [0, 1, 2];
   staticFormGroup = new FormGroup({});
 
   private currentRealIndex: number;
@@ -23,6 +24,7 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   private urlForwardMapping: { [key: string]: string } = {};
   private urlBackwardMapping: { [key: string]: string } = {};
   private currentUrl = '';
+  private currentRoute: Route;
   constructor(private router: Router) {
 
     for (let index = 0; index < RoutingRoutes.routes.length - 2; index++) {
@@ -53,15 +55,15 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
 
   private performRouteEvent(e: RouterEvent) {
     this.triggerUrlCheck();
-    this.initIndices(e);
-  }
-
-  private initIndices(e: RouterEvent) {
     if (!e || !e.url || this.currentUrl === e.url) {
       return;
     } else {
       this.currentUrl = e.url;
     }
+    this.initIndices(e);
+  }
+
+  private initIndices(e: RouterEvent) {
     if (typeof this.currentRealIndex === 'undefined') {
       let currentRealIndex = RoutingRoutes.routes.findIndex((oneRoutingRoute: Route) => {
         return e.url.includes(oneRoutingRoute.path);
@@ -122,7 +124,6 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
       this.realIndexToDisplayedIndexMap[currentRealIndex] = 2;
       this.displayedIndexToRealIndexMap[2] = currentRealIndex;
     }
-
   }
 
   public isForwardButtonDisabled = true;
@@ -130,7 +131,7 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
 
   formGroups: FormGroup[] = [];
   routingRoutes = RoutingRoutes.routes;
-  displayedIndexes: number[] = [0, 1, 2];
+  displayedIndexes: number[] = RouterPagesSwitcherComponent.threeIndicesToDisplay;
   displayedIndexToRealIndexMap: { [displayedIndex: number]: number } = {};
   realIndexToDisplayedIndexMap: { [displayedIndex: number]: number } = {};
 
@@ -181,12 +182,16 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   onAnimationDone() {
     const currentDisplayedEntryIndex = this.stepper.selectedIndex;
     this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
-    this.createCurrentIndices(this.currentRealIndex);
-    // this.
-    // this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
 
-    const currentRoute = RoutingRoutes.routes[this.currentRealIndex];
-    this.router.navigate([currentRoute.path]);
+    this.createCurrentIndices(this.currentRealIndex);
+
+    this.currentRoute = RoutingRoutes.routes[this.currentRealIndex];
+
+    if (this.currentRoute &&
+      ('/' + this.currentRoute.path) === this.currentUrl) {
+      return;
+    }
+    this.router.navigate([this.currentRoute.path]);
   }
 
   ngOnDestroy(): void {
