@@ -69,11 +69,11 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
           let identifierUrl = '';
           if (this.isTaskBased) {
             identifer = (oneDuration.basis as ITask).number;
-            identifierUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + ''; //(oneDuration.basis as ITask).number;
+            identifierUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + (oneDuration.basis as ITask).number;
             description = (oneDuration.basis as ITask).name;
           } else if (this.isBookingBased) {
             identifer = (oneDuration.basis as IBookingDeclaration).code;
-            identifierUrl = this.configurationService.configuration.bookingBasedIdentifierBaseUrl +  '';
+            identifierUrl = this.configurationService.configuration.bookingBasedIdentifierBaseUrl +  (oneDuration.basis as IBookingDeclaration).code;
             description = (oneDuration.basis as IBookingDeclaration).description;
           }
 
