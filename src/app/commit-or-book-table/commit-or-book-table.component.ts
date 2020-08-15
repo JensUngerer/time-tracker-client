@@ -5,6 +5,7 @@ import { IDurationSumBase } from '../../../../common/typescript/iDurationSumBase
 import { ICommitBase } from '../../../../common/typescript/iCommitBase';
 import { ITask } from '../../../../common/typescript/iTask';
 import { IBookingDeclaration } from '../../../../common/typescript/iBookingDeclaration';
+import { ConfigurationService } from '../configuration.service';
 
 export interface IColumnNames {
   identifer: string;
@@ -47,7 +48,7 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
   readonly displayedColumns: string[] = ['identifer', 'description', 'durationInHours'];
   readonly dataSource: MatTableDataSource<ICommitOrBookGridLine> = new MatTableDataSource(this.gridLines);
 
-  constructor() { }
+  constructor(private configurationService: ConfigurationService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes &&
@@ -68,11 +69,11 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
           let identifierUrl = '';
           if (this.isTaskBased) {
             identifer = (oneDuration.basis as ITask).number;
-            identifierUrl = ''; //(oneDuration.basis as ITask).number;
+            identifierUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + ''; //(oneDuration.basis as ITask).number;
             description = (oneDuration.basis as ITask).name;
           } else if (this.isBookingBased) {
             identifer = (oneDuration.basis as IBookingDeclaration).code;
-            identifierUrl = '';
+            identifierUrl = this.configurationService.configuration.bookingBasedIdentifierBaseUrl +  '';
             description = (oneDuration.basis as IBookingDeclaration).description;
           }
 

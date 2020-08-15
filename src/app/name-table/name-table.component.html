@@ -4,7 +4,7 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td class="pointerCursor" mat-cell *matCellDef="let line">
           <span *ngIf="line.codeOrNumberUrl">
-            <a [href]="line.codeOrNumberUrl">{{line.codeOrNumber}}</a>
+            <a [href]="this.configurationService.configuration.codeOrNumberBaseUrl + line.codeOrNumberUrl">{{line.codeOrNumber}}</a>
           </span>
           <span *ngIf="!line.codeOrNumberUrl">
             {{line.codeOrNumber}}

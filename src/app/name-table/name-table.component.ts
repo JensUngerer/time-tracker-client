@@ -2,6 +2,7 @@ import { IGridLine } from './../typescript/iGridLine';
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { ConfigurationService } from '../configuration.service';
 
 @Component({
   selector: 'mtt-name-table',
@@ -54,7 +55,7 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
     this.deleteRowClicked.emit(row);
   }
 
-  constructor() {
+  constructor(public configurationService: ConfigurationService) {
     this.dataSource = new MatTableDataSource(this.gridLines);
   }
 

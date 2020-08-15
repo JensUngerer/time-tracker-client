@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ConfigurationService } from './configuration.service';
 
 @Component({
   selector: 'mtt-root',
@@ -7,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'mtt-client';
+
+  constructor(private configurationService: ConfigurationService)  {
+    
+  }
 }
