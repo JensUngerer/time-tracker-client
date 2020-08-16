@@ -1,5 +1,5 @@
-<div class="oneHundredPercent">
-  <div class="headerFlexItem">
+<div fxLayout="column" fxFlexFill>
+  <div fxFlex = "0 1 auto">
     <mat-toolbar color="primary">
 
       <button mat-button (click)="sidenav.toggle()">
@@ -8,8 +8,8 @@
 
     </mat-toolbar>
   </div>
-  <div class="contentPlusFooterFlexItem">
-    <mat-sidenav-container fxFlexFill class="example-container" style="height: 100%">
+  <div fxFlex = "1 1 100%">
+    <mat-sidenav-container fxFlexFill class="example-container">
 
       <mat-sidenav #sidenav fxLayout="column">
 
@@ -29,7 +29,7 @@
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  <div class="stickyFooterFlexItem">
+  <div fxFlex = "0 1 150px">
     <mtt-router-pages-switcher></mtt-router-pages-switcher>
   </div>
 </div>

@@ -79,7 +79,8 @@ import { MatStepperModule } from '@angular/material/stepper';
     FontAwesomeModule,
     MatDialogModule,
     MatCheckboxModule,
-    MatStepperModule
+    MatStepperModule,
+    FlexLayoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]

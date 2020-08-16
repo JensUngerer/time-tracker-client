@@ -1,5 +1,5 @@
-<div class="container">
-  <div class="flexItem">
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlex = "0 1 auto">
     <mtt-name-table
     columnName="Project-Name"
     [gridLines]="gridLines"
@@ -8,11 +8,11 @@
     ></mtt-name-table>
     <div>
       <form [formGroup]="projectFormGroup" (submit)="onSubmit(projectFormGroup.value)">
-        <div class="innerFormFlexContainer">
-          <div class="innerFormFlexItem">
+        <div fxLayout="column">
+          <div fxFlex = "0 1 auto" class="spacing-around">
             <input type="text" [required]="true" [formControlName]="formControlNameProjectName">
           </div>
-          <div class="innerFormFlexItem">
+          <div fxFlex = "0 1 auto" class="spacing-around">
             <button type="submit" [disabled]="projectFormGroup.invalid">Add project</button>
           </div>
         </div>
