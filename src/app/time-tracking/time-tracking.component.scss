@@ -1,12 +1,8 @@
-.buttonFlexContainer {
-  direction: flex;
-  flex-direction: column;
-}
-.buttonFlexItem {
+.space-around {
   margin-top: 15px;
   margin-bottom: 15px;
-  flex: 0 1 auto;
 }
+
 // https://stackoverflow.com/questions/46766597/styling-mat-select-in-angular-material
 .mat-select {
   width: 175px !important;
@@ -15,15 +11,4 @@
   // border: 1 px solid red !important;
   margin-top: 15px;
   margin-bottom: 15px;
-}
-
-.emptyFlexItem  {
-  height: 25px;
-  flex: 0 1 25px;
-}
-
-.centeredFlexBoxRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
 }

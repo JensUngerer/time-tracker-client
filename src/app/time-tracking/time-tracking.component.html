@@ -1,8 +1,8 @@
-<div class="container">
-  <div class="flexItem">
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlex="0 1 auto">
     <form [formGroup]="timeTrackingUserSelectionForm">
-      <div class="buttonFlexContainer">
-        <div class="buttonFlexItem">
+      <div fxLayout="column">
+        <div fxFlex="0 1 auto" class="space-around">
           <mat-select
             placeholder="Project"
             matInput
@@ -17,10 +17,10 @@
             </mat-option>
           </mat-select>
         </div>
-        <div class="buttonFlexItem">
+        <div fxFlex="0 1 auto" class="space-around">
           <label>{{bookingDeclarationDescription}}</label>
         </div>
-        <div class="buttonFlexItem">
+        <div fxFlex="0 1 auto" class="space-around">
           <mat-select
             placeholder="Task"
             matInput
@@ -36,7 +36,7 @@
             </mat-option>
           </mat-select>
         </div>
-        <div class="buttonFlexItem">
+        <div fxFlex="0 1 auto" class="space-around">
           <button
             type="button"
             (click)="onStartStopButtonClicked()"
@@ -51,8 +51,8 @@
             {{ startStopButtonLabel }}
           </button>
         </div>
-        <div class="buttonFlexItem" *ngIf="currentTimeEntryDuration">
-          <div class="centeredFlexBoxRow">
+        <div fxFlex="0 1 auto" class="space-around" *ngIf="currentTimeEntryDuration">
+          <div fxLayout="row" fxLayoutAlign="center">
             <div>{{currentTimeEntryDuration}}</div>
           </div>
         </div>
