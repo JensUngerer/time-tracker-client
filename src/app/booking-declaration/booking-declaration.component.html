@@ -1,15 +1,15 @@
-<div class="container">
-  <div class="flexItem">
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlex="0 1 auto">
     <div>
       <form [formGroup]="bookingDeclarationFromGroup" (submit)="onSubmit(bookingDeclarationFromGroup.value)">
-        <div class="innerFormFlexContainer">
-          <div class="innerFormFlexItem">
+        <div>
+          <div>
             <label>Code:</label><input type="text" [formControlName]="formControlNameCode">
           </div>
-          <div class="innerFormFlexItem">
+          <div>
             <label>Description:</label><input type="text" [formControlName]="formControlNameDescription">
           </div>
-          <div class="innerFormFlexItem">
+          <div>
             <table>
               <tr>
                 <th>Project(s)</th>
@@ -19,7 +19,7 @@
               </tr>
             </table>
           </div>
-          <div class="innerFormFlexItem">
+          <div>
             <button type="submit" [disabled]="bookingDeclarationFromGroup.invalid">Add Booking-Declaration</button>
           </div>
         </div>
