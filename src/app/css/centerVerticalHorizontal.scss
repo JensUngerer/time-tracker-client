@@ -1,15 +1,1 @@
 /* https://stackoverflow.com/questions/396145/how-to-vertically-center-a-div-for-all-browsers?page=1&tab=votes#tab-top */
-
-.container{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  overflow: hidden;
-  /*background:green;*/
-}
-
-.flexItem {
-  flex: 0 1 auto;
-}
-

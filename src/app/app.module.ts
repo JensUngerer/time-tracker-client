@@ -23,8 +23,6 @@ import { AppComponent } from './app.component';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { CommitOrBookTableComponent } from './commit-or-book-table/commit-or-book-table.component';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
-import { CompletedTaskComponent } from './completed-task/completed-task.component';
-import { CompletedTimeEntryComponent } from './completed-time-entry/completed-time-entry.component';
 import { HomeComponent } from './home/home.component';
 import { NameTableComponent } from './name-table/name-table.component';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
@@ -49,8 +47,6 @@ import { MatStepperModule } from '@angular/material/stepper';
     TimeTrackingComponent,
     ProjectComponent,
     TaskComponent,
-    CompletedTaskComponent,
-    CompletedTimeEntryComponent,
     ProjectDeleteDialogComponent,
     NameTableComponent,
     BookingDeclarationComponent,
