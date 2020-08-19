@@ -29,6 +29,8 @@
             "assets": [
               "src/favicon.ico",
               "src/watch-32.ico",
+              "src/stopwatch-2-32.ico",
+              "src/Iconsmind-Outline-Stopwatch.ico",
               "src/assets"
             ],
             "styles": [
