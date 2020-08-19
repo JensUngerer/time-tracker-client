@@ -60,6 +60,7 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
     } else {
       this.currentUrl = e.url;
     }
+    this.currentRealIndex = undefined;
     this.initIndices(e);
   }
 
