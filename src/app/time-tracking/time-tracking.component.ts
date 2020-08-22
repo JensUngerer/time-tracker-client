@@ -15,6 +15,8 @@ import { TimeTrackingService } from './../time-tracking.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
 import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
+import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
+import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -23,7 +25,6 @@ import { IBookingDeclarationsDocument } from '../../../../common/typescript/mong
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']
 })
 export class TimeTrackingComponent implements OnInit, OnDestroy {
-
   private activatedRouteSubscription: Subscription = null;
 
   private inMemoryDataServiceSubscription: Subscription = null;
@@ -82,7 +83,22 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     const task = this.timeTrackingUserSelectionForm
     .controls[this.formControlNameTaskSelectionDropDown]
     .value;
-    this.setBookingDescription(task);
+    this.setBookingDescription(task._bookingDeclarationId);
+  }
+
+  private visualizeStartedTimeEntry(rawTimeEntry: string) {
+    const resolvedValue: ITimeEntry = this.sessionStorageSerializationService.deSerialize<ITimeEntry>(rawTimeEntry);
+    // visualize current duration
+    const oneSecondInMilliseconds = 1000.0;
+    this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
+    this.durationVisualizationIntervalId = setInterval(() => {
+      this.visualizeTimeEntry(resolvedValue.timeEntryId);
+    }, oneSecondInMilliseconds);
+
+    // this.setTimeEntryId(resolvedValue.timeEntryId);
+    this.timeEntryId = resolvedValue.timeEntryId;
+    this.isStartStopButtonDisabled = false;
+    this.isPauseResumeButtonDisabled = false;
   }
 
   public onStartStopButtonClicked() {
@@ -97,25 +113,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     const taskId = task.taskId;
     const currentBookingDeclarationId = task._bookingDeclarationId;
 
-
     this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
     if (this.startStopButtonLabel === 'Stop') {
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId, 
         currentBookingDeclarationId);
       startedTimeEntryPromise.then((rawTimeEntry: string) => {
-        const resolvedValue: ITimeEntry = this.sessionStorageSerializationService.deSerialize<ITimeEntry>(rawTimeEntry);
-        // visualize current duration
-        const oneSecondInMilliseconds = 1000.0;
-        this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
-        this.durationVisualizationIntervalId = setInterval(() => {
-          this.visualizeTimeEntry(resolvedValue.timeEntryId);
-        }, oneSecondInMilliseconds);
-
-        // this.setTimeEntryId(resolvedValue.timeEntryId);
-        this.timeEntryId = resolvedValue.timeEntryId;
-        this.isStartStopButtonDisabled = false;
-        this.isPauseResumeButtonDisabled = false;
+        this.visualizeStartedTimeEntry(rawTimeEntry);
       });
       startedTimeEntryPromise.catch(() => {
         console.error('startTimeTracking rejected');
@@ -144,6 +148,17 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
         this.visualizeTimeEntry(this.timeEntryId);
       });
+    }
+  }
+
+  private displayCurrentProjectInDropDown(projectId: string) {
+    const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+      return oneProjectOption.value.projectId === projectId;
+    });
+    if (projectOption) {
+      this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
+    } else {
+      console.error('no project option for: ' + projectId);
     }
   }
 
@@ -199,79 +214,98 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
 
-      this.allProjectsPromise.finally(() => {
-        if (projectId) {
-          const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
-            return oneProjectOption.value.projectId === projectId;
-          });
-          if (projectOption) {
-            this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
-          } else {
-            console.error('no project option for: ' + projectId);
-          }
-        }
-        this.allTasksPromise.finally(() => {
-          if (taskId) {
-            // const notCompletedTimeEntriesPromise = this.commitService.getTimeEntriesByTaskId(taskId);
-            // notCompletedTimeEntriesPromise.then((theJsonString: string) => {
-            //   const notCompletedTimeEntries: ITimeEntryDocument[] = this.sessionStorageSerializationService
-            //     .deSerialize<ITimeEntryDocument[]>(theJsonString);
-
-            //   this.timeEntryOptions = [];
-            //   // DEBUGGING:
-            //   // console.log(JSON.stringify(notCompletedTimeEntries, null, 4));
-            //   if (!notCompletedTimeEntries || notCompletedTimeEntries.length === 0) {
-            //     console.error('there are not "open" timeEntries');
-            //     return;
-            //   }
-            //   notCompletedTimeEntries.forEach((oneNotCompletedTimeEntry: ITimeEntryDocument) => {
-            //     this.timeEntryOptions.push(new TimeEntryOption(oneNotCompletedTimeEntry));
-            //   });
-            // });
-
-
-            const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
-              return oneTaskOption.value.taskId === taskId;
-            });
-            if (taskOption) {
-              this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
-
-              // i) get the correlated booking - declarations (which are possible for a unique projectId)
-              // const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy();
-              // bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
-              //   const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
-
-
-              // ii) currently displayed task:
-              const currentTask = this.allTasks.find((oneTask: ITask) => {
-                return oneTask.taskId === taskId;
+      const isTimeEntryRunningPromise = this.displayRunningTimeEntry();
+      isTimeEntryRunningPromise.then((resolvedTimeEntryValues: ITimeEntryDocument) => {
+        if (!resolvedTimeEntryValues) {
+            // there are not running timeEntries --> continue as before
+            this.allProjectsPromise.finally(() => {
+              if (projectId) {
+                this.displayCurrentProjectInDropDown(projectId);
+              }
+              this.allTasksPromise.finally(() => {
+                if (taskId) {
+                  this.setTask(taskId);
+                }
               });
-
-              // iii) filter by task
-              // const filteredBooking = parsedBookingDeclarations.filter((oneBooking: IBookingDeclarationsDocument) => {
-              //   return oneBooking.bookingDeclarationId = currentTask._bookingDeclarationId;
-              // });
-              // if (!filteredBooking || filteredBooking.length !== 1) {
-              //   console.error('not a unique booking id found');
-              //   return;
-              // }
-              
-              // });
-              this.setBookingDescription(currentTask);
-
-            } else {
-              console.error('no task option for:' + taskId);
-            }
-
-
-          }
-        });
+            });
+        }
       });
+
+
     });
   }
 
-  private setBookingDescription(task: ITask) {
-    this.currentBookingDeclarationId = task._bookingDeclarationId;
+  private setTask(taskId: string) {
+    const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
+      return oneTaskOption.value.taskId === taskId;
+    });
+    if (taskOption) {
+      this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
+
+      const currentTask = this.allTasks.find((oneTask: ITask) => {
+        return oneTask.taskId === taskId;
+      });
+
+      this.setBookingDescription(currentTask._bookingDeclarationId);
+    } else {
+      console.error('no task option for:' + taskId);
+    }
+  }
+
+  private displayRunningTimeEntry(): Promise<ITimeEntryDocument> {
+    return new Promise<ITimeEntryDocument>((resolve: (value?: ITimeEntryDocument) => void) => {
+      const getRunningPromise = this.commitService.getRunningTimeEntry();
+        getRunningPromise.then((runningTimeEntry: string)=>{
+          const runningTimeEntryParsed: ITimeEntryDocument = this.sessionStorageSerializationService.deSerialize(runningTimeEntry);
+          if (runningTimeEntryParsed) {
+            resolve(runningTimeEntryParsed);
+
+            console.log(runningTimeEntryParsed);
+
+            const timeEntryId = runningTimeEntryParsed.timeEntryId;
+            const projectPromise = this.commitService.getProjectByTaskId(runningTimeEntryParsed._taskId);
+            projectPromise.then((rawProject: string) => {
+              if (!rawProject) {
+                console.error('no project found');
+                return;
+              }
+              // a) project
+              const project: IProjectsDocument = this.sessionStorageSerializationService.deSerialize(rawProject);
+              // this.projectOptions = [];
+              // this.projectOptions.push(new ProjectOption(project));
+              this.displayCurrentProjectInDropDown(project.projectId)
+          
+              // b) booking-declaration
+              this.setBookingDescription(runningTimeEntryParsed._bookingDeclarationId);
+
+
+              // c) task
+              const taskId = runningTimeEntryParsed._taskId;
+              // this.taskOptions = [];
+              // this.taskOptions.push(new TaskOption(task));
+              this.setTask(taskId);
+
+              // start visualization
+              this.startStopButtonLabel = 'Stop';
+              const timeEntryPromise = this.commitService.getTimeEntryById(timeEntryId);
+              timeEntryPromise.then((rawTimeEntry: string) => {
+                this.visualizeStartedTimeEntry(rawTimeEntry);
+              });
+              timeEntryPromise.catch(()=>{
+                console.error('timeEntry rejected');
+              });
+            });
+
+          } else  {
+            resolve(null);
+          }
+        });
+        
+    });
+  }
+
+  private setBookingDescription(bookingDeclarationId: string) {
+    this.currentBookingDeclarationId = bookingDeclarationId;
 
     const bookingDocumentPromise = this.commitService.getBookingDeclarationById(this.currentBookingDeclarationId);
     bookingDocumentPromise.then((receivedBookingRaw: string) => {

@@ -25,6 +25,21 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  getTimeEntryById(timeEntryId: string){
+    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + '/' + timeEntryId;
+    return this.httpGet(url);
+  }
+
+  getProjectByTaskId(taskId: string) {
+    const url = environment.httpBaseUrl + environment.port + routes.project + routes.projectByTaskIdSuffix + '/' + taskId;
+    return this.httpGet(url);
+  }
+  
+  getRunningTimeEntry() {
+    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesRunningSuffix;
+    return this.httpGet(url);
+  }
+
   getDurationSumsForTasks() {
     const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
     return this.httpGet(url);
