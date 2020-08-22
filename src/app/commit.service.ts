@@ -25,6 +25,11 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  getTaskById(taskId: string)  {
+    const url = this.getTaskUrl() + '/' + taskId;
+    return this.httpGet(url); 
+  }
+
   getTimeEntryById(timeEntryId: string){
     const url = environment.httpBaseUrl + environment.port + routes.timeEntries + '/' + timeEntryId;
     return this.httpGet(url);

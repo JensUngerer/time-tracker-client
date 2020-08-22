@@ -17,6 +17,7 @@ import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
+import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -252,6 +253,46 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
   }
 
+  private insertProjectIfNotContained(project: IProjectsDocument) {
+    if (!project) {
+      return;
+    }
+    if (!this.projectOptions) {
+      this.projectOptions = [];
+    }
+    const indexInOptions = this.projectOptions.findIndex((oneProjectOption: IProjectOption) => {
+      return oneProjectOption.value.projectId === project.projectId;
+    });
+    if (indexInOptions === -1) {
+      this.projectOptions.push(new ProjectOption(project));
+    }
+  }
+
+  private insertTaskIfNotContained(taskId: string) {
+    return new Promise<any>((resolve: (value?:any) => void) => {
+      if (!this.taskOptions) {
+        this.taskOptions = [];
+      }
+      const indexInTaskOptions = this.taskOptions.findIndex((oneTaskOption: TaskOption) => {
+        return oneTaskOption.value.taskId === taskId;
+      });
+      if (indexInTaskOptions === -1) {
+        const getTaskPromise = this.commitService.getTaskById(taskId);
+        getTaskPromise.then((rawTask: string) => {
+          const task: ITask = this.sessionStorageSerializationService.deSerialize(rawTask);
+          this.taskOptions.push(new TaskOption(task));
+          resolve(true);
+        });
+        getTaskPromise.catch(() => {
+          console.error('error when catching task');
+          resolve(null);
+        });
+      } else {
+        resolve(false);
+      }
+    });
+  }
+
   private displayRunningTimeEntry(): Promise<ITimeEntryDocument> {
     return new Promise<ITimeEntryDocument>((resolve: (value?: ITimeEntryDocument) => void) => {
       const getRunningPromise = this.commitService.getRunningTimeEntry();
@@ -259,8 +300,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
           const runningTimeEntryParsed: ITimeEntryDocument = this.sessionStorageSerializationService.deSerialize(runningTimeEntry);
           if (runningTimeEntryParsed) {
             resolve(runningTimeEntryParsed);
-
-            console.log(runningTimeEntryParsed);
 
             const timeEntryId = runningTimeEntryParsed.timeEntryId;
             const projectPromise = this.commitService.getProjectByTaskId(runningTimeEntryParsed._taskId);
@@ -271,8 +310,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
               }
               // a) project
               const project: IProjectsDocument = this.sessionStorageSerializationService.deSerialize(rawProject);
-              // this.projectOptions = [];
-              // this.projectOptions.push(new ProjectOption(project));
+              this.insertProjectIfNotContained(project);
               this.displayCurrentProjectInDropDown(project.projectId)
           
               // b) booking-declaration
@@ -281,18 +319,23 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
               // c) task
               const taskId = runningTimeEntryParsed._taskId;
-              // this.taskOptions = [];
-              // this.taskOptions.push(new TaskOption(task));
-              this.setTask(taskId);
+              const insertTaskPromise = this.insertTaskIfNotContained(taskId);
+              
+              insertTaskPromise.then(()=> {
+                this.setTask(taskId);
 
-              // start visualization
-              this.startStopButtonLabel = 'Stop';
-              const timeEntryPromise = this.commitService.getTimeEntryById(timeEntryId);
-              timeEntryPromise.then((rawTimeEntry: string) => {
-                this.visualizeStartedTimeEntry(rawTimeEntry);
+                // start visualization
+                this.startStopButtonLabel = 'Stop';
+                const timeEntryPromise = this.commitService.getTimeEntryById(timeEntryId);
+                timeEntryPromise.then((rawTimeEntry: string) => {
+                  this.visualizeStartedTimeEntry(rawTimeEntry);
+                });
+                timeEntryPromise.catch(()=>{
+                  console.error('timeEntry rejected');
+                });
               });
-              timeEntryPromise.catch(()=>{
-                console.error('timeEntry rejected');
+              insertTaskPromise.catch(() => {
+                console.error('error when inserting missing task');
               });
             });
 
