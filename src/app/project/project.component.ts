@@ -135,7 +135,8 @@ export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
     const projectsStrPromise = this.commitService.getProjects();
     projectsStrPromise.then((projectsStr: string) => {
       const projects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
-      if (!projects || projects.length === 0) {
+      if (!projects || !projects.length || projects.length === 0) {
+        console.error(JSON.stringify(projects));
         console.error('no projects to display');
         return;
       }
