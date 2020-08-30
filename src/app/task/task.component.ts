@@ -18,6 +18,7 @@ import { ViewPaths } from '../viewPathsEnum';
 import { Router } from '@angular/router';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescript/bookingDeclarationOption';
+import { ConfigurationService } from '../configuration.service';
 
 @Component({
   selector: 'mtt-task',
@@ -92,7 +93,8 @@ export class TaskComponent implements OnInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               public dialog: MatDialog,
               private router: Router,
-              private sessionStorageSerializationService: SessionStorageSerializationService) {
+              private sessionStorageSerializationService: SessionStorageSerializationService,
+              private configurationService: ConfigurationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -269,14 +271,27 @@ export class TaskComponent implements OnInit, OnDestroy {
         console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
         return;
       }
+      const baseUrl = this.configurationService.configuration.codeOrNumberBaseUrl;
       existingCorrespondingTasks.forEach((oneTask: ITask) => {
-        const taskForRow: IGridLine = {
-          codeOrNumberUrl: '',
-          codeOrNumber: oneTask.number,
-          name: oneTask.name,
-          id: oneTask.taskId,
-          deleteRow: ''
-        };
+        let taskForRow: IGridLine = null;
+        if (baseUrl) {
+          taskForRow = {
+            codeOrNumberUrl: baseUrl + oneTask.number,
+            codeOrNumber: oneTask.number,
+            name: oneTask.name,
+            id: oneTask.taskId,
+            deleteRow: ''
+          };
+        } else {
+          taskForRow = {
+            codeOrNumberUrl: '',
+            codeOrNumber: oneTask.number,
+            name: oneTask.name,
+            id: oneTask.taskId,
+            deleteRow: ''
+          };
+        }
+        
         this.gridLines.push(taskForRow);
       });
     });

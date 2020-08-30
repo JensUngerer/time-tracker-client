@@ -3,10 +3,10 @@
       <ng-container matColumnDef="identifer">
         <th mat-header-cell *matHeaderCellDef>{{identiferColumnName}}</th>
         <td mat-cell *matCellDef="let line">
-          <span *ngIf="line.identiferUrl">
-            <a [href]="line.identiferUrl">{{line.identifer}}</a>
+          <span *ngIf="line.identifierUrl">
+            <a [href]="line.identifierUrl">{{line.identifer}}</a>
           </span>
-          <span *ngIf="!line.identiferUrl">
+          <span *ngIf="!line.identifierUrl">
             {{line.identifer}}
           </span>
         </td>
