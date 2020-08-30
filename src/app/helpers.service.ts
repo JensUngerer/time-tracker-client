@@ -21,7 +21,7 @@ export class HelpersService {
   }
 
   public getDurationStructure(hours: number, minutes: number): IDuration {
-    return { hours, minutes };
+    return { hours, minutes, seconds: 0};
   }
 
   public getDateStructure(theDate: Date): IDate {
