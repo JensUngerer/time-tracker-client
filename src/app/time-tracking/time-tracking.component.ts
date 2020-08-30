@@ -17,7 +17,7 @@ import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
-import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
+import { TimeTrackingState } from './timeTrackingState.enum';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -50,7 +50,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public timeTrackingUserSelectionFormControl: AbstractControl = null;
 
-  public startStopButtonLabel = 'Start';
+  public startStopButtonLabel = TimeTrackingState.start;
 
   public isStartStopButtonDisabled = false;
 
@@ -114,8 +114,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     const taskId = task.taskId;
     const currentBookingDeclarationId = task._bookingDeclarationId;
 
-    this.startStopButtonLabel = (this.startStopButtonLabel === 'Start') ? 'Stop' : 'Start';
-    if (this.startStopButtonLabel === 'Stop') {
+    this.startStopButtonLabel = (this.startStopButtonLabel === TimeTrackingState.start) ? TimeTrackingState.stop : TimeTrackingState.start;
+    if (this.startStopButtonLabel === TimeTrackingState.stop) {
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId, 
         currentBookingDeclarationId);
@@ -325,7 +325,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
                 this.setTask(taskId);
 
                 // start visualization
-                this.startStopButtonLabel = 'Stop';
+                this.startStopButtonLabel = TimeTrackingState.stop;
                 const timeEntryPromise = this.commitService.getTimeEntryById(timeEntryId);
                 timeEntryPromise.then((rawTimeEntry: string) => {
                   this.visualizeStartedTimeEntry(rawTimeEntry);
@@ -386,7 +386,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   //   // const value: ITimeEntryDocument = $event.value;
   //   // this.setTimeEntryIdInUrl(value.timeEntryId);
-  //   // // this.startStopButtonLabel = 'Stop';
+  //   // // this.startStopButtonLabel = TimeTrackingState.stop;
   // }
 
   ngOnInit() {
