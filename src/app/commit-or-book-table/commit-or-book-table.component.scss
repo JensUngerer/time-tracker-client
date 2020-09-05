@@ -50,3 +50,17 @@ table {
   -webkit-hyphens: auto;
   hyphens: auto;
 }
+
+.over-all-sum-first-column-width {
+  width: 20%;
+}
+
+.over-all-sum-second-column-width {
+  width: 60%;
+}
+
+.over-all-sum-third-column-width {
+  width: 20%;
+  display: flex;
+  justify-content: flex-start;
+}

@@ -40,6 +40,8 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
   @Input()
   isBookingBased = false;
 
+  overallDurationSum: number = null;
+
   gridLines: ICommitOrBookGridLine[] = [];
 
   identiferColumnName = '';
@@ -62,6 +64,7 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
     if (areRowsReset) {
       this.gridLines = [];
       if (this.currentDayOption) {
+        this.overallDurationSum = this.currentDayOption.overallDurationSum;
         const durations = this.currentDayOption.durations;
         durations.forEach((oneDuration: ICommitBase) => {
           let identifier = '';
