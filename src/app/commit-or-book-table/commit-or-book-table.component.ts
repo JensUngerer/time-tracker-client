@@ -14,7 +14,7 @@ export interface IColumnNames {
 
 export interface ICommitOrBookGridLine {
   identifierUrl: string;
-  identifer: string;
+  identifier: string;
   description: string;
   durationInHours: number;
 }
@@ -64,22 +64,22 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
       if (this.currentDayOption) {
         const durations = this.currentDayOption.durations;
         durations.forEach((oneDuration: ICommitBase) => {
-          let identifer = '';
+          let identifier = '';
           let description = '';
           let identifierUrl = '';
           if (this.isTaskBased) {
-            identifer = (oneDuration.basis as ITask).number;
-            identifierUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + (oneDuration.basis as ITask).number;
+            identifier = (oneDuration.basis as ITask).number;
+            identifierUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + (oneDuration.basis as ITask).number;
             description = (oneDuration.basis as ITask).name;
           } else if (this.isBookingBased) {
-            identifer = (oneDuration.basis as IBookingDeclaration).code;
-            identifierUrl = this.configurationService.configuration.bookingBasedIdentifierBaseUrl +  (oneDuration.basis as IBookingDeclaration).code;
+            identifier = (oneDuration.basis as IBookingDeclaration).code;
+            identifierUrl = this.configurationService.configuration.bookingBasedIdentifierBaseUrl + '/' +  (oneDuration.basis as IBookingDeclaration).code;
             description = (oneDuration.basis as IBookingDeclaration).description;
           }
 
           this.gridLines.push({
             identifierUrl,
-            identifer,
+            identifier: identifier,
             description,
             durationInHours: oneDuration.durationInHours
           });

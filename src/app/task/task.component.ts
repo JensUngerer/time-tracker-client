@@ -276,7 +276,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         let taskForRow: IGridLine = null;
         if (baseUrl) {
           taskForRow = {
-            codeOrNumberUrl: baseUrl + oneTask.number,
+            codeOrNumberUrl: baseUrl + '/' + oneTask.number,
             codeOrNumber: oneTask.number,
             name: oneTask.name,
             id: oneTask.taskId,

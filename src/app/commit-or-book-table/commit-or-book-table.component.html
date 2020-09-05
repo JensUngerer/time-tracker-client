@@ -3,11 +3,11 @@
       <ng-container matColumnDef="identifer">
         <th mat-header-cell *matHeaderCellDef>{{identiferColumnName}}</th>
         <td mat-cell *matCellDef="let line">
-          <span *ngIf="line.identifierUrl">
-            <a [href]="line.identifierUrl">{{line.identifer}}</a>
+          <span *ngIf="(this.configurationService.configuration.taskBasedIdentifierBaseUrl || this.configurationService.configuration.bookingBasedIdentifierBaseUrl)">
+            <a [href]="line.identifierUrl">{{line.identifier}}</a>
           </span>
-          <span *ngIf="!line.identifierUrl">
-            {{line.identifer}}
+          <span *ngIf="!(this.configurationService.configuration.taskBasedIdentifierBaseUrl || this.configurationService.configuration.bookingBasedIdentifierBaseUrl)">
+            {{line.identifier}}
           </span>
         </td>
       </ng-container>

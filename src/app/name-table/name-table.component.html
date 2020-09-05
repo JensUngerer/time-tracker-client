@@ -3,10 +3,10 @@
       <ng-container matColumnDef="codeOrNumber">
         <th mat-header-cell *matHeaderCellDef></th>
         <td class="pointerCursor" mat-cell *matCellDef="let line">
-          <span *ngIf="line.codeOrNumberUrl">
-            <a [href]="this.configurationService.configuration.codeOrNumberBaseUrl + line.codeOrNumberUrl">{{line.codeOrNumber}}</a>
+          <span *ngIf="this.configurationService.configuration.codeOrNumberBaseUrl">
+            <a [href]="line.codeOrNumberUrl">{{line.codeOrNumber}}</a>
           </span>
-          <span *ngIf="!line.codeOrNumberUrl">
+          <span *ngIf="!this.configurationService.configuration.codeOrNumberBaseUrl">
             {{line.codeOrNumber}}
           </span>
         </td>
