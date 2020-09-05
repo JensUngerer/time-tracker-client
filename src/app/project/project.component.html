@@ -1,22 +1,41 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxFlex="0 1 auto">
-    <mtt-name-table
-    columnName="Project-Name"
-    [gridLines]="gridLines"
-    (nameCellClicked)="onProjectRowClicked($event)"
-    (deleteRowClicked)="onDeleteRowClicked($event)"
-    ></mtt-name-table>
-    <div>
-      <form [formGroup]="projectFormGroup" (submit)="onSubmit(projectFormGroup.value)">
-        <div fxLayout="column">
-          <div fxFlex = "0 1 auto" class="spacing-around">
-            <input type="text" [required]="true" [formControlName]="formControlNameProjectName">
-          </div>
-          <div fxFlex = "0 1 auto" class="spacing-around">
-            <button type="submit" [disabled]="projectFormGroup.invalid">Add project</button>
+  <div xLayout="column" fxFlex="1 1 100%">
+    <div fxFlex="1 1 100%" fxLayoutAlign="center center">
+      <div fxLayout="column" fxFlex="1 1 100%">
+        <div fxFlex="1 1 100%">
+          <mtt-name-table
+            fxFlex="1 1 100%"
+            columnName="Project-Name"
+            [gridLines]="gridLines"
+            (nameCellClicked)="onProjectRowClicked($event)"
+            (deleteRowClicked)="onDeleteRowClicked($event)"
+          >
+          </mtt-name-table>
+        </div>
+        <div fxFlex="1 1 100%">
+          <div fxLayoutAlign="center center">
+            <form
+              [formGroup]="projectFormGroup"
+              (submit)="onSubmit(projectFormGroup.value)"
+            >
+              <div fxLayout="column">
+                <div fxFlex="0 1 auto" class="spacing-around">
+                  <input
+                    type="text"
+                    [required]="true"
+                    [formControlName]="formControlNameProjectName"
+                  />
+                </div>
+                <div fxFlex="0 1 auto" class="spacing-around">
+                  <button type="submit" [disabled]="projectFormGroup.invalid">
+                    Add project
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
