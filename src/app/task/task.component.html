@@ -1,77 +1,88 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxFlex="0 1 auto">
-    <div>
-      <mtt-name-table
-        columnName="Task-Name"
-        [gridLines]="gridLines"
-        (nameCellClicked)="onTaskRowClicked($event)"
-        (deleteRowClicked)="onDeleteRowClicked($event)"
-      ></mtt-name-table>
-    </div>
-    <div>
-      <form
-        [formGroup]="taskFormGroup"
-        (submit)="onSubmit(taskFormGroup.value)"
-      >
-        <div fxLayout="column">
-          <div fxFlex="0 1 auto" class="space-around">
-            <mat-select
-              placeholder="Project"
-              matInput
-              [formControlName]="formControlNameProjectName"
-              (selectionChange)="onProjectSelectionChanged()"
-              [required]="true"
+  <div fxLayout="column" fxFlex="1 1 100%">
+    <div fxFlex="1 1 100%" fxLayoutAlign="center center">
+      <div fxLayout="column" fxFlex="1 1 100%">
+        <div fxFlex="1 1 100%">
+          <mtt-name-table
+            fxFlex="1 1 100%"
+            columnName="Task-Name"
+            [gridLines]="gridLines"
+            (nameCellClicked)="onTaskRowClicked($event)"
+            (deleteRowClicked)="onDeleteRowClicked($event)"
+          ></mtt-name-table>
+        </div>
+        <div fxFlex="1 1 100%">
+          <div fxFlex="1 1 100%" fxLayoutAlign="center center">
+            <form
+              fxFlex="1 1 100%"
+              [formGroup]="taskFormGroup"
+              (submit)="onSubmit(taskFormGroup.value)"
             >
-              <mat-option
-                *ngFor="let projectOption of projectOptions"
-                [value]="projectOption.value"
-              >
-                {{ projectOption.viewValue }}
-              </mat-option>
-            </mat-select>
-          </div>
+              <div fxLayout="column">
+                <div fxFlex="1 1 100%" class="space-around">
+                  <mat-select
+                    placeholder="Project"
+                    matInput
+                    [formControlName]="formControlNameProjectName"
+                    (selectionChange)="onProjectSelectionChanged()"
+                    [required]="true"
+                  >
+                    <mat-option
+                      *ngFor="let projectOption of projectOptions"
+                      [value]="projectOption.value"
+                    >
+                      {{ projectOption.viewValue }}
+                    </mat-option>
+                  </mat-select>
+                </div>
 
-          <div fxFlex="0 1 auto" class="space-around">
-            <mat-select
-              placeholder="Booking-Declaration"
-              matInput
-              [formControlName]="formControlNameBookingDeclaration"
-              [required]="true"
-            >
-              <mat-option
-                *ngFor="let bookingDeclaration of bookingDeclarationOptions"
-                [value]="bookingDeclaration.value"
-              >
-                {{ bookingDeclaration.viewValue }}
-              </mat-option>
-            </mat-select>
-          </div>
+                <div fxFlex="1 1 100%" class="space-around">
+                  <mat-select
+                    fxFlex="1 1 100%"
+                    placeholder="Booking-Declaration"
+                    matInput
+                    [formControlName]="formControlNameBookingDeclaration"
+                    [required]="true"
+                  >
+                    <mat-option
+                      *ngFor="
+                        let bookingDeclaration of bookingDeclarationOptions
+                      "
+                      [value]="bookingDeclaration.value"
+                    >
+                      {{ bookingDeclaration.viewValue }}
+                    </mat-option>
+                  </mat-select>
+                </div>
 
-          <div fxFlex="0 1 auto" class="space-around">
-            <label>Task Number: </label
-            ><input
-              type="text"
-              [formControlName]="formControlNameTaskNumber"
-              [required]="true"
-            />
-          </div>
+                <div fxFlex="1 1 100%" fxLayoutAlign="center center" class="space-around">
+                  <label>Task Number: </label
+                  ><input
+                    type="text"
+                    [formControlName]="formControlNameTaskNumber"
+                    [required]="true"
+                  />
+                </div>
 
-          <div fxFlex="0 1 auto" class="space-around">
-            <label>Task Name: </label
-            ><input
-              type="text"
-              [formControlName]="formControlNameTaskName"
-              [required]="true"
-            />
-          </div>
+                <div fxFlex="1 1 100%"  fxLayoutAlign="center center" class="space-around">
+                  <label>Task Name: </label
+                  ><input
+                    type="text"
+                    [formControlName]="formControlNameTaskName"
+                    [required]="true"
+                  />
+                </div>
 
-          <div fxFlex="0 1 auto" class="space-around">
-            <button type="submit" [disabled]="taskFormGroup.invalid">
-              Add Task
-            </button>
+                <div fxFlex="1 1 100%" fxLayoutAlign="center center" class="space-around">
+                  <button type="submit" [disabled]="taskFormGroup.invalid">
+                    Add Task
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

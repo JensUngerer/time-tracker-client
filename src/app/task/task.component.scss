@@ -2,3 +2,15 @@
   margin-top: 15px;
   margin-bottom: 15px;
 }
+
+:host > div {
+  overflow: hidden;
+ }
+
+ ::ng-deep .mat-select {
+  display: unset;
+}
+
+::ng-deep .mat-select-value {
+  text-align: center !important;
+}
