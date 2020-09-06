@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescript/bookingDeclarationOption';
 import { ConfigurationService } from '../configuration.service';
+import { ProjectService } from '../project.service';
 
 @Component({
   selector: 'mtt-task',
@@ -94,6 +95,7 @@ export class TaskComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               private router: Router,
               private sessionStorageSerializationService: SessionStorageSerializationService,
+              private projectService: ProjectService,
               private configurationService: ConfigurationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
@@ -260,44 +262,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  public redrawTableOfProject(selectedProject: IProject) {
-    this.gridLines = [];
-    const existingCorrespondingTasksPromise = this.commitService.getTasksByProjectId(selectedProject.projectId);
-
-    existingCorrespondingTasksPromise.then((tasksStr: string) => {
-      const existingCorrespondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
-
-      if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
-        console.error('no corresponding tasks to projectId:' + selectedProject.projectId);
-        return;
-      }
-      const baseUrl = this.configurationService.configuration.codeOrNumberBaseUrl;
-      existingCorrespondingTasks.forEach((oneTask: ITask) => {
-        let taskForRow: IGridLine = null;
-        if (baseUrl) {
-          taskForRow = {
-            codeOrNumberUrl: baseUrl + '/' + oneTask.number,
-            codeOrNumber: oneTask.number,
-            name: oneTask.name,
-            id: oneTask.taskId,
-            deleteRow: ''
-          };
-        } else {
-          taskForRow = {
-            codeOrNumberUrl: '',
-            codeOrNumber: oneTask.number,
-            name: oneTask.name,
-            id: oneTask.taskId,
-            deleteRow: ''
-          };
-        }
-        
-        this.gridLines.push(taskForRow);
-      });
-    });
-    existingCorrespondingTasksPromise.catch(() => {
-      console.error('an rejection when getting tasks');
-    });
+  public async redrawTableOfProject(selectedProject: IProject) {
+    this.gridLines = await this.projectService.getTasksByProjectId(selectedProject.projectId);
   }
 
 

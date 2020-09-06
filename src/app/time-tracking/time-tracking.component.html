@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center" class="overflow-hidden">
   <div fxFlex="1 1 100%">
     <form [formGroup]="timeTrackingUserSelectionForm">
       <div fxLayout="column">
@@ -18,7 +18,17 @@
           </mat-select>
         </div>
         <div fxFlex="1 1 100%" class="space-around" fxLayoutAlign="center center">
-          <label>{{bookingDeclarationDescription}}</label>
+          <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{bookingDeclarationDescription}}</label>
+        </div>
+        <div fxFlex="1 1 100%">
+          <mtt-name-table
+            *ngIf="isTasksTableVisible"
+            fxFlex="1 1 100%"
+            columnName="Task-Name"
+            [gridLines]="gridLines"
+            (nameCellClicked)="onTaskRowClicked($event)"
+            (deleteRowClicked)="onDeleteRowClicked($event)"
+          ></mtt-name-table>
         </div>
         <div fxFlex="1 1 100%" class="space-around">
           <mat-select

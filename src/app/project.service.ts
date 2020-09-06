@@ -7,6 +7,10 @@ import { ITask } from '../../../common/typescript/iTask';
 import { HelpersService } from './helpers.service';
 import { IDuration } from '../../../common/typescript/iDuration';
 import { IDate } from '../../../common/typescript/iDate';
+import { IGridLine } from './typescript/iGridLine';
+import { CommitService } from './commit.service';
+import { SessionStorageSerializationService } from './session-storage-serialization.service';
+import { ConfigurationService } from './configuration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +21,10 @@ export class ProjectService {
 
   constructor(/*private inMemoryDataService: InMemoryDataService*/
     private helpersService: HelpersService,
-    private taskService: TaskService) { }
+    private taskService: TaskService,
+    private commitService: CommitService,
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private configurationService: ConfigurationService) { }
 
   public createProject(projectName: string): IProject {
     const newProject: IProject = {
@@ -27,6 +34,51 @@ export class ProjectService {
 
     // this.inMemoryDataService.push(this.projectsKey, newProject);
     return newProject;
+  }
+
+  getTasksByProjectId(projectId: string): Promise<IGridLine[]> {
+    return new Promise<IGridLine[]>((resolve: (value?: any) => void, reject: (value?: any) => void) => {
+      const gridLines = [];
+      const existingCorrespondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
+  
+      existingCorrespondingTasksPromise.then((tasksStr: string) => {
+        const existingCorrespondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
+  
+        if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
+          console.error('no corresponding tasks to projectId:' + projectId);
+          return;
+        }
+        const baseUrl = this.configurationService.configuration.codeOrNumberBaseUrl;
+        existingCorrespondingTasks.forEach((oneTask: ITask) => {
+          let taskForRow: IGridLine = null;
+          if (baseUrl) {
+            taskForRow = {
+              codeOrNumberUrl: baseUrl + '/' + oneTask.number,
+              codeOrNumber: oneTask.number,
+              name: oneTask.name,
+              id: oneTask.taskId,
+              deleteRow: ''
+            };
+          } else {
+            taskForRow = {
+              codeOrNumberUrl: '',
+              codeOrNumber: oneTask.number,
+              name: oneTask.name,
+              id: oneTask.taskId,
+              deleteRow: ''
+            };
+          }
+          
+          gridLines.push(taskForRow);
+        });
+        resolve(gridLines);
+      });
+      existingCorrespondingTasksPromise.catch(() => {
+        const errMsg = 'an rejection when getting tasks';
+        console.error(errMsg);
+        reject(errMsg);
+      });
+    });
   }
 
   // public deleteProject(projectId: string) {

@@ -18,6 +18,9 @@ import { IBookingDeclarationsDocument } from '../../../../common/typescript/mong
 import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
 import { TimeTrackingState } from './timeTrackingState.enum';
+import { IGridLine } from '../typescript/iGridLine';
+import { ProjectService } from '../project.service';
+import { ViewPaths } from '../viewPathsEnum';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -39,6 +42,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   private allTasks: ITask[];
 
   private timeEntryId: string;
+
+  @Output()
+  gridLines: IGridLine[] = [];
 
   // https://stackoverflow.com/questions/31548311/angular-html-binding
   @Output()
@@ -80,6 +86,29 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private currentBookingDeclarationId;
 
+  onTaskRowClicked($event: IGridLine) {
+    const taskId = $event.id;
+    this.setTask(taskId);
+
+    const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
+    const queryParams = {};
+    const projectId = this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty];
+    queryParams[routesConfig.projectIdProperty] = projectId;
+    queryParams[routesConfig.taskIdProperty] = taskId;
+    this.router.navigate([url], { queryParams });
+  }
+
+  onDeleteRowClicked($event: any) {
+
+  }
+
+  isTasksTableVisible = true;
+  isUiElementDisabled = false;
+
+  private async redrawTableOfTasks(projectId: string) {
+    this.gridLines = await this.projectService.getTasksByProjectId(projectId);
+  }
+
   public onTaskChange() {
     const task = this.timeTrackingUserSelectionForm
     .controls[this.formControlNameTaskSelectionDropDown]
@@ -116,6 +145,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     this.startStopButtonLabel = (this.startStopButtonLabel === TimeTrackingState.start) ? TimeTrackingState.stop : TimeTrackingState.start;
     if (this.startStopButtonLabel === TimeTrackingState.stop) {
+      this.isTasksTableVisible = false;
+
+      this.isUiElementDisabled = true;
+      this.timeTrackingProjectSelectionFormControl.disable();
+      this.timeTrackingTaskSelectionFromControl.disable();
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId, 
         currentBookingDeclarationId);
@@ -130,6 +164,12 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       });
 
     } else {
+      this.isTasksTableVisible = true;
+
+      this.isUiElementDisabled = false;
+      this.timeTrackingProjectSelectionFormControl.enable();
+      this.timeTrackingTaskSelectionFromControl.enable();
+
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.timeEntryId);
       stopTimeTrackingPromise.then(() => {
         if (this.durationVisualizationIntervalId) {
@@ -161,9 +201,12 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     } else {
       console.error('no project option for: ' + projectId);
     }
+
+    this.redrawTableOfTasks(projectId);
   }
 
-  constructor(private helpersService: HelpersService,
+  constructor(private projectService: ProjectService,
+    private helpersService: HelpersService,
     private timeTrackingService: TimeTrackingService,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -214,6 +257,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
+
+      this.redrawTableOfTasks(projectId);
 
       const isTimeEntryRunningPromise = this.displayRunningTimeEntry();
       isTimeEntryRunningPromise.then((resolvedTimeEntryValues: ITimeEntryDocument) => {
