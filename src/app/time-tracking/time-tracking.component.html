@@ -8,6 +8,7 @@
             matInput
             [formControl]="timeTrackingProjectSelectionFormControl"
             [required]="true"
+            (selectionChange)="onProjectChange($event)"
           >
             <mat-option
               *ngFor="let projectOption of projectOptions"

@@ -21,8 +21,35 @@
   text-align: center !important;
 }
 
+// ::ng-deep select {
+//   text-align: center;
+//   text-align-last: center;
+//   /* webkit*/
+// }
+// ::ng-deep option {
+//   text-align: center;
+//   /* reset to center*/
+// }
+
+// // ::ng-deep .mat-select-value > .mat-select-placeholder {
+//   display: flex !important;
+//   justify-content: center !important;
+// }
+
+// mat-select div.mat-select-trigger div.mat-select-value div.mat-select-placeholder {
+//   // color:orange !important;
+//   // display: unset;
+//   // text-align: center !important;
+//   display: flex !important;
+//   justify-content: center !important;
+// }
+
+// ::ng-deep mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+//   text-align: center !important;
+// }
+
 .text-disabled-color {
-  color: rgba(0,0,0,.38);
+  color: rgba(0, 0, 0, 0.38);
 }
 
 .overflow-hidden {
