@@ -10,6 +10,8 @@ import { ConfigurationService } from '../configuration.service';
   styleUrls: ['./name-table.component.scss']
 })
 export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
+  @Input()
+  isDeleteRowShown = false;
 
   @ViewChild(MatTable)
   public theTable: MatTable<IGridLine>;
@@ -26,7 +28,7 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   public deleteRowClicked: EventEmitter<IGridLine> = new EventEmitter<IGridLine>();
 
-  public readonly displayedColumns: string[] = ['codeOrNumber', 'name', 'deleteRow'];
+  public displayedColumns: string[] = ['codeOrNumber', 'name', 'deleteRow'];
 
   public readonly faTrash = faTrash;
 
@@ -56,6 +58,9 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   constructor(public configurationService: ConfigurationService) {
+    if (!this.isDeleteRowShown)  {
+      this.displayedColumns = ['codeOrNumber', 'name'];
+    }
     this.dataSource = new MatTableDataSource(this.gridLines);
   }
 
