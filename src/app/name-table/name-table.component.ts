@@ -11,6 +11,9 @@ import { ConfigurationService } from '../configuration.service';
 })
 export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
+  currentId = '';
+  
+  @Input()
   isDeleteRowShown = false;
 
   @ViewChild(MatTable)

@@ -89,6 +89,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   onTaskRowClicked($event: IGridLine) {
     const taskId = $event.id;
     this.setTask(taskId);
+    this.currentTaskId = taskId;
 
     // const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
     // const queryParams = {};
@@ -105,6 +106,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   isTasksTableVisible = true;
   isUiElementDisabled = false;
 
+  private currentTaskId = '';
+
   private async redrawTableOfTasks(projectId: string) {
     if (!projectId) {
       return;
@@ -117,6 +120,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       .controls[this.formControlNameTaskSelectionDropDown]
       .value;
     this.setBookingDescription(task._bookingDeclarationId);
+    this.currentTaskId = task.taskId;
   }
 
   public onProjectChange($event: any) {
@@ -274,6 +278,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
+
+      this.currentTaskId = taskId;
 
       const initTaskDropDownPromise = this.initTasksDropDown(projectId);
       initTaskDropDownPromise.then(() => {

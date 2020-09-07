@@ -25,6 +25,7 @@
           <mtt-name-table
             *ngIf="isTasksTableVisible"
             fxFlex="1 1 100%"
+            [currentId]="currentTaskId"
             columnName="Task-Name"
             [gridLines]="gridLines"
             (nameCellClicked)="onTaskRowClicked($event)"

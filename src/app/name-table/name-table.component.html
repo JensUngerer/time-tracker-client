@@ -28,6 +28,6 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [ngClass]="{'highlighted-line': row.id === currentId}"></tr>
     </table>
   </div>
