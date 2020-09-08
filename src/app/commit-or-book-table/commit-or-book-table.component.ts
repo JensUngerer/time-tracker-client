@@ -50,7 +50,7 @@ export class CommitOrBookTableComponent implements AfterViewInit, OnChanges {
   readonly displayedColumns: string[] = ['identifer', 'description', 'durationInHours'];
   readonly dataSource: MatTableDataSource<ICommitOrBookGridLine> = new MatTableDataSource(this.gridLines);
 
-  constructor(private configurationService: ConfigurationService) { }
+  constructor(public configurationService: ConfigurationService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes &&

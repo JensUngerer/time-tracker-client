@@ -106,7 +106,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   isTasksTableVisible = true;
   isUiElementDisabled = false;
 
-  private currentTaskId = '';
+  currentTaskId = '';
 
   private async redrawTableOfTasks(projectId: string) {
     if (!projectId) {
