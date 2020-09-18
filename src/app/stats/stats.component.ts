@@ -51,7 +51,6 @@ export class StatsComponent implements OnInit {
     const utcStartTime = this.convertToUtc(startTime);
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
     const utcEndTime = this.convertToUtc(endTime);
-
   }
 
 }
