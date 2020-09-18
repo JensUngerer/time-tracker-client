@@ -4,5 +4,6 @@ export enum ViewPaths {
   timeTracking = 'timeTracking',
   bookingDeclaration = 'bookingDeclaration',
   book = 'book',
-  commit = 'commit'
+  commit = 'commit',
+  statistics = 'statistics'
 }

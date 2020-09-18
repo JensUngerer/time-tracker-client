@@ -4,6 +4,7 @@ import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { ProjectComponent } from './project/project.component';
+import { StatsComponent } from './stats/stats.component.js';
 import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
@@ -44,20 +45,13 @@ export class RoutingRoutes {
         label: ViewLabels.timeTracking
       }
     },
-    // {
-    //   path: RoutingRoutes.viewsPrefix + 'completedTask',
-    //   component: CompletedTaskComponent,
-    //   data: {
-    //     label: 'Completed-Tasks'
-    //   }
-    // },
-    // {
-    //   path: RoutingRoutes.viewsPrefix + 'completedTimeEntry',
-    //   component: CompletedTimeEntryComponent,
-    //   data: {
-    //     label: 'Completed-Time-Entries'
-    //   }
-    // },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.statistics,
+      component: StatsComponent,
+      data: {
+        label: ViewLabels.statistics
+      }
+    },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
       component: CommitOrBookComponent,

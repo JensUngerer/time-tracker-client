@@ -32,6 +32,8 @@ import { RouterPagesSwitcherComponent } from './router-pages-switcher/router-pag
 import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { MatStepperModule } from '@angular/material/stepper';
+import { StatsComponent } from './stats/stats.component';
+import { CommonModule } from '@angular/common';
 
 // https://stackoverflow.com/questions/38209713/how-to-make-a-responsive-nav-bar-using-angular-material-2
 // https://material.angular.io/guide/getting-started
@@ -51,9 +53,11 @@ import { MatStepperModule } from '@angular/material/stepper';
     NameTableComponent,
     BookingDeclarationComponent,
     CommitOrBookComponent,
-    CommitOrBookTableComponent
+    CommitOrBookTableComponent,
+    StatsComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     FlexLayoutModule,

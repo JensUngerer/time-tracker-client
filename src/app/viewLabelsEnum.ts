@@ -4,5 +4,6 @@ export enum ViewLabels {
   timeTracking = 'Time-Tracking',
   bookingDeclaration = 'Booking-Declaration',
   book = 'Book',
-  commit = 'Commit'
+  commit = 'Commit',
+  statistics = 'Statistics'
 }
