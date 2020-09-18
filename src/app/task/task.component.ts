@@ -98,13 +98,13 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(private taskService: TaskService,
-              private commitService: CommitService,
-              private activatedRoute: ActivatedRoute,
-              public dialog: MatDialog,
-              private router: Router,
-              private sessionStorageSerializationService: SessionStorageSerializationService,
-              private projectService: ProjectService,
-              private configurationService: ConfigurationService) {
+    private commitService: CommitService,
+    private activatedRoute: ActivatedRoute,
+    public dialog: MatDialog,
+    private router: Router,
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private projectService: ProjectService,
+    private configurationService: ConfigurationService) {
     const configObj: { [key: string]: AbstractControl } = {};
 
     configObj[this.formControlNameProjectName] = new FormControl('');
@@ -113,12 +113,17 @@ export class TaskComponent implements OnInit, OnDestroy {
     configObj[this.formControlNameTaskNumber] = new FormControl('');
     configObj[this.formControlNameTaskCategory] = new FormControl('');
 
-    this.configurationService.configuration.taskCategories.forEach((oneCategory: string) => {
-      this.taskCategoryOptions.push({
-        value: oneCategory,
-        viewValue: oneCategory
+    if (this.configurationService &&
+      this.configurationService.configuration &&
+      this.configurationService.configuration.taskCategories) {
+      this.configurationService.configuration.taskCategories.forEach((oneCategory: string) => {
+        this.taskCategoryOptions.push({
+          value: oneCategory,
+          viewValue: oneCategory
+        });
       });
-    });
+    }
+
     this.taskFormGroup = new FormGroup(configObj);
 
     const projectsPromise = this.commitService.getProjects();
@@ -171,16 +176,16 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   private setCorrelatedBooking(projectId: string) {
-      const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectId);
-      bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
-        const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
+    const bookingDeclarationsPromise = this.commitService.getBookingDeclarationsBy(projectId);
+    bookingDeclarationsPromise.then((rawBookingDeclarations: string) => {
+      const parsedBookingDeclarations: IBookingDeclarationsDocument[] = JSON.parse(rawBookingDeclarations);
 
-        // DEBUGGING
-        // console.log(parsedBookingDeclarations);
-        parsedBookingDeclarations.forEach((oneBookingDeclaration: IBookingDeclarationsDocument) => {
-          this.bookingDeclarationOptions.push(new BookingDeclarationOption(oneBookingDeclaration));
-        });
+      // DEBUGGING
+      // console.log(parsedBookingDeclarations);
+      parsedBookingDeclarations.forEach((oneBookingDeclaration: IBookingDeclarationsDocument) => {
+        this.bookingDeclarationOptions.push(new BookingDeclarationOption(oneBookingDeclaration));
       });
+    });
   }
 
   public onProjectSelectionChanged() {
