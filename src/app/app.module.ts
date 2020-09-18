@@ -1,6 +1,6 @@
 import { LayoutModule } from '@angular/cdk/layout';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,6 +34,13 @@ import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { StatsComponent } from './stats/stats.component';
 import { CommonModule } from '@angular/common';
+import { MatInputModule }from '@angular/material/input';
+// https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
+// import { registerLocaleData } from '@angular/common';
+// import localeDe from '@angular/common/locales/de';
+// import localeDeExtra from '@angular/common/locales/extra/de';
+
+// registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
 // https://stackoverflow.com/questions/38209713/how-to-make-a-responsive-nav-bar-using-angular-material-2
 // https://material.angular.io/guide/getting-started
@@ -69,8 +76,6 @@ import { CommonModule } from '@angular/common';
     LayoutModule,
     MatSidenavModule,
     MatListModule,
-    MatIconModule,
-    MatButtonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -80,9 +85,14 @@ import { CommonModule } from '@angular/common';
     MatDialogModule,
     MatCheckboxModule,
     MatStepperModule,
-    FlexLayoutModule
+    MatInputModule,
   ],
-  providers: [],
+  providers: [
+    // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0
+    // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
+    // {provide: LOCALE_ID, useValue: 'de-DE'}
+  ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+}

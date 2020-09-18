@@ -1,7 +1,36 @@
-<div fxLayout="row" fxFlexFill>
-    <div>
-        <div>
-            <p>stats works!</p>
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+    <div fxLayout="column">
+        <div fxFlex="1 1 100%">
+            <!-- Stats works -->
+            <!--
+                pre-selection via datetime-local input field
+                + query start time (earliest)
+                + query end time (latest)
+
+                drop downs of time entries                
+                + start time (earliest)
+                + end time (latest)
+
+
+
+            -->
+        </div>
+        <div fxFlex="1 1 100%">
+            <form [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
+                <div fxLayout="column">
+                    <mat-form-field fxFlex="1 1 100%">
+                        <mat-label>Query (erliest) start time</mat-label>
+                        <input [formControlName]="queryTimeStartFormControlName" matInput type="datetime-local" />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="1 1 100%">
+                        <mat-label>Query (latest) end time</mat-label>
+                        <input [formControlName]="queryTimeEndFormControlName" matInput type="datetime-local" />
+                    </mat-form-field>
+                    <div fxFlex="1 1 100%">
+                        <button type="submit">Search corresponding Time-Entries</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
