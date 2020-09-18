@@ -5,6 +5,7 @@ export interface IConfiguration {
   taskBasedIdentifierBaseUrl: string;
   bookingBasedIdentifierBaseUrl: string;
   codeOrNumberBaseUrl: string;
+  taskCategories: string[];
 }
 
 @Injectable({

@@ -36,6 +36,24 @@
                   </mat-select>
                 </div>
 
+                <div fxLayout="column">
+                  <div fxFlex="1 1 100%" class="space-around">
+                    <mat-select
+                      placeholder="Task Category"
+                      matInput
+                      [formControlName]="formControlNameTaskCategory"
+                      [required]="true"
+                    >
+                      <mat-option
+                        *ngFor="let taskCategoryOption of taskCategoryOptions"
+                        [value]="taskCategoryOption.value"
+                      >
+                        {{ taskCategoryOption.viewValue }}
+                      </mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+
                 <div fxFlex="1 1 100%" class="space-around">
                   <mat-select
                     fxFlex="1 1 100%"

@@ -1,5 +1,11 @@
 {
-    "taskBasedIdentifierBaseUrl": "",
-    "bookingBasedIdentifierBaseUrl": "",
-    "codeOrNumberBaseUrl": ""
+    "taskBasedIdentifierBaseUrl": "http://jens-ungerer.de",
+    "bookingBasedIdentifierBaseUrl": "http://jens-ungerer.de",
+    "codeOrNumberBaseUrl": "http://jens-ungerer.de",
+    "taskCategories": [
+        "feature",
+        "bugfix",
+        "hotfix",
+        "support"
+    ]
 }

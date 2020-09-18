@@ -20,6 +20,7 @@ import { IBookingDeclarationsDocument } from '../../../../common/typescript/mong
 import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescript/bookingDeclarationOption';
 import { ConfigurationService } from '../configuration.service';
 import { ProjectService } from '../project.service';
+import { ITaskCategoryOption } from '../typescript/taskCategoryOption';
 
 @Component({
   selector: 'mtt-task',
@@ -43,11 +44,15 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public formControlNameBookingDeclaration = 'theBookingDeclaration';
 
+  public formControlNameTaskCategory = 'theTaskCategory';
+
   public projectOptions: IProjectOption[] = [];
 
   public bookingDeclarationOptions: IBookingDeclarationOption[] = [];
 
   public gridLines: IGridLine[] = [];
+
+  public taskCategoryOptions: ITaskCategoryOption[] = [];
 
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
@@ -58,11 +63,14 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const taskNumber = values[this.formControlNameTaskNumber];
 
-    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId, taskNumber);
+    const taskCategory: string = values[this.formControlNameTaskCategory];
+
+    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId, taskNumber, taskCategory);
 
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
     this.taskFormGroup.controls[this.formControlNameTaskNumber].setValue('');
+    this.taskFormGroup.controls[this.formControlNameTaskCategory].setValue('');
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
@@ -102,8 +110,15 @@ export class TaskComponent implements OnInit, OnDestroy {
     configObj[this.formControlNameProjectName] = new FormControl('');
     configObj[this.formControlNameTaskName] = new FormControl('');
     configObj[this.formControlNameBookingDeclaration] = new FormControl('');
-    configObj[this.formControlNameTaskNumber] = new FormControl();
+    configObj[this.formControlNameTaskNumber] = new FormControl('');
+    configObj[this.formControlNameTaskCategory] = new FormControl('');
 
+    this.configurationService.configuration.taskCategories.forEach((oneCategory: string) => {
+      this.taskCategoryOptions.push({
+        value: oneCategory,
+        viewValue: oneCategory
+      });
+    });
     this.taskFormGroup = new FormGroup(configObj);
 
     const projectsPromise = this.commitService.getProjects();

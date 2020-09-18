@@ -12,13 +12,14 @@ export class TaskService {
 
   // constructor(private inMemoryDataService: InMemoryDataService) { }
 
-  public createTask(taskName: string, projectId: string, bookingDeclarationId: string, taskNumber: string): ITask {
+  public createTask(taskName: string, projectId: string, bookingDeclarationId: string, taskNumber: string, taskCategory: string): ITask {
     const newTask: ITask = {
       number: taskNumber,
       name: taskName,
       taskId: v4(),
       _projectId: projectId,
-      _bookingDeclarationId: bookingDeclarationId
+      _bookingDeclarationId: bookingDeclarationId,
+      taskCategory: taskCategory
     };
     // this.inMemoryDataService.push(this.tasksKey, newTask);
 
