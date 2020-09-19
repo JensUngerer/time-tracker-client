@@ -24,7 +24,8 @@ export class StatsComponent implements OnInit {
     const currentTime = Date.now();
     // https://stackoverflow.com/questions/35144821/angular-use-pipes-in-services-and-components
     // https://stackoverflow.com/questions/46715543/how-to-bind-date-time-form-control
-    const requiredDateTimeFormat = "yyyy-MM-ddThh:mm"
+    // https://stackoverflow.com/questions/50362854/how-to-change-time-from-24-to-12-hour-format-in-angular-5
+    const requiredDateTimeFormat = "yyyy-MM-ddTHH:mm"
     const cestOffset = "UTC +2";
     const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale, cestOffset);
 
