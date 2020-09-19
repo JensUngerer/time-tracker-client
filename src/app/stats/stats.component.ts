@@ -3,6 +3,8 @@ import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { LOCALE_ID } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { CommitService } from '../commit.service';
+import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummarizedTimeEntries';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
 @Component({
   selector: 'mtt-stats',
@@ -17,7 +19,8 @@ export class StatsComponent implements OnInit {
   queryTimeFormGroup: FormGroup;
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
-  private commitService: CommitService) { }
+  private commitService: CommitService,
+  private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
   ngOnInit(): void {
     const configObj: { [key: string]: AbstractControl } = {};
@@ -26,7 +29,7 @@ export class StatsComponent implements OnInit {
     // https://stackoverflow.com/questions/46715543/how-to-bind-date-time-form-control
     // https://stackoverflow.com/questions/50362854/how-to-change-time-from-24-to-12-hour-format-in-angular-5
     const requiredDateTimeFormat = "yyyy-MM-ddTHH:mm"
-    const cestOffset = "UTC +2";
+    const cestOffset = "UTC";
     const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale, cestOffset);
 
     configObj[this.queryTimeStartFormControlName] = new FormControl(formattedCurrentTime);
@@ -57,8 +60,16 @@ export class StatsComponent implements OnInit {
     const utcEndTime = this.convertToUtc(endTime);
 
     const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime);
-    statisticsPromise.then((stats: any) => {
-      console.log(stats);
+    statisticsPromise.then((stats: string) => {
+      const parsedStats: ISummarizedTimeEntries[] = this.sessionStorageSerializationService.deSerialize(stats);
+      if (!parsedStats || !parsedStats.length) {
+        console.log('no stats received');
+        return;
+      }
+      parsedStats.forEach(oneParsedStatistics => {
+        // console.log(JSON.stringify(oneParsedStatistics, null, 4));
+        
+      });
     })
     statisticsPromise.catch((err: any) => {
       console.error(err);
