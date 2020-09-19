@@ -25,6 +25,12 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+
+  getStatistics(utcStartTime: Date, utcEndTime: Date) {
+    const url = this.getTimeEntriesUrl() + '/' + routes.timeEntriesStatisticsSufffix + '/' + routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' + routes.endDateProperty + '=' + utcEndTime.getTime();
+    return this.httpGet(url);
+  }
+
   getTaskById(taskId: string)  {
     const url = this.getTaskUrl() + '/' + taskId;
     return this.httpGet(url); 

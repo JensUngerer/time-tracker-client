@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { LOCALE_ID } from '@angular/core';
 import { formatDate } from '@angular/common';
+import { CommitService } from '../commit.service';
 
 @Component({
   selector: 'mtt-stats',
@@ -15,7 +16,8 @@ export class StatsComponent implements OnInit {
 
   queryTimeFormGroup: FormGroup;
 
-  constructor(@Inject(LOCALE_ID) private currentLocale) { }
+  constructor(@Inject(LOCALE_ID) private currentLocale,
+  private commitService: CommitService) { }
 
   ngOnInit(): void {
     const configObj: { [key: string]: AbstractControl } = {};
@@ -32,6 +34,7 @@ export class StatsComponent implements OnInit {
     this.queryTimeFormGroup = new FormGroup(configObj);
   }
 
+  // TODO: move to common
   convertToUtc(date: Date) {
     // https://stackoverflow.com/questions/948532/how-do-you-convert-a-javascript-date-to-utc
     const utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
@@ -51,6 +54,14 @@ export class StatsComponent implements OnInit {
     const utcStartTime = this.convertToUtc(startTime);
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
     const utcEndTime = this.convertToUtc(endTime);
+
+    const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime);
+    statisticsPromise.then((stats: any) => {
+      console.log(stats);
+    })
+    statisticsPromise.catch((err: any) => {
+      console.error(err);
+    });
   }
 
 }

@@ -1,6 +1,6 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
     <div fxLayout="column">
-        <div fxFlex="1 1 100%">
+        <!-- <div fxFlex="1 1 100%"> -->
             <!-- Stats works -->
             <!--
                 pre-selection via datetime-local input field
@@ -22,7 +22,7 @@
 
 
             -->
-        </div>
+        <!-- </div> -->
         <div fxFlex="1 1 100%">
             <form [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
                 <div fxLayout="column">
@@ -35,10 +35,13 @@
                         <input [formControlName]="queryTimeEndFormControlName" matInput type="datetime-local" />
                     </mat-form-field>
                     <div fxFlex="1 1 100%">
-                        <button type="submit">Search corresponding Time-Entries</button>
+                        <button type="submit">Visualize Time-Entries Summary</button>
                     </div>
                 </div>
             </form>
+        </div>
+        <div fxFlex="1 1 100%">
+            <div>Commit or book table?</div>
         </div>
     </div>
 </div>
