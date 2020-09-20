@@ -41,7 +41,9 @@
             </form>
         </div>
         <div fxFlex="1 1 100%">
-            <div>Commit or book table?</div>
+            <div *ngFor="let item of summarizedTasksByCategory">
+                <p>{{item | json}}</p>
+            </div>
         </div>
     </div>
 </div>

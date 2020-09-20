@@ -25,14 +25,18 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
-
-  getStatistics(utcStartTime: Date, utcEndTime: Date) {
-    const url = this.getTimeEntriesUrl() + '/' + routes.timeEntriesStatisticsSufffix + '/' + routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' + routes.endDateProperty + '=' + utcEndTime.getTime();
+  getTaskByTaskId(taskId: string) {
+    const url = this.getTaskUrl() + routes.taskIdSuffix + '/' + taskId;
     return this.httpGet(url);
   }
 
-  getTaskById(taskId: string)  {
-    const url = this.getTaskUrl() + '/' + taskId;
+  getStatistics(utcStartTime: Date, utcEndTime: Date) {
+    const url = this.getTimeEntriesUrl() + routes.timeEntriesStatisticsSufffix + '/' + routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' + routes.endDateProperty + '=' + utcEndTime.getTime();
+    return this.httpGet(url);
+  }
+
+  getTaskById(projectId: string)  {
+    const url = this.getTaskUrl() + '/' + projectId;
     return this.httpGet(url); 
   }
 
