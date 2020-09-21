@@ -1,8 +1,8 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
     <div fxLayout="column">
         <!-- <div fxFlex="1 1 100%"> -->
-            <!-- Stats works -->
-            <!--
+        <!-- Stats works -->
+        <!--
                 pre-selection via datetime-local input field
                 + query start time (earliest)
                 + query end time (latest)
@@ -40,13 +40,24 @@
                 </div>
             </form>
         </div>
-        <div fxFlex="1 1 100%">
+        <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
             <div *ngFor="let item of summarizedTasksByCategory">
                 <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
             </div>
         </div>
-        <div fxFlex="1 1 100%">
+        <!-- <div fxFlex="1 1 100%">
             <button type="button" (click)="isQuerySelectionVisible = !isQuerySelectionVisible">Selection Query Visibility</button>
+        </div> -->
+        <div fxFlex="1 1 100%" *ngIf="isPieChartButtonVisible">
+            <button type="button"
+                (click)="onPieChartOpen()">Pie
+                Chart</button>
+        </div>
+        <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
+            <div fxFlex="row" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
+                <canvas style="width: 500px"  fxFlex="1 1 100" baseChart [data]="doughnutChartData[i]" [labels]="doughnutChartLabels[i]" [chartType]="doughnutChartType">
+                </canvas>
+            </div>
         </div>
     </div>
 </div>

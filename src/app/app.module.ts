@@ -36,6 +36,8 @@ import { StatsComponent } from './stats/stats.component';
 import { CommonModule } from '@angular/common';
 import { MatInputModule }from '@angular/material/input';
 import { StatsTableComponent } from './stats-table/stats-table.component';
+import { ChartsModule } from 'ng2-charts';
+
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
 // import localeDe from '@angular/common/locales/de';
@@ -88,6 +90,7 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     MatCheckboxModule,
     MatStepperModule,
     MatInputModule,
+    ChartsModule
   ],
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0

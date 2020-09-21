@@ -7,6 +7,8 @@ import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummari
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
 import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/summarizedData';
+import { Label, MultiDataSet, SingleDataSet } from 'ng2-charts';
+import { ChartType } from 'chart.js';
 
 @Component({
   selector: 'mtt-stats',
@@ -23,6 +25,22 @@ export class StatsComponent implements OnInit {
   summarizedTasksByCategory: ISummarizedTasks[] = [];
 
   isQuerySelectionVisible = true;
+  isQueryDataVisible = false;
+  isPieChartButtonVisible = false;
+  isPieChartVisible = false;
+
+  // doughnutChartData = null;
+  // doughnutChartLabels = null;
+  // doughnutChartType = null;
+  public doughnutChartLabels: Label[][] = []; //['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
+  public doughnutChartData: SingleDataSet[] = [
+    // [350, 450, 100],
+    // [50, 150, 120],
+    // [250, 130, 70],
+  ];
+  public doughnutChartType: ChartType = 'doughnut';
+
+
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private commitService: CommitService,
@@ -52,9 +70,49 @@ export class StatsComponent implements OnInit {
     return new Date(utc);
   }
 
+  onPieChartOpen() {
+    this.isQueryDataVisible = false;
+    this.isPieChartButtonVisible = false;
+    if (this.summarizedTasksByCategory
+      && this.summarizedTasksByCategory.length
+      && this.summarizedTasksByCategory.length > 0) {
+
+      // index === 0 --> features
+      const categoryDataEntry = [];
+      this.doughnutChartLabels.push([]);
+      this.doughnutChartData.push([]);
+      this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
+        this.doughnutChartLabels[0].push(oneSummarizedCategory.category);
+        categoryDataEntry.push(oneSummarizedCategory.durationSum);
+        // const oneDataEntry = [];
+        // oneSummarizedCategory.lines.forEach((oneLine)=>{
+        //   // const oneDataEntry = [oneLine.durationInHours, oneSummarizedCategory.durationSum];
+        //   // this.doughnutChartData.push(oneDataEntry);
+        //   oneDataEntry.push(oneLine.durationInHours);
+        // });
+        // this.doughnutChartData.push(oneDataEntry);
+      });
+      this.doughnutChartData[0].push(categoryDataEntry);
+    }
+
+    this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
+      this.doughnutChartLabels.push([]);
+      this.doughnutChartData.push([]);
+      // this.doughnutChartLabels[1].push(oneSummarizedCategory);
+      oneSummarizedCategory.lines.forEach((oneLine: ITaskLine, indexOfLine: number) => {
+
+        this.doughnutChartLabels[1 + indexOfCategory].push(oneLine.taskDescription);
+        this.doughnutChartData[1 + indexOfCategory].push(oneLine.durationInHours);
+      });
+    });
+
+    // DEBUGGING:
+    console.log(JSON.stringify(this.doughnutChartData[0], null, 4));
+
+    this.isPieChartVisible = true
+  }
 
   onQueryTime($event: any) {
-    this.isQuerySelectionVisible = false;
     // DEBUGGING
     // console.log($event[this.queryTimeStartFormControlName]);
     // console.log($event[this.queryTimeEndFormControlName]);
@@ -77,16 +135,20 @@ export class StatsComponent implements OnInit {
       let outerLoopCtr = 0;
       const outerLoop = () => {
         if (outerLoopCtr >= parsedStats.length) {
-          console.log('done');
+          // console.log('done');
+
+          this.isQuerySelectionVisible = false;
+          this.isQueryDataVisible = true;
+          this.isPieChartButtonVisible = true;
           return;
         }
         const oneParsedStatistics = parsedStats[outerLoopCtr];
 
         // parsedStats.forEach(oneParsedStatistics => {
-        console.log(JSON.stringify(oneParsedStatistics, null, 4));
+        // console.log(JSON.stringify(oneParsedStatistics, null, 4));
 
         const taskIds = Object.keys(oneParsedStatistics.durationSumByTaskId);
-        console.log(JSON.stringify(taskIds, null, 4));
+        // console.log(JSON.stringify(taskIds, null, 4));
 
         if (!taskIds || !taskIds.length) {
           console.error('not taskIds');
