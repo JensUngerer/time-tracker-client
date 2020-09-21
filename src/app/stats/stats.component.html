@@ -23,7 +23,7 @@
 
             -->
         <!-- </div> -->
-        <div fxFlex="1 1 100%">
+        <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
             <form [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
                 <div fxLayout="column">
                     <mat-form-field fxFlex="1 1 100%">
@@ -42,8 +42,11 @@
         </div>
         <div fxFlex="1 1 100%">
             <div *ngFor="let item of summarizedTasksByCategory">
-                <p>{{item | json}}</p>
+                <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
             </div>
+        </div>
+        <div fxFlex="1 1 100%">
+            <button type="button" (click)="isQuerySelectionVisible = !isQuerySelectionVisible">Selection Query Visibility</button>
         </div>
     </div>
 </div>

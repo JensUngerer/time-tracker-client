@@ -35,6 +35,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { StatsComponent } from './stats/stats.component';
 import { CommonModule } from '@angular/common';
 import { MatInputModule }from '@angular/material/input';
+import { StatsTableComponent } from './stats-table/stats-table.component';
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
 // import localeDe from '@angular/common/locales/de';
@@ -61,7 +62,8 @@ import { MatInputModule }from '@angular/material/input';
     BookingDeclarationComponent,
     CommitOrBookComponent,
     CommitOrBookTableComponent,
-    StatsComponent
+    StatsComponent,
+    StatsTableComponent
   ],
   imports: [
     CommonModule,

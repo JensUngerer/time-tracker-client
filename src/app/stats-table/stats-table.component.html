@@ -1,0 +1,73 @@
+<!-- <p>{{summarizedTasks | json}}</p> -->
+<!-- 
+
+            // create data for visualization (so "join" the both data)
+            // lines like:
+            // category
+            // | taskNumber | taskDescription | sum in hours | sum fraction in percentage
+            // ...
+            // duration sum
+-->
+<div>
+    {{summarizedTasks.category}}
+</div>
+<table #statsTable mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="taskNumber">
+        <th mat-header-cell *matHeaderCellDef>Number</th>
+        <td mat-cell *matCellDef="let row">
+            {{row.taskNumber}}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="taskDescription">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let row">
+            {{row.taskDescription}}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="durationInHours">
+        <th mat-header-cell *matHeaderCellDef>Duration (h)</th>
+        <td mat-cell *matCellDef="let row">
+            {{row.durationInHours | number : '1.2-2'}}
+        </td>
+    </ng-container>
+    <!-- https://angular.io/api/common/PercentPipe -->
+    <ng-container matColumnDef="durationFraction">
+        <th mat-header-cell *matHeaderCellDef>Duration (%)</th>
+        <th mat-cell *matCellDef="let row">
+            {{(row.durationFraction * 100) | number : '3.0-0'}}
+        </th>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<table>
+    <!-- <tr class="mat-row">
+        <th class="mat-header-cell column-taskNumber">
+            &nbsp;
+        </th>
+        <th class="mat-header-cell column-taskDescription">
+            &nbsp;
+        </th>
+        <th class="mat-header-cell column-durationInHours">
+            Sum
+        </th>
+        <th class="mat-header-cell column-durationFraction">
+            Fraction
+        </th>
+    </tr> -->
+    <tr class="mat-row">
+        <td class="mat-cell column-taskNumber">
+            &nbsp;
+        </td>
+        <td class="mat-cell column-taskDescription">
+            &nbsp;
+        </td>
+        <td class="mat-cell column-durationInHours">
+            {{summarizedTasks.durationSum | number : '1.2-2'}}
+        </td>
+        <td class="mat-cell column-durationFraction">
+            {{(summarizedTasks.durationFraction * 100) | number : '3.0-0'}}
+        </td>
+    </tr>
+</table>

@@ -6,21 +6,7 @@ import { CommitService } from '../commit.service';
 import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummarizedTimeEntries';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
-
-export interface ITaskLine {
-  taskNumber: string;
-  taskNumberUrl: string;
-  taskDescription: string;
-  durationInHours: number;
-  durationFraction: number;
-}
-
-export interface ISummarizedTasks {
-  category: string;
-  lines: ITaskLine[];
-  durationSum: number;
-  durationFraction: number;
-}
+import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/summarizedData';
 
 @Component({
   selector: 'mtt-stats',
@@ -35,6 +21,8 @@ export class StatsComponent implements OnInit {
   queryTimeFormGroup: FormGroup;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
+
+  isQuerySelectionVisible = true;
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private commitService: CommitService,
@@ -66,6 +54,7 @@ export class StatsComponent implements OnInit {
 
 
   onQueryTime($event: any) {
+    this.isQuerySelectionVisible = false;
     // DEBUGGING
     // console.log($event[this.queryTimeStartFormControlName]);
     // console.log($event[this.queryTimeEndFormControlName]);
@@ -87,7 +76,7 @@ export class StatsComponent implements OnInit {
       this.summarizedTasksByCategory = [];
       let outerLoopCtr = 0;
       const outerLoop = () => {
-        if (outerLoopCtr >= parsedStats.length){
+        if (outerLoopCtr >= parsedStats.length) {
           console.log('done');
           return;
         }
@@ -111,12 +100,6 @@ export class StatsComponent implements OnInit {
             // TODO:
             console.log(JSON.stringify(tasks, null, 4));
 
-            // create data for visualization (so "join" the both data)
-            // lines like:
-            // category
-            // | taskNumber | taskDescription | sum in hours | sum fraction in percentage
-            // ...
-            // duration sum
             const category = oneParsedStatistics.taskCategory;
             const lines: ITaskLine[] = [];
             tasks.forEach((oneTaskToMerge: ITasksDocument) => {
@@ -155,7 +138,7 @@ export class StatsComponent implements OnInit {
           oneTaskPromise.then((oneRawTask: string) => {
             // DEBUGGING
             console.log(oneRawTask);
-            
+
             const oneParsedTask: ITasksDocument[] = this.sessionStorageSerializationService.deSerialize(oneRawTask);
             if (oneParsedTask && oneParsedTask.length === 1) {
               tasks.push(oneParsedTask[0]);
