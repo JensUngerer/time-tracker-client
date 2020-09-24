@@ -59,7 +59,18 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     private configurationService: ConfigurationService) {
   }
 
+  private innerNgOnDestroy() {
+    if (this.currentChart) {
+      try {
+        this.currentChart.destroy();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
   ngOnDestroy(): void {
+      this.innerNgOnDestroy();
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -155,7 +166,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         backgroundColor: backgroundColors
       }]
     };
-
+    
+    // this.innerNgOnDestroy();
+    
     this.currentChart = new Chart(this.doughnutCtx, {
       type: StatsVisualizationComponent.doughnutType,
       data: data,
@@ -165,6 +178,13 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   private chartOnClick(evt: MouseEvent) {
+    try {
+      evt.stopImmediatePropagation();
+      // evt.stopPropagation();
+      // evt.preventDefault();
+    } catch (e) {
+      console.log(e);
+    }
     // https://stackoverflow.com/questions/26257268/click-events-on-pie-charts-in-chart-js
     // https://jsfiddle.net/u1szh96g/208/
     const activePoints = this.currentChart.getElementsAtEvent(evt);
@@ -184,10 +204,14 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       // --> so switch the doughnut visualization
       switch (this.matPaginator.pageIndex) {
         case 0:
+          // DEBUGGING:
+          // console.log(new Error().stack);
           this.openDetailedDoughnutChartForCategory(label);
           break;
 
         default:
+          // DEBUGGING:
+          console.log('do not change view as pageIndex:' + this.matPaginator.pageIndex);
           break;
       }
     } else {
@@ -299,6 +323,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       // };
 
 
+      // this.innerNgOnDestroy();
 
       this.currentChart = new Chart(this.doughnutCtx, {
         type: StatsVisualizationComponent.doughnutType,
