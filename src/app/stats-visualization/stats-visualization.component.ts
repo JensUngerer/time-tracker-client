@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID,  OnDestroy,  ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnDestroy, ViewChild } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
@@ -22,21 +22,21 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
 
   static formatString = '1.2-2';
-  static randomRgba () {
+  static randomRgba() {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
   }
   @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
-  @ViewChild(MatPaginator, { static: false}) matPaginator: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
-  
-  private configurationServiceSubscription: Subscription;
+  pageSizeOptions: number[] = [];
+
   private doughnutChartLabels: string[] = [];
   private doughnutChartData: number[] = [];
   private doughnutCtx: CanvasRenderingContext2D;
   private doughnutOptions: ChartOptions;
-  
+
   private internalDoughnutTitle: string;
   private set doughnutTitle(value: string) {
     this.internalDoughnutTitle = value;
@@ -51,7 +51,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
 
   private currentChart: Chart;
 
-  private categoryToPageIndexMap: {[key: string]: number} = {};
+  private categoryToPageIndexMap: { [key: string]: number } = {};
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private statsService: StatsService,
@@ -60,9 +60,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.configurationServiceSubscription) {
-      this.configurationServiceSubscription.unsubscribe();
-    }
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -72,6 +69,8 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       this.isPieChartVisible = true;
       this.summarizedTasksByCategory = stats;
 
+      this.initializePaginator();
+
       this.changeDetectorRef.detectChanges();
       this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
       this.showSubView(StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW);
@@ -80,6 +79,22 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       console.error(err);
       console.error(JSON.stringify(err, null, 4));
     });
+  }
+
+  private initializePaginator() {
+    this.categoryToPageIndexMap = {};
+    const START_INDEX_OF_PAGINATOR = 1;
+    // the first paginator page is the categories sub-view
+    const generatedPageSizeOptions = [START_INDEX_OF_PAGINATOR];
+    let pageIndex = StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS;
+    this.summarizedTasksByCategory.forEach((oneSummarizedObj) => {
+      const category = oneSummarizedObj.category;
+      this.categoryToPageIndexMap[category] = pageIndex;
+      // each following paginator page is a detailed sub-view (of a category)
+      generatedPageSizeOptions.push(START_INDEX_OF_PAGINATOR + pageIndex);
+      pageIndex++;
+    });
+    this.pageSizeOptions = generatedPageSizeOptions;
   }
 
   private showSubView(pageIndex: number) {
@@ -115,15 +130,15 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     // });
     const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
     oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
-        this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
-        const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsVisualizationComponent.formatString);
-        this.doughnutChartData.push(parseFloat(formattedDurationInHours));
+      this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
+      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsVisualizationComponent.formatString);
+      this.doughnutChartData.push(parseFloat(formattedDurationInHours));
     });
   }
 
   private openDetailedDoughnutChartForCategory(category: string) {
     // DEBUGGING:
-    console.log('open detailed view for category:' + category);
+    // console.log('open detailed view for category:' + category);
     // a) paging control
     this.matPaginator.pageIndex = this.categoryToPageIndexMap[category];
 
@@ -227,9 +242,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       //   }
       // };
       // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
-    
+
       const backgroundColors = this.generateRandomRgbBackgroundColors();
-      this.doughnutTitle = 'Categories'; 
+      this.doughnutTitle = 'Categories';
 
       // cf.: https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages
       // cf.: https://jsfiddle.net/leighking2/q4yaa78c/
@@ -283,7 +298,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
 
       // };
 
-      
+
 
       this.currentChart = new Chart(this.doughnutCtx, {
         type: StatsVisualizationComponent.doughnutType,
@@ -334,7 +349,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       //     // position: 'outside'
       //   }
       // },
-      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOnClick.bind(this) : null, 
+      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOnClick.bind(this) : null,
       legend: {
         display: true,
         position: 'bottom',
@@ -355,15 +370,15 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
             const labels = data.labels;
             const dataset = data.datasets[datasetIndex];
             const dataSetData = dataset.data;
-            
+
             let total = 0.0;
             dataSetData.forEach((oneDataSetData) => {
               total += oneDataSetData;
             });
-            
+
             const currentValue = dataSetData[toolTipIndex] as number;
             const precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-            const currentLabel =  labels[toolTipIndex];
+            const currentLabel = labels[toolTipIndex];
             return precentage + "%" + ' ' + currentLabel;
           }
         }
@@ -372,26 +387,14 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     this.doughnutOptions = options;
   }
 
-  private initializeCategoryToPageIndexMap(isInitialized: boolean) {
-    if (!isInitialized) {
-      return;
-    }
-    let pageIndex = StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS;
-    this.configurationService.configuration.taskCategories.forEach((category) => {
-      this.categoryToPageIndexMap[category] = pageIndex;
-      pageIndex++;
-    });
-  }
-
   ngAfterViewInit(): void {
-    const configurationServiceSubscription = this.configurationService.configurationReceived$.pipe(tap(this.initializeCategoryToPageIndexMap.bind(this))).subscribe();
   }
 
 
   onPageChanged($event: PageEvent) {
     // DEBUGGING:
-    console.log('onPageChaged');
-    console.log($event);
+    // console.log('onPageChaged');
+    // console.log($event);
 
     const pageIndex = $event.pageIndex;
     this.showSubView(pageIndex);
