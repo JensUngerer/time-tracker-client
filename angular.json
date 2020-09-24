@@ -18,7 +18,9 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "uuid"
+              "uuid",
+              "chart.js",
+              "chartjs-plugin-datalabels"
             ],
             "outputPath": "dist/mtt-client",
             "index": "src/index.html",

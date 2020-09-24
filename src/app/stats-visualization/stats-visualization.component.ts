@@ -25,7 +25,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
   }
-  @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
+  @ViewChild('firstDoughnut', { static: false }) firstDoughnut: ElementRef<HTMLCanvasElement>;
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
@@ -58,18 +58,19 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     private configurationService: ConfigurationService) {
   }
 
-  private innerNgOnDestroy() {
+  private destroyVisualRepresentationOfChartJs(isDestroyCall?: boolean) {
     if (this.currentChart) {
-      try {
+      this.currentChart.stop();
+      this.currentChart.clear();
+      if (isDestroyCall) {
         this.currentChart.destroy();
-      } catch (e) {
-        console.log(e);
       }
     }
+    this.currentChart = null;
   }
 
   ngOnDestroy(): void {
-    this.innerNgOnDestroy();
+    this.destroyVisualRepresentationOfChartJs(true);
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -82,7 +83,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       this.initializePaginator();
 
       this.changeDetectorRef.detectChanges();
-      this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
       this.showSubView(StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW);
     });
     statsPromise.catch((err: any) => {
@@ -119,6 +119,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   private initializeOutputProperties() {
     this.doughnutChartLabels = [];
     this.doughnutChartData = [];
+    this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
   }
 
   private fillOutputPropertiesForCategory(category: string) {
@@ -150,13 +151,14 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       }]
     };
 
-    // this.innerNgOnDestroy();
+    this.destroyVisualRepresentationOfChartJs(true);
 
     this.currentChart = new Chart(this.doughnutCtx, {
       type: StatsVisualizationComponent.doughnutType,
       data: data,
       options: this.doughnutOptions
     });
+    this.changeDetectorRef.detectChanges();
     this.currentChart.render();
   }
 
@@ -236,13 +238,14 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         }]
       };
 
-      // this.innerNgOnDestroy();
+      this.destroyVisualRepresentationOfChartJs(true);
 
       this.currentChart = new Chart(this.doughnutCtx, {
         type: StatsVisualizationComponent.doughnutType,
         data: data,
         options: this.doughnutOptions
       });
+      this.changeDetectorRef.detectChanges();
       this.currentChart.render();
     }
   }
