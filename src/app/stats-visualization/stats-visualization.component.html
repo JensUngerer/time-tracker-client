@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div fxFlex="1 1 100%">
-                    <mat-paginator (page)="onPageChanged($event)" [hidePageSize]="true" [length]="3" [pageSize]="1"
+                    <mat-paginator #matPaginator (page)="onPageChanged($event)" [hidePageSize]="true" [length]="3" [pageSize]="1"
                         [pageSizeOptions]="[1, 2, 3]">
                         <!-- <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
                         <div fxLayout="column"> -->

@@ -1,12 +1,12 @@
 import { formatNumber } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild, ɵbypassSanitizationTrustStyle } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
-import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
+import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
 import { StatsService } from '../stats.service';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
 
 @Component({
@@ -15,13 +15,29 @@ import { ConfigurationService } from '../configuration.service';
   styleUrls: ['./stats-visualization.component.scss']
 })
 export class StatsVisualizationComponent implements OnInit {
-  private static doughnoutType: ChartType = 'doughnut';
-  
+  private static doughnutType: ChartType = 'doughnut';
+  static formatString = '1.2-2';
+  static randomRgba () {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+  }
   @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
+  @ViewChild('matPaginator') matPaginator: ElementRef<MatPaginator>;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
   private doughnutChartLabels: string[] = [];
   private doughnutChartData: number[] = [];
+  private doughnutCtx: CanvasRenderingContext2D;
+  private doughnutOptions: ChartOptions;
+  
+  private internalDoughnutTitle: string;
+  private set doughnutTitle(value: string) {
+    this.internalDoughnutTitle = value;
+    this.refreshOptions();
+  }
+  private get doughnutTitle() {
+    return this.internalDoughnutTitle;
+  }
 
   isQuerySelectionVisible = true;
   isPieChartVisible = false;
@@ -43,7 +59,7 @@ export class StatsVisualizationComponent implements OnInit {
       this.summarizedTasksByCategory = stats;
 
       this.changeDetectorRef.detectChanges();
-
+      this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
       this.showSubView(0);
     });
     statsPromise.catch((err: any) => {
@@ -72,16 +88,57 @@ export class StatsVisualizationComponent implements OnInit {
     this.doughnutChartData = [];
   }
 
+  private fillOutputPropertiesForCategory(category: string) {
+    // this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
+    //   const oneCategoryData = o
+
+    //   this.doughnutChartLabels.push(oneSummarizedCategory.category);
+    //   const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, '1.2-2');
+    //   this.doughnutChartData.push(parseFloat(formattedValue));
+
+    //   // categoryDataEntry.push(oneSummarizedCategory.durationSum);
+    //   // const oneDataEntry = [];
+    //   // oneSummarizedCategory.lines.forEach((oneLine)=>{
+    //   //   // const oneDataEntry = [oneLine.durationInHours, oneSummarizedCategory.durationSum];
+    //   //   // this.doughnutChartData.push(oneDataEntry);
+    //   //   this.doughnutChartData[0].push(oneLine.durationInHours);
+    //   // });
+    //   // this.doughnutChartData.push(oneDataEntry);
+    // });
+    const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
+    oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
+        this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
+        const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsVisualizationComponent.formatString);
+        this.doughnutChartData.push(parseFloat(formattedDurationInHours));
+    });
+  }
+
   private openDetailedDoughnutChartForCategory(category: string) {
     // DEBUGGING:
     console.log('open detailed view for category:' + category);
+    // a) paging control
+    // this.matPaginator.nativeElement.pageIndex = this.categoryToPageIndexMap[category];
 
-
+    // b) chart
     this.initializeOutputProperties();
+    this.fillOutputPropertiesForCategory(category);
+    this.doughnutTitle = category;
+    const backgroundColors = this.generateRandomRgbBackgroundColors();
+    const data: ChartData = {
+      labels: this.doughnutChartLabels,
+      datasets: [{
+        data: this.doughnutChartData,
+        label: this.doughnutTitle,
+        backgroundColor: backgroundColors
+      }]
+    };
 
-
-
-
+    this.currentChart = new Chart(this.doughnutCtx, {
+      type: StatsVisualizationComponent.doughnutType,
+      data: data,
+      options: this.doughnutOptions
+    });
+    this.currentChart.render();
   }
 
   private chartOnClick(evt: MouseEvent) {
@@ -114,6 +171,13 @@ export class StatsVisualizationComponent implements OnInit {
       console.error('detection of area failed');
     }
   }
+  private generateRandomRgbBackgroundColors() {
+    const backgroundColors = [];
+    this.doughnutChartData.forEach(() => {
+      backgroundColors.push(StatsVisualizationComponent.randomRgba());
+    });
+    return backgroundColors;
+  }
 
   private openCategoryDoughnutChart() {
     // this.isQueryDataVisible = false;
@@ -131,7 +195,7 @@ export class StatsVisualizationComponent implements OnInit {
       // this.doughnutChartData.push([]);
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels.push(oneSummarizedCategory.category);
-        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, '1.2-2');
+        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, StatsVisualizationComponent.formatString);
         this.doughnutChartData.push(parseFloat(formattedValue));
 
         // categoryDataEntry.push(oneSummarizedCategory.durationSum);
@@ -154,16 +218,10 @@ export class StatsVisualizationComponent implements OnInit {
       //     }
       //   }
       // };
-      let donutCtx = this.firstDoughnut.nativeElement.getContext('2d');
       // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
-      const random_rgba = () => {
-        var o = Math.round, r = Math.random, s = 255;
-        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
-      };
-      const backgroundColors = [];
-      this.doughnutChartData.forEach(() => {
-        backgroundColors.push(random_rgba());
-      });
+    
+      const backgroundColors = this.generateRandomRgbBackgroundColors();
+      this.doughnutTitle = 'Categories'; 
 
       // cf.: https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages
       // cf.: https://jsfiddle.net/leighking2/q4yaa78c/
@@ -171,7 +229,7 @@ export class StatsVisualizationComponent implements OnInit {
         labels: this.doughnutChartLabels,
         datasets: [{
           data: this.doughnutChartData,
-          label: 'Categories',
+          label: this.doughnutTitle,
           backgroundColor: backgroundColors
         }]
         //   datasets: [{
@@ -217,62 +275,12 @@ export class StatsVisualizationComponent implements OnInit {
 
       // };
 
-      const options: ChartOptions = {
-        plugins: [ChartDataLabels],
-        // {
-        //   datalabels: {
-        //     // labels: labelOptions,
-        //     display: true,
-        //     formatter: (value: any, context: Context) => {
-        //       console.log(value);
-        //       console.log(context);
-        //       console.log('-------------');
-        //     }
-        //     // renderer: 'label',
-        //     // fontColor: '#000',
-        //     // position: 'outside'
-        //   }
-        // },
-        onClick: this.chartOnClick.bind(this),
-        legend: {
-          display: true,
-          position: 'bottom',
-          fullWidth: true
-        },
-        title: {
-          display: true,
-          text: 'Categories'
-        },
-        tooltips: {
-          // position: 'nearest', // https://www.chartjs.org/docs/latest/configuration/tooltip.html#position-modes
-          xPadding: 30,
-          yPadding: 30,
-          callbacks: {
-            label: (tooltipItem, data) => {
-              const datasetIndex = tooltipItem.datasetIndex;
-              const toolTipIndex = tooltipItem.index;
-              const labels = data.labels;
-              const dataset = data.datasets[datasetIndex];
-              const dataSetData = dataset.data;
-              
-              let total = 0.0;
-              dataSetData.forEach((oneDataSetData) => {
-                total += oneDataSetData;
-              });
-              
-              const currentValue = dataSetData[toolTipIndex] as number;
-              const precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-              const currentLabel =  labels[toolTipIndex];
-              return precentage + "%" + ' ' + currentLabel;
-            }
-          }
-        }
-      };
+      
 
-      this.currentChart = new Chart(donutCtx, {
-        type: StatsVisualizationComponent.doughnoutType,
+      this.currentChart = new Chart(this.doughnutCtx, {
+        type: StatsVisualizationComponent.doughnutType,
         data: data,
-        options: options
+        options: this.doughnutOptions
       });
       this.currentChart.render();
 
@@ -299,6 +307,61 @@ export class StatsVisualizationComponent implements OnInit {
     // // DEBUGGING:
     // console.log(JSON.stringify(this.doughnutChartData[0], null, 4));
 
+  }
+
+  private refreshOptions() {
+    const options: ChartOptions = {
+      plugins: [ChartDataLabels],
+      // {
+      //   datalabels: {
+      //     // labels: labelOptions,
+      //     display: true,
+      //     formatter: (value: any, context: Context) => {
+      //       console.log(value);
+      //       console.log(context);
+      //       console.log('-------------');
+      //     }
+      //     // renderer: 'label',
+      //     // fontColor: '#000',
+      //     // position: 'outside'
+      //   }
+      // },
+      onClick: this.chartOnClick.bind(this),
+      legend: {
+        display: true,
+        position: 'bottom',
+        fullWidth: true
+      },
+      title: {
+        display: true,
+        text: this.internalDoughnutTitle
+      },
+      tooltips: {
+        // position: 'nearest', // https://www.chartjs.org/docs/latest/configuration/tooltip.html#position-modes
+        xPadding: 30,
+        yPadding: 30,
+        callbacks: {
+          label: (tooltipItem, data) => {
+            const datasetIndex = tooltipItem.datasetIndex;
+            const toolTipIndex = tooltipItem.index;
+            const labels = data.labels;
+            const dataset = data.datasets[datasetIndex];
+            const dataSetData = dataset.data;
+            
+            let total = 0.0;
+            dataSetData.forEach((oneDataSetData) => {
+              total += oneDataSetData;
+            });
+            
+            const currentValue = dataSetData[toolTipIndex] as number;
+            const precentage = Math.floor(((currentValue / total) * 100) + 0.5);
+            const currentLabel =  labels[toolTipIndex];
+            return precentage + "%" + ' ' + currentLabel;
+          }
+        }
+      }
+    };
+    this.doughnutOptions = options;
   }
 
   ngOnInit(): void {
