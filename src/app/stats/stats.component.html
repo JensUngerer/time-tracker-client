@@ -45,18 +45,17 @@
                 <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
             </div>
         </div>
-        <!-- <div fxFlex="1 1 100%">
-            <button type="button" (click)="isQuerySelectionVisible = !isQuerySelectionVisible">Selection Query Visibility</button>
-        </div> -->
         <div fxFlex="1 1 100%" *ngIf="isPieChartButtonVisible">
             <button type="button"
                 (click)="onPieChartOpen()">Pie
                 Chart</button>
         </div>
         <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
-            <div fxFlex="row" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
-                <canvas style="width: 500px"  fxFlex="1 1 100" baseChart [data]="doughnutChartData[i]" [labels]="doughnutChartLabels[i]" [chartType]="doughnutChartType">
-                </canvas>
+            <!-- <div fxFlex="column" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
+                <chart style="width: 500px" fxFlex="1 1 100" [type]="doughnutChartType" [data]="doughnutChartDataObjs[i]" [options]="doughnutChartOptionsObj" ></chart>
+            </div> -->
+            <div>
+                <canvas style="width: 750px" #firstDoughnut></canvas>
             </div>
         </div>
     </div>

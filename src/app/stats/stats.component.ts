@@ -1,14 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { LOCALE_ID } from '@angular/core';
-import { formatDate } from '@angular/common';
+import { formatDate, formatNumber } from '@angular/common';
 import { CommitService } from '../commit.service';
 import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummarizedTimeEntries';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
 import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/summarizedData';
-import { Label, MultiDataSet, SingleDataSet } from 'ng2-charts';
-import { ChartType } from 'chart.js';
+import { ChartData, ChartType } from 'chart.js';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 
 @Component({
   selector: 'mtt-stats',
@@ -16,9 +18,10 @@ import { ChartType } from 'chart.js';
   styleUrls: ['./stats.component.scss']
 })
 export class StatsComponent implements OnInit {
+  @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
+
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
-  // buttonFormControlName = "theQueryButton";
 
   queryTimeFormGroup: FormGroup;
 
@@ -28,23 +31,17 @@ export class StatsComponent implements OnInit {
   isQueryDataVisible = false;
   isPieChartButtonVisible = false;
   isPieChartVisible = false;
-
-  // doughnutChartData = null;
-  // doughnutChartLabels = null;
-  // doughnutChartType = null;
-  public doughnutChartLabels: Label[][] = []; //['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
-  public doughnutChartData: SingleDataSet[] = [
-    // [350, 450, 100],
-    // [50, 150, 120],
-    // [250, 130, 70],
-  ];
-  public doughnutChartType: ChartType = 'doughnut';
-
+  public doughnutChartLabels: string[][] = [];
+  public doughnutChartData: number[][] = [];
+  public doughnutChartType: string = 'doughnut';
+  public doughnutChartDataObjs: any[] = [];
+  public doughnutChartOptionsObj: any = [];
 
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const configObj: { [key: string]: AbstractControl } = {};
@@ -58,7 +55,6 @@ export class StatsComponent implements OnInit {
 
     configObj[this.queryTimeStartFormControlName] = new FormControl(formattedCurrentTime);
     configObj[this.queryTimeEndFormControlName] = new FormControl(formattedCurrentTime);
-    // configObj[this.buttonFormControlName] = new FormControl();
     this.queryTimeFormGroup = new FormGroup(configObj);
   }
 
@@ -73,43 +69,199 @@ export class StatsComponent implements OnInit {
   onPieChartOpen() {
     this.isQueryDataVisible = false;
     this.isPieChartButtonVisible = false;
+    this.isPieChartVisible = true
+
+    this.changeDetectorRef.detectChanges();
+
     if (this.summarizedTasksByCategory
       && this.summarizedTasksByCategory.length
       && this.summarizedTasksByCategory.length > 0) {
 
       // index === 0 --> features
-      const categoryDataEntry = [];
+      // const categoryDataEntry: number[] = [];
       this.doughnutChartLabels.push([]);
       this.doughnutChartData.push([]);
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels[0].push(oneSummarizedCategory.category);
-        categoryDataEntry.push(oneSummarizedCategory.durationSum);
+        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, '1.2-2');
+        this.doughnutChartData[0].push(parseFloat(formattedValue));
+
+        // categoryDataEntry.push(oneSummarizedCategory.durationSum);
         // const oneDataEntry = [];
         // oneSummarizedCategory.lines.forEach((oneLine)=>{
         //   // const oneDataEntry = [oneLine.durationInHours, oneSummarizedCategory.durationSum];
         //   // this.doughnutChartData.push(oneDataEntry);
-        //   oneDataEntry.push(oneLine.durationInHours);
+        //   this.doughnutChartData[0].push(oneLine.durationInHours);
         // });
         // this.doughnutChartData.push(oneDataEntry);
       });
-      this.doughnutChartData[0].push(categoryDataEntry);
+      // this.doughnutChartData[0].push(categoryDataEntry);
+
+      this.doughnutChartDataObjs.push({
+        labels: this.doughnutChartLabels[0],
+        datasets: [
+          {
+            label: 'categories',
+          }
+        ]
+      });
+
+      this.doughnutChartOptionsObj = {
+        plugins: {
+          labels: {
+            renderer: 'label',
+            fontColor: '#000',
+            position: 'outside'
+          }
+        }
+      };
+      let donutCtx = this.firstDoughnut.nativeElement.getContext('2d');
+      // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
+      const random_rgba = () => {
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+      };
+      const backgroundColors = [];
+      this.doughnutChartData[0].forEach(() => {
+        backgroundColors.push(random_rgba());
+      });
+
+
+      const data: ChartData = {
+        labels: this.doughnutChartLabels[0],
+        datasets: [{
+          data: this.doughnutChartData[0],
+          label: 'Categories',
+          backgroundColor: backgroundColors
+        }]
+        //   datasets: [{
+        //     label: '# of Votes',
+        //     data: [12, 19, 3, 5, 2, 3],
+        //     backgroundColor: [
+        //         'rgba(255, 99, 132, 0.2)',
+        //         'rgba(54, 162, 235, 0.2)',
+        //         'rgba(255, 206, 86, 0.2)',
+        //         'rgba(75, 192, 192, 0.2)',
+        //         'rgba(153, 102, 255, 0.2)',
+        //         'rgba(255, 159, 64, 0.2)'
+        //     ],
+        //     borderColor: [
+        //         'rgba(255,99,132,1)',
+        //         'rgba(54, 162, 235, 1)',
+        //         'rgba(255, 206, 86, 1)',
+        //         'rgba(75, 192, 192, 1)',
+        //         'rgba(153, 102, 255, 1)',
+        //         'rgba(255, 159, 64, 1)'
+        //     ],
+        //     borderWidth: 1
+        // }]
+      };
+      // const plugin: PluginServiceGlobalRegistration & PluginServiceRegistrationOptions =  {
+      //   id: 'labels',
+      //   // berforeInit: (chartInstance: Chart, options?: any) => {
+
+      //   // }
+      // };
+      // Chart.plugins.register(
+      //   {
+      //     id: 'datalabels',
+      //     beforeInit: (chartInstance: Chart) => {
+      //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
+      //         return value.toFixed(2);
+      //       };
+      //     }
+      //   }
+      // );
+      // Chart.prototype
+      // ChartDataLabels.formatter = () => {
+
+      // };
+      const oneChart = new Chart(donutCtx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+          // formatter: () =>  {
+
+          // },
+          // title: {
+          //   display: true
+          // },
+          legend: {
+            display: true
+          },
+          title: {
+            display: true,
+            // fontColor: random_rgba()
+          },
+          plugins: [ChartDataLabels]
+          // 
+          // plugins: {
+          //   datalabels: {
+          //     formatter: (chartInstance: Chart) => {
+          //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
+          //         return value.toFixed(2);
+          //       };
+          //     }
+          //   }
+          // }
+          // [
+          //   {
+          //     id: 'datalabels',
+          //     beforeInit: (chartInstance: Chart) => {
+          //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
+          //         return value.toFixed(2);
+          //       };
+          //     }
+          //   }
+          // ]
+          // plugins: {
+          //   datalabels:  {
+          //     display: true
+          //   },
+          //   formatter: () =>  {
+
+          //   }
+          // }
+          // {
+          //   labels: [{
+          //     render: 'label',
+          //     position: 'outside',
+          //     showActualPercentages: false
+          //   }],
+          // datalabels: {
+          //   labels: {
+          //     title:{
+          //       color: 'blue'
+          //     },
+          //     value:  {
+          //       color: 'red'
+          //     }
+          //   }
+          // }
+          // labels: {
+          //   renderer: 'label',
+          //   fontColor: '#000',
+          //   position: 'outside'
+          // }
+          // }
+        }
+      });
+      oneChart.render();
     }
 
-    this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
-      this.doughnutChartLabels.push([]);
-      this.doughnutChartData.push([]);
-      // this.doughnutChartLabels[1].push(oneSummarizedCategory);
-      oneSummarizedCategory.lines.forEach((oneLine: ITaskLine, indexOfLine: number) => {
+    // this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
+    //   this.doughnutChartLabels.push([]);
+    //   this.doughnutChartData.push([]);
+    //   // this.doughnutChartLabels[1].push(oneSummarizedCategory);
+    //   oneSummarizedCategory.lines.forEach((oneLine: ITaskLine, indexOfLine: number) => {
 
-        this.doughnutChartLabels[1 + indexOfCategory].push(oneLine.taskDescription);
-        this.doughnutChartData[1 + indexOfCategory].push(oneLine.durationInHours);
-      });
-    });
+    //     this.doughnutChartLabels[1 + indexOfCategory].push(oneLine.taskDescription);
+    //     this.doughnutChartData[1 + indexOfCategory].push(oneLine.durationInHours);
+    //   });
+    // });
+    // // DEBUGGING:
+    // console.log(JSON.stringify(this.doughnutChartData[0], null, 4));
 
-    // DEBUGGING:
-    console.log(JSON.stringify(this.doughnutChartData[0], null, 4));
-
-    this.isPieChartVisible = true
   }
 
   onQueryTime($event: any) {
