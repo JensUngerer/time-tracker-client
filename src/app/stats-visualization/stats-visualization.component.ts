@@ -1,5 +1,5 @@
 import { formatNumber, formatPercent } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, NgZone, OnDestroy, QueryList, Renderer2, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
@@ -25,8 +25,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
   }
-  @ViewChild('firstDoughnut', { static: false }) firstDoughnut: ElementRef<HTMLCanvasElement>;
+  // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
+  @ViewChild('canvasContainer', {static: false}) canvasContainer: ElementRef<HTMLDivElement>;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
   pageSizeOptions: number[] = [];
@@ -55,22 +56,30 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private statsService: StatsService,
     private changeDetectorRef: ChangeDetectorRef,
-    private configurationService: ConfigurationService) {
+    private configurationService: ConfigurationService,
+    private renderer: Renderer2) {
   }
 
-  private destroyVisualRepresentationOfChartJs(isDestroyCall?: boolean) {
+  private destroyVisualRepresentationOfChartJs() {
     if (this.currentChart) {
-      this.currentChart.stop();
-      this.currentChart.clear();
-      if (isDestroyCall) {
-        this.currentChart.destroy();
-      }
+        this.currentChart.stop();
+        this.currentChart.clear();
+        this.doughnutCtx.restore();
+        // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
+        const singleChild = this.getCanvasNode();
+        this.canvasContainer.nativeElement.removeChild(singleChild);
+
+        const canvas = this.renderer.createElement('canvas');
+        this.renderer.addClass(canvas, 'doughnut-fixed-width');
+        // https://stackoverflow.com/questions/45085567/how-to-append-dynamic-dom-elements-from-a-directive-in-angular-2
+        this.renderer.appendChild(this.canvasContainer.nativeElement, canvas);
+        this.changeDetectorRef.detectChanges();
     }
     this.currentChart = null;
   }
 
   ngOnDestroy(): void {
-    this.destroyVisualRepresentationOfChartJs(true);
+    this.destroyVisualRepresentationOfChartJs();
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -119,7 +128,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   private initializeOutputProperties() {
     this.doughnutChartLabels = [];
     this.doughnutChartData = [];
-    this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
   }
 
   private fillOutputPropertiesForCategory(category: string) {
@@ -129,6 +137,17 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsTableComponent.formatNumber);
       this.doughnutChartData.push(parseFloat(formattedDurationInHours));
     });
+  }
+
+  private getCanvasNode() {
+    const childNodes = this.canvasContainer.nativeElement.children;
+    for (let index = 0; index < childNodes.length; index++) {
+      const oneChildNode = childNodes[index];
+      if (oneChildNode.nodeName === 'CANVAS') {
+        return oneChildNode;
+      }
+    }
+    
   }
 
   private openDetailedDoughnutChartForCategory(category: string) {
@@ -151,7 +170,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       }]
     };
 
-    this.destroyVisualRepresentationOfChartJs(true);
+    this.destroyVisualRepresentationOfChartJs();
+    const canvas = this.getCanvasNode();
+    this.doughnutCtx = (canvas as HTMLCanvasElement).getContext('2d');
 
     this.currentChart = new Chart(this.doughnutCtx, {
       type: StatsVisualizationComponent.doughnutType,
@@ -238,7 +259,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         }]
       };
 
-      this.destroyVisualRepresentationOfChartJs(true);
+      this.destroyVisualRepresentationOfChartJs();
+      const canvas = this.getCanvasNode();
+      this.doughnutCtx = (canvas as HTMLCanvasElement).getContext('2d');
 
       this.currentChart = new Chart(this.doughnutCtx, {
         type: StatsVisualizationComponent.doughnutType,

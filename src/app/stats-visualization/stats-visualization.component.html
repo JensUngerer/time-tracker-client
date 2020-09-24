@@ -10,8 +10,8 @@
                     <!-- <div fxFlex="column" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
     <chart style="width: 500px" fxFlex="1 1 100" [type]="doughnutChartType" [data]="doughnutChartDataObjs[i]" [options]="doughnutChartOptionsObj" ></chart>
     </div> -->
-                    <div>
-                        <canvas class="doughnut-fixed-width" #firstDoughnut></canvas>
+                    <div #canvasContainer>
+                        <canvas class="doughnut-fixed-width"></canvas>
                     </div>
                 </div>
                 <div fxFlex="1 1 100%">
