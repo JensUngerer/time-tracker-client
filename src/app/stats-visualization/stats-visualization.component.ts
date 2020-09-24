@@ -8,8 +8,6 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
-import { tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -23,6 +21,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
 
   static formatString = '1.2-2';
   static randomRgba() {
+    // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
   }
@@ -70,7 +69,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-      this.innerNgOnDestroy();
+    this.innerNgOnDestroy();
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -123,22 +122,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   private fillOutputPropertiesForCategory(category: string) {
-    // this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
-    //   const oneCategoryData = o
-
-    //   this.doughnutChartLabels.push(oneSummarizedCategory.category);
-    //   const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, '1.2-2');
-    //   this.doughnutChartData.push(parseFloat(formattedValue));
-
-    //   // categoryDataEntry.push(oneSummarizedCategory.durationSum);
-    //   // const oneDataEntry = [];
-    //   // oneSummarizedCategory.lines.forEach((oneLine)=>{
-    //   //   // const oneDataEntry = [oneLine.durationInHours, oneSummarizedCategory.durationSum];
-    //   //   // this.doughnutChartData.push(oneDataEntry);
-    //   //   this.doughnutChartData[0].push(oneLine.durationInHours);
-    //   // });
-    //   // this.doughnutChartData.push(oneDataEntry);
-    // });
     const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
     oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
       this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
@@ -166,9 +149,9 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         backgroundColor: backgroundColors
       }]
     };
-    
+
     // this.innerNgOnDestroy();
-    
+
     this.currentChart = new Chart(this.doughnutCtx, {
       type: StatsVisualizationComponent.doughnutType,
       data: data,
@@ -227,45 +210,17 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   private openCategoryDoughnutChart() {
-    // this.isQueryDataVisible = false;
-    // this.isPieChartButtonVisible = false;
-    // this.isPieChartVisible = true
     this.initializeOutputProperties();
 
     if (this.summarizedTasksByCategory
       && this.summarizedTasksByCategory.length
       && this.summarizedTasksByCategory.length > 0) {
 
-      // index === 0 --> features
-      // const categoryDataEntry: number[] = [];
-      // this.doughnutChartLabels.push([]);
-      // this.doughnutChartData.push([]);
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels.push(oneSummarizedCategory.category);
         const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, StatsVisualizationComponent.formatString);
         this.doughnutChartData.push(parseFloat(formattedValue));
-
-        // categoryDataEntry.push(oneSummarizedCategory.durationSum);
-        // const oneDataEntry = [];
-        // oneSummarizedCategory.lines.forEach((oneLine)=>{
-        //   // const oneDataEntry = [oneLine.durationInHours, oneSummarizedCategory.durationSum];
-        //   // this.doughnutChartData.push(oneDataEntry);
-        //   this.doughnutChartData[0].push(oneLine.durationInHours);
-        // });
-        // this.doughnutChartData.push(oneDataEntry);
       });
-      // this.doughnutChartData[0].push(categoryDataEntry);
-
-      // this.doughnutChartOptionsObj = {
-      //   plugins: {
-      //     labels: {
-      //       renderer: 'label',
-      //       fontColor: '#000',
-      //       position: 'outside'
-      //     }
-      //   }
-      // };
-      // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
 
       const backgroundColors = this.generateRandomRgbBackgroundColors();
       this.doughnutTitle = 'Categories';
@@ -279,50 +234,8 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
           label: this.doughnutTitle,
           backgroundColor: backgroundColors
         }]
-        //   datasets: [{
-        //     label: '# of Votes',
-        //     data: [12, 19, 3, 5, 2, 3],
-        //     backgroundColor: [
-        //         'rgba(255, 99, 132, 0.2)',
-        //         'rgba(54, 162, 235, 0.2)',
-        //         'rgba(255, 206, 86, 0.2)',
-        //         'rgba(75, 192, 192, 0.2)',
-        //         'rgba(153, 102, 255, 0.2)',
-        //         'rgba(255, 159, 64, 0.2)'
-        //     ],
-        //     borderColor: [
-        //         'rgba(255,99,132,1)',
-        //         'rgba(54, 162, 235, 1)',
-        //         'rgba(255, 206, 86, 1)',
-        //         'rgba(75, 192, 192, 1)',
-        //         'rgba(153, 102, 255, 1)',
-        //         'rgba(255, 159, 64, 1)'
-        //     ],
-        //     borderWidth: 1
-        // }]
       };
-      // const plugin: PluginServiceGlobalRegistration & PluginServiceRegistrationOptions =  {
-      //   id: 'labels',
-      //   // berforeInit: (chartInstance: Chart, options?: any) => {
-
-      //   // }
-      // };
-      // Chart.plugins.register(
-      //   {
-      //     id: 'datalabels',
-      //     beforeInit: (chartInstance: Chart) => {
-      //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
-      //         return value.toFixed(2);
-      //       };
-      //     }
-      //   }
-      // );
-      // Chart.prototype
-      // ChartDataLabels.formatter = () => {
-
-      // };
-
-
+      
       // this.innerNgOnDestroy();
 
       this.currentChart = new Chart(this.doughnutCtx, {
@@ -331,49 +244,12 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         options: this.doughnutOptions
       });
       this.currentChart.render();
-
-      // Chart.defaults.global.plugins.datalabels.display = true;
-      // Chart.defaults.global.plugins.datalabels.formatter = (value: any, context: any) => {
-      //   console.log(value);
-      //   console.log(context);
-      //   console.log('-------------');
-
-      //   return context[value];
-      // };
     }
-
-    // this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
-    //   this.doughnutChartLabels.push([]);
-    //   this.doughnutChartData.push([]);
-    //   // this.doughnutChartLabels[1].push(oneSummarizedCategory);
-    //   oneSummarizedCategory.lines.forEach((oneLine: ITaskLine, indexOfLine: number) => {
-
-    //     this.doughnutChartLabels[1 + indexOfCategory].push(oneLine.taskDescription);
-    //     this.doughnutChartData[1 + indexOfCategory].push(oneLine.durationInHours);
-    //   });
-    // });
-    // // DEBUGGING:
-    // console.log(JSON.stringify(this.doughnutChartData[0], null, 4));
-
   }
 
   private refreshOptions() {
     const options: ChartOptions = {
       plugins: [ChartDataLabels],
-      // {
-      //   datalabels: {
-      //     // labels: labelOptions,
-      //     display: true,
-      //     formatter: (value: any, context: Context) => {
-      //       console.log(value);
-      //       console.log(context);
-      //       console.log('-------------');
-      //     }
-      //     // renderer: 'label',
-      //     // fontColor: '#000',
-      //     // position: 'outside'
-      //   }
-      // },
       onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOnClick.bind(this) : null,
       legend: {
         display: true,
