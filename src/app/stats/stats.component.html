@@ -23,39 +23,13 @@
 
             -->
         <!-- </div> -->
+        <!--  -->
         <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-            <form [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
-                <div fxLayout="column">
-                    <mat-form-field fxFlex="1 1 100%">
-                        <mat-label>Query (erliest) start time</mat-label>
-                        <input [formControlName]="queryTimeStartFormControlName" matInput type="datetime-local" />
-                    </mat-form-field>
-                    <mat-form-field fxFlex="1 1 100%">
-                        <mat-label>Query (latest) end time</mat-label>
-                        <input [formControlName]="queryTimeEndFormControlName" matInput type="datetime-local" />
-                    </mat-form-field>
-                    <div fxFlex="1 1 100%">
-                        <button type="submit">Visualize Time-Entries Summary</button>
-                    </div>
-                </div>
-            </form>
+            <mtt-query-time-boundaries (queryTimeBoundaries)="onQueryTimeBoundaries($event)"></mtt-query-time-boundaries>
         </div>
         <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
             <div *ngFor="let item of summarizedTasksByCategory">
                 <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
-            </div>
-        </div>
-        <div fxFlex="1 1 100%" *ngIf="isPieChartButtonVisible">
-            <button type="button"
-                (click)="onPieChartOpen()">Pie
-                Chart</button>
-        </div>
-        <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
-            <!-- <div fxFlex="column" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
-                <chart style="width: 500px" fxFlex="1 1 100" [type]="doughnutChartType" [data]="doughnutChartDataObjs[i]" [options]="doughnutChartOptionsObj" ></chart>
-            </div> -->
-            <div>
-                <canvas class="doughnut-fixed-width" #firstDoughnut></canvas>
             </div>
         </div>
     </div>

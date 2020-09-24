@@ -36,6 +36,8 @@ import { StatsComponent } from './stats/stats.component';
 import { CommonModule } from '@angular/common';
 import { MatInputModule }from '@angular/material/input';
 import { StatsTableComponent } from './stats-table/stats-table.component';
+import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
+import { QueryTimeBoundariesComponent } from './query-time-boundaries/query-time-boundaries.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -64,7 +66,9 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     CommitOrBookComponent,
     CommitOrBookTableComponent,
     StatsComponent,
-    StatsTableComponent
+    StatsTableComponent,
+    StatsVisualizationComponent,
+    QueryTimeBoundariesComponent
   ],
   imports: [
     CommonModule,

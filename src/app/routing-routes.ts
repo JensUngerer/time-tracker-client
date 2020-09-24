@@ -4,6 +4,7 @@ import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { ProjectComponent } from './project/project.component';
+import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component.js';
 import { StatsComponent } from './stats/stats.component.js';
 import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
@@ -50,6 +51,13 @@ export class RoutingRoutes {
       component: StatsComponent,
       data: {
         label: ViewLabels.statistics
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.statisticsVisualization,
+      component: StatsVisualizationComponent,
+      data: {
+        label: ViewLabels.statisticsVisualization
       }
     },
     {

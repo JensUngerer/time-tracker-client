@@ -5,5 +5,6 @@ export enum ViewPaths {
   bookingDeclaration = 'bookingDeclaration',
   book = 'book',
   commit = 'commit',
-  statistics = 'statistics'
+  statistics = 'statistics',
+  statisticsVisualization = 'visualization'
 }

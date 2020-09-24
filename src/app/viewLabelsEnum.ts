@@ -5,5 +5,6 @@ export enum ViewLabels {
   bookingDeclaration = 'Booking-Declaration',
   book = 'Book',
   commit = 'Commit',
-  statistics = 'Statistics'
+  statistics = 'Statistics',
+  statisticsVisualization = 'Statistics-Visualization'
 }

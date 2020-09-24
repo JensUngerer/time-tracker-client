@@ -1,0 +1,21 @@
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+    <div fxLayout="column">
+        <div fxFlex="1 1 100%" >
+            <form [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
+                <div fxLayout="column">
+                    <mat-form-field fxFlex="1 1 100%">
+                        <mat-label>Query (erliest) start time</mat-label>
+                        <input [formControlName]="queryTimeStartFormControlName" matInput type="datetime-local" />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="1 1 100%">
+                        <mat-label>Query (latest) end time</mat-label>
+                        <input [formControlName]="queryTimeEndFormControlName" matInput type="datetime-local" />
+                    </mat-form-field>
+                    <div fxFlex="1 1 100%">
+                        <button type="submit">Visualize Time-Entries Summary</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
