@@ -38,6 +38,7 @@ import { MatInputModule }from '@angular/material/input';
 import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { QueryTimeBoundariesComponent } from './query-time-boundaries/query-time-boundaries.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -92,7 +93,8 @@ import { QueryTimeBoundariesComponent } from './query-time-boundaries/query-time
     MatDialogModule,
     MatCheckboxModule,
     MatStepperModule,
-    MatInputModule
+    MatInputModule,
+    MatPaginatorModule
   ],
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0

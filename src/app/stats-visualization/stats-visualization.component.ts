@@ -6,6 +6,8 @@ import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.
 import { StatsService } from '../stats.service';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
+import { PageEvent } from '@angular/material/paginator';
+import { ConfigurationService } from '../configuration.service';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -16,8 +18,8 @@ export class StatsVisualizationComponent implements OnInit {
   @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
-  doughnutChartLabels: string[][] = [];
-  doughnutChartData: number[][] = [];
+  doughnutChartLabels: string[] = [];
+  doughnutChartData: number[] = [];
   doughnutChartType: ChartType = 'doughnut';
   doughnutChartDataObjs: any[] = [];
   doughnutChartOptionsObj: any = [];
@@ -25,9 +27,13 @@ export class StatsVisualizationComponent implements OnInit {
   isQuerySelectionVisible = true;
   isPieChartVisible = false;
 
+  private currentPageIndex: number;
+  private currentChart: Chart;
+
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private statsService: StatsService,
-    private changeDetectorRef: ChangeDetectorRef) {
+    private changeDetectorRef: ChangeDetectorRef,
+    private configurationService: ConfigurationService) {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -39,7 +45,7 @@ export class StatsVisualizationComponent implements OnInit {
 
       this.changeDetectorRef.detectChanges();
 
-      this.onDoughnutChartOpen();
+      this.showSubView(0);
     });
     statsPromise.catch((err: any) => {
       console.error(err);
@@ -47,11 +53,79 @@ export class StatsVisualizationComponent implements OnInit {
     });
   }
 
-  onDoughnutChartOpen() {
+  private showSubView(pageIndex: number) {
+    this.currentPageIndex = pageIndex;
+    const categories = this.configurationService.configuration.taskCategories;
+    switch (pageIndex) {
+      case 0:
+        this.openCategoryDoughnutChart();
+        break;
+      case 1:
+        this.openDetailedDoughnutChartForCategory(categories[0]);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private initializeOutputProperties() {
+    this.doughnutChartLabels = [];
+    this.doughnutChartData = [];
+    this.doughnutChartType = 'doughnut';
+    this.doughnutChartDataObjs = [];
+    this.doughnutChartOptionsObj = [];
+  }
+
+  private openDetailedDoughnutChartForCategory(category: string) {
+    // DEBUGGING:
+    console.log('open detailed view for category:' + category);
+
+
+    this.initializeOutputProperties();
+
+    // this.doughnutChartLabels.push([]);
+    // this.doughnutChartData.push([]);
+
+
+
+  }
+
+  private chartOnClick(evt: MouseEvent) {
+    // https://stackoverflow.com/questions/26257268/click-events-on-pie-charts-in-chart-js
+    // https://jsfiddle.net/u1szh96g/208/
+    const activePoints = this.currentChart.getElementsAtEvent(evt);
+    if (activePoints[0]) {
+      const chartData = activePoints[0]['_chart'].config.data;
+      const idx = activePoints[0]['_index'];
+
+      const label = chartData.labels[idx];
+      const value = chartData.datasets[0].data[idx];
+
+      // DEBUGGING
+      // console.log(label);
+      // console.log(value);
+
+      // go to specific detail(ed) doughnut chart
+      // --> so switch the page control
+      // --> so switch the doughnut visualization
+      switch (this.currentPageIndex) {
+        case 0:
+          this.openDetailedDoughnutChartForCategory(label);
+          break;
+
+        default:
+          break;
+      }
+    } else {
+      console.error('detection of area failed');
+    }
+  }
+
+  private openCategoryDoughnutChart() {
     // this.isQueryDataVisible = false;
     // this.isPieChartButtonVisible = false;
     // this.isPieChartVisible = true
-
+    this.initializeOutputProperties();
 
     if (this.summarizedTasksByCategory
       && this.summarizedTasksByCategory.length
@@ -59,12 +133,12 @@ export class StatsVisualizationComponent implements OnInit {
 
       // index === 0 --> features
       // const categoryDataEntry: number[] = [];
-      this.doughnutChartLabels.push([]);
-      this.doughnutChartData.push([]);
+      // this.doughnutChartLabels.push([]);
+      // this.doughnutChartData.push([]);
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
-        this.doughnutChartLabels[0].push(oneSummarizedCategory.category);
+        this.doughnutChartLabels.push(oneSummarizedCategory.category);
         const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, '1.2-2');
-        this.doughnutChartData[0].push(parseFloat(formattedValue));
+        this.doughnutChartData.push(parseFloat(formattedValue));
 
         // categoryDataEntry.push(oneSummarizedCategory.durationSum);
         // const oneDataEntry = [];
@@ -78,7 +152,7 @@ export class StatsVisualizationComponent implements OnInit {
       // this.doughnutChartData[0].push(categoryDataEntry);
 
       this.doughnutChartDataObjs.push({
-        labels: this.doughnutChartLabels[0],
+        labels: this.doughnutChartLabels,
         datasets: [
           {
             label: 'categories',
@@ -102,16 +176,16 @@ export class StatsVisualizationComponent implements OnInit {
         return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
       };
       const backgroundColors = [];
-      this.doughnutChartData[0].forEach(() => {
+      this.doughnutChartData.forEach(() => {
         backgroundColors.push(random_rgba());
       });
 
       // cf.: https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages
       // cf.: https://jsfiddle.net/leighking2/q4yaa78c/
       const data: ChartData = {
-        labels: this.doughnutChartLabels[0],
+        labels: this.doughnutChartLabels,
         datasets: [{
-          data: this.doughnutChartData[0],
+          data: this.doughnutChartData,
           label: 'Categories',
           backgroundColor: backgroundColors
         }]
@@ -158,6 +232,7 @@ export class StatsVisualizationComponent implements OnInit {
 
       // };
       const options: ChartOptions = {
+        onClick: this.chartOnClick.bind(this),
         legend: {
           display: true,
           position: 'bottom',
@@ -185,12 +260,12 @@ export class StatsVisualizationComponent implements OnInit {
         plugins: [ChartDataLabels]
       };
 
-      const oneChart = new Chart(donutCtx, {
+      this.currentChart = new Chart(donutCtx, {
         type: 'doughnut',
         data: data,
         options: options
       });
-      oneChart.render();
+      this.currentChart.render();
     }
 
     // this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
@@ -211,4 +286,9 @@ export class StatsVisualizationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+
+  onPageChanged($event: PageEvent) {
+    const pageIndex = $event.pageIndex;
+    this.showSubView(pageIndex);
+  }
 }
