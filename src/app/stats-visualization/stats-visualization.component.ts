@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild, ɵbypassSanitizationTrustStyle } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
@@ -15,14 +15,13 @@ import { ConfigurationService } from '../configuration.service';
   styleUrls: ['./stats-visualization.component.scss']
 })
 export class StatsVisualizationComponent implements OnInit {
+  private static doughnoutType: ChartType = 'doughnut';
+  
   @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
-  doughnutChartLabels: string[] = [];
-  doughnutChartData: number[] = [];
-  doughnutChartType: ChartType = 'doughnut';
-  doughnutChartDataObjs: any[] = [];
-  doughnutChartOptionsObj: any = [];
+  private doughnutChartLabels: string[] = [];
+  private doughnutChartData: number[] = [];
 
   isQuerySelectionVisible = true;
   isPieChartVisible = false;
@@ -71,9 +70,6 @@ export class StatsVisualizationComponent implements OnInit {
   private initializeOutputProperties() {
     this.doughnutChartLabels = [];
     this.doughnutChartData = [];
-    this.doughnutChartType = 'doughnut';
-    this.doughnutChartDataObjs = [];
-    this.doughnutChartOptionsObj = [];
   }
 
   private openDetailedDoughnutChartForCategory(category: string) {
@@ -83,8 +79,6 @@ export class StatsVisualizationComponent implements OnInit {
 
     this.initializeOutputProperties();
 
-    // this.doughnutChartLabels.push([]);
-    // this.doughnutChartData.push([]);
 
 
 
@@ -151,24 +145,15 @@ export class StatsVisualizationComponent implements OnInit {
       });
       // this.doughnutChartData[0].push(categoryDataEntry);
 
-      this.doughnutChartDataObjs.push({
-        labels: this.doughnutChartLabels,
-        datasets: [
-          {
-            label: 'categories',
-          }
-        ]
-      });
-
-      this.doughnutChartOptionsObj = {
-        plugins: {
-          labels: {
-            renderer: 'label',
-            fontColor: '#000',
-            position: 'outside'
-          }
-        }
-      };
+      // this.doughnutChartOptionsObj = {
+      //   plugins: {
+      //     labels: {
+      //       renderer: 'label',
+      //       fontColor: '#000',
+      //       position: 'outside'
+      //     }
+      //   }
+      // };
       let donutCtx = this.firstDoughnut.nativeElement.getContext('2d');
       // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
       const random_rgba = () => {
@@ -231,7 +216,23 @@ export class StatsVisualizationComponent implements OnInit {
       // ChartDataLabels.formatter = () => {
 
       // };
+
       const options: ChartOptions = {
+        plugins: [ChartDataLabels],
+        // {
+        //   datalabels: {
+        //     // labels: labelOptions,
+        //     display: true,
+        //     formatter: (value: any, context: Context) => {
+        //       console.log(value);
+        //       console.log(context);
+        //       console.log('-------------');
+        //     }
+        //     // renderer: 'label',
+        //     // fontColor: '#000',
+        //     // position: 'outside'
+        //   }
+        // },
         onClick: this.chartOnClick.bind(this),
         legend: {
           display: true,
@@ -243,29 +244,46 @@ export class StatsVisualizationComponent implements OnInit {
           text: 'Categories'
         },
         tooltips: {
+          // position: 'nearest', // https://www.chartjs.org/docs/latest/configuration/tooltip.html#position-modes
+          xPadding: 30,
+          yPadding: 30,
           callbacks: {
             label: (tooltipItem, data) => {
-              var dataset = data.datasets[tooltipItem.datasetIndex];
+              const datasetIndex = tooltipItem.datasetIndex;
+              const toolTipIndex = tooltipItem.index;
+              const labels = data.labels;
+              const dataset = data.datasets[datasetIndex];
               const dataSetData = dataset.data;
+              
               let total = 0.0;
               dataSetData.forEach((oneDataSetData) => {
                 total += oneDataSetData;
               });
-              const currentValue = dataset.data[tooltipItem.index] as number;
+              
+              const currentValue = dataSetData[toolTipIndex] as number;
               const precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-              return precentage + "%";
+              const currentLabel =  labels[toolTipIndex];
+              return precentage + "%" + ' ' + currentLabel;
             }
           }
-        },
-        plugins: [ChartDataLabels]
+        }
       };
 
       this.currentChart = new Chart(donutCtx, {
-        type: 'doughnut',
+        type: StatsVisualizationComponent.doughnoutType,
         data: data,
         options: options
       });
       this.currentChart.render();
+
+      // Chart.defaults.global.plugins.datalabels.display = true;
+      // Chart.defaults.global.plugins.datalabels.formatter = (value: any, context: any) => {
+      //   console.log(value);
+      //   console.log(context);
+      //   console.log('-------------');
+
+      //   return context[value];
+      // };
     }
 
     // this.summarizedTasksByCategory.forEach((oneSummarizedCategory, indexOfCategory: number) => {
