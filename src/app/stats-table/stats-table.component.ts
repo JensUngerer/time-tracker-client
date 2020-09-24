@@ -8,6 +8,11 @@ import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/sum
   styleUrls: ['./stats-table.component.scss']
 })
 export class StatsTableComponent implements OnInit, AfterViewInit {
+  static formatPercent = '2.0-0';
+  static formatNumber = '1.2-2';
+
+  classInstance = StatsTableComponent;
+
   @Input()
   summarizedTasks: ISummarizedTasks = null;
 

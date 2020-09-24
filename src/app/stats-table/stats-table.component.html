@@ -1,13 +1,3 @@
-<!-- <p>{{summarizedTasks | json}}</p> -->
-<!-- 
-
-            // create data for visualization (so "join" the both data)
-            // lines like:
-            // category
-            // | taskNumber | taskDescription | sum in hours | sum fraction in percentage
-            // ...
-            // duration sum
--->
 <div>
     {{summarizedTasks.category}}
 </div>
@@ -27,13 +17,13 @@
     <ng-container matColumnDef="durationInHours">
         <th mat-header-cell *matHeaderCellDef>Duration (h)</th>
         <td mat-cell *matCellDef="let row">
-            {{row.durationInHours | number : '1.2-2'}}
+            {{row.durationInHours | number : classInstance.formatNumber}}
         </td>
     </ng-container>
     <ng-container matColumnDef="durationFraction">
         <th mat-header-cell *matHeaderCellDef>Duration (%)</th>
         <td mat-cell *matCellDef="let row">
-            {{row.durationFraction | percent : '2.0-0'}}
+            {{row.durationFraction | percent : classInstance.formatPercent}}
         </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -49,10 +39,10 @@
             &nbsp;
         </td>
         <td class="mat-cell column-durationInHours">
-            {{summarizedTasks.durationSum | number : '1.2-2'}}
+            {{summarizedTasks.durationSum | number : classInstance.formatNumber}}
         </td>
         <td class="mat-cell column-durationFraction">
-            {{summarizedTasks.durationFraction | percent : '2.0-0'}}
+            {{summarizedTasks.durationFraction | percent : classInstance.formatPercent}}
         </td>
     </tr>
 </table>

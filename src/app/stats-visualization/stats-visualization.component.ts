@@ -1,4 +1,4 @@
-import { formatNumber } from '@angular/common';
+import { formatNumber, formatPercent } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnDestroy, ViewChild } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
@@ -8,6 +8,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
+import { StatsTableComponent } from '../stats-table/stats-table.component';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -19,7 +20,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   private static PAGE_INDEX_OF_CATEGORY_VIEW = 0;
   private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
 
-  static formatString = '1.2-2';
   static randomRgba() {
     // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
     var o = Math.round, r = Math.random, s = 255;
@@ -125,7 +125,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
     oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
       this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
-      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsVisualizationComponent.formatString);
+      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsTableComponent.formatNumber);
       this.doughnutChartData.push(parseFloat(formattedDurationInHours));
     });
   }
@@ -218,7 +218,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
 
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels.push(oneSummarizedCategory.category);
-        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, StatsVisualizationComponent.formatString);
+        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, StatsTableComponent.formatNumber);
         this.doughnutChartData.push(parseFloat(formattedValue));
       });
 
@@ -235,7 +235,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
           backgroundColor: backgroundColors
         }]
       };
-      
+
       // this.innerNgOnDestroy();
 
       this.currentChart = new Chart(this.doughnutCtx, {
@@ -273,14 +273,29 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
             const dataSetData = dataset.data;
 
             let total = 0.0;
-            dataSetData.forEach((oneDataSetData) => {
-              total += oneDataSetData;
-            });
+            let percentNumber = -1.0;
+            const category = dataset.label;
+            const currentLabel = labels[toolTipIndex].toString();
+            const foundCorrespondingSummaryFroDetail = this.summarizedTasksByCategory.find(summary => summary.category === category);
+            const foundCorrespondingSummaryForCategories = this.summarizedTasksByCategory.find(summary => summary.category === currentLabel);
+            if (typeof foundCorrespondingSummaryFroDetail !== 'undefined') {
+              // use case of detail
+              percentNumber = foundCorrespondingSummaryFroDetail.lines[toolTipIndex].durationFraction;
+            } else if (typeof foundCorrespondingSummaryForCategories !== 'undefined') {
+              // use case of Categories
+              percentNumber = foundCorrespondingSummaryForCategories.durationFraction;
+            } else {
+              // fallback
+              console.error('this case should never be taken');
+              dataSetData.forEach((oneDataSetData) => {
+                total += oneDataSetData;
+              });
+              const currentValue = dataSetData[toolTipIndex] as number;
+              percentNumber = currentValue / total;
+            }
 
-            const currentValue = dataSetData[toolTipIndex] as number;
-            const precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-            const currentLabel = labels[toolTipIndex];
-            return precentage + "%" + ' ' + currentLabel;
+            const precentage = formatPercent(percentNumber, this.currentLocale, StatsTableComponent.formatPercent);
+            return precentage + ' ' + currentLabel;
           }
         }
       }
