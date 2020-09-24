@@ -7,7 +7,7 @@ import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummari
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
 import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/summarizedData';
-import { ChartData, ChartType } from 'chart.js';
+import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -33,7 +33,7 @@ export class StatsComponent implements OnInit {
   isPieChartVisible = false;
   public doughnutChartLabels: string[][] = [];
   public doughnutChartData: number[][] = [];
-  public doughnutChartType: string = 'doughnut';
+  public doughnutChartType: ChartType = 'doughnut';
   public doughnutChartDataObjs: any[] = [];
   public doughnutChartOptionsObj: any = [];
 
@@ -126,7 +126,8 @@ export class StatsComponent implements OnInit {
         backgroundColors.push(random_rgba());
       });
 
-
+      // cf.: https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages
+      // cf.: https://jsfiddle.net/leighking2/q4yaa78c/
       const data: ChartData = {
         labels: this.doughnutChartLabels[0],
         datasets: [{
@@ -176,75 +177,38 @@ export class StatsComponent implements OnInit {
       // ChartDataLabels.formatter = () => {
 
       // };
-      const oneChart = new Chart(donutCtx, {
-        type: 'doughnut',
-        data: data,
-        options: {
-          // formatter: () =>  {
-
-          // },
-          // title: {
-          //   display: true
-          // },
+      const options: ChartOptions = {
           legend: {
-            display: true
+            display: true,
+            position: 'bottom',
+            fullWidth: true
           },
           title: {
             display: true,
-            // fontColor: random_rgba()
+            text: 'Categories'
+          },
+          tooltips: {
+            callbacks: {
+              label: (tooltipItem, data) => {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                const dataSetData = dataset.data;
+                let total = 0.0;
+                dataSetData.forEach((oneDataSetData) => {
+                  total += oneDataSetData;
+                });
+                const currentValue = dataset.data[tooltipItem.index] as number;
+                const precentage = Math.floor(((currentValue/total) * 100)+0.5);         
+                return precentage + "%";
+              }
+            }
           },
           plugins: [ChartDataLabels]
-          // 
-          // plugins: {
-          //   datalabels: {
-          //     formatter: (chartInstance: Chart) => {
-          //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
-          //         return value.toFixed(2);
-          //       };
-          //     }
-          //   }
-          // }
-          // [
-          //   {
-          //     id: 'datalabels',
-          //     beforeInit: (chartInstance: Chart) => {
-          //       chartInstance.options.plugins.datalabels.formatter = (value: number) => {
-          //         return value.toFixed(2);
-          //       };
-          //     }
-          //   }
-          // ]
-          // plugins: {
-          //   datalabels:  {
-          //     display: true
-          //   },
-          //   formatter: () =>  {
+      };
 
-          //   }
-          // }
-          // {
-          //   labels: [{
-          //     render: 'label',
-          //     position: 'outside',
-          //     showActualPercentages: false
-          //   }],
-          // datalabels: {
-          //   labels: {
-          //     title:{
-          //       color: 'blue'
-          //     },
-          //     value:  {
-          //       color: 'red'
-          //     }
-          //   }
-          // }
-          // labels: {
-          //   renderer: 'label',
-          //   fontColor: '#000',
-          //   position: 'outside'
-          // }
-          // }
-        }
+      const oneChart = new Chart(donutCtx, {
+        type: 'doughnut',
+        data: data,
+        options: options
       });
       oneChart.render();
     }
