@@ -1,6 +1,8 @@
 {
   "name": "mtt-client",
   "version": "0.0.0",
+  "author": "Jens Ungerer",
+  "license": "GPL",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
