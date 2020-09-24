@@ -49,7 +49,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   isQuerySelectionVisible = true;
   isPieChartVisible = false;
 
-  // private matPaginator.pageIndex: number;
   private currentChart: Chart;
 
   private categoryToPageIndexMap: {[key: string]: number} = {};
@@ -84,7 +83,6 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   private showSubView(pageIndex: number) {
-    // this.matPaginator.pageIndex = pageIndex;
     const categories = this.configurationService.configuration.taskCategories;
     if (pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW) {
       this.openCategoryDoughnutChart();
@@ -336,7 +334,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
       //     // position: 'outside'
       //   }
       // },
-      onClick: this.chartOnClick.bind(this),
+      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOnClick.bind(this) : null, 
       legend: {
         display: true,
         position: 'bottom',
