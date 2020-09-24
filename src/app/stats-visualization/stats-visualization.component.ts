@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild, ɵbypassSanitizationTrustStyle } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID,  OnDestroy,  ViewChild } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
@@ -8,23 +8,30 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
+import { tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'mtt-stats-visualization',
   templateUrl: './stats-visualization.component.html',
   styleUrls: ['./stats-visualization.component.scss']
 })
-export class StatsVisualizationComponent implements OnInit {
+export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   private static doughnutType: ChartType = 'doughnut';
+  private static PAGE_INDEX_OF_CATEGORY_VIEW = 0;
+  private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
+
   static formatString = '1.2-2';
   static randomRgba () {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
   }
   @ViewChild('firstDoughnut', { static: false, read: ElementRef }) firstDoughnut: ElementRef<HTMLCanvasElement>;
-  @ViewChild('matPaginator') matPaginator: ElementRef<MatPaginator>;
+  @ViewChild(MatPaginator, { static: false}) matPaginator: MatPaginator;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
+  
+  private configurationServiceSubscription: Subscription;
   private doughnutChartLabels: string[] = [];
   private doughnutChartData: number[] = [];
   private doughnutCtx: CanvasRenderingContext2D;
@@ -42,13 +49,21 @@ export class StatsVisualizationComponent implements OnInit {
   isQuerySelectionVisible = true;
   isPieChartVisible = false;
 
-  private currentPageIndex: number;
+  // private matPaginator.pageIndex: number;
   private currentChart: Chart;
+
+  private categoryToPageIndexMap: {[key: string]: number} = {};
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private statsService: StatsService,
     private changeDetectorRef: ChangeDetectorRef,
     private configurationService: ConfigurationService) {
+  }
+
+  ngOnDestroy(): void {
+    if (this.configurationServiceSubscription) {
+      this.configurationServiceSubscription.unsubscribe();
+    }
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
@@ -60,7 +75,7 @@ export class StatsVisualizationComponent implements OnInit {
 
       this.changeDetectorRef.detectChanges();
       this.doughnutCtx = this.firstDoughnut.nativeElement.getContext('2d');
-      this.showSubView(0);
+      this.showSubView(StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW);
     });
     statsPromise.catch((err: any) => {
       console.error(err);
@@ -69,17 +84,12 @@ export class StatsVisualizationComponent implements OnInit {
   }
 
   private showSubView(pageIndex: number) {
-    this.currentPageIndex = pageIndex;
+    // this.matPaginator.pageIndex = pageIndex;
     const categories = this.configurationService.configuration.taskCategories;
-    switch (pageIndex) {
-      case 0:
-        this.openCategoryDoughnutChart();
-        break;
-      case 1:
-        this.openDetailedDoughnutChartForCategory(categories[0]);
-        break;
-      default:
-        break;
+    if (pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW) {
+      this.openCategoryDoughnutChart();
+    } else {
+      this.openDetailedDoughnutChartForCategory(categories[this.matPaginator.pageIndex - StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS]);
     }
   }
 
@@ -117,7 +127,7 @@ export class StatsVisualizationComponent implements OnInit {
     // DEBUGGING:
     console.log('open detailed view for category:' + category);
     // a) paging control
-    // this.matPaginator.nativeElement.pageIndex = this.categoryToPageIndexMap[category];
+    this.matPaginator.pageIndex = this.categoryToPageIndexMap[category];
 
     // b) chart
     this.initializeOutputProperties();
@@ -159,7 +169,7 @@ export class StatsVisualizationComponent implements OnInit {
       // go to specific detail(ed) doughnut chart
       // --> so switch the page control
       // --> so switch the doughnut visualization
-      switch (this.currentPageIndex) {
+      switch (this.matPaginator.pageIndex) {
         case 0:
           this.openDetailedDoughnutChartForCategory(label);
           break;
@@ -364,11 +374,27 @@ export class StatsVisualizationComponent implements OnInit {
     this.doughnutOptions = options;
   }
 
-  ngOnInit(): void {
+  private initializeCategoryToPageIndexMap(isInitialized: boolean) {
+    if (!isInitialized) {
+      return;
+    }
+    let pageIndex = StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS;
+    this.configurationService.configuration.taskCategories.forEach((category) => {
+      this.categoryToPageIndexMap[category] = pageIndex;
+      pageIndex++;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    const configurationServiceSubscription = this.configurationService.configurationReceived$.pipe(tap(this.initializeCategoryToPageIndexMap.bind(this))).subscribe();
   }
 
 
   onPageChanged($event: PageEvent) {
+    // DEBUGGING:
+    console.log('onPageChaged');
+    console.log($event);
+
     const pageIndex = $event.pageIndex;
     this.showSubView(pageIndex);
   }
