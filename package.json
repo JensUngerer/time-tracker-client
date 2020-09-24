@@ -27,7 +27,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "chart.js": "^2.9.3",
     "chartjs-plugin-datalabels": "^0.7.0",
-    "chartjs-plugin-labels": "^1.1.0",
     "material-design-icons": "^3.0.1",
     "rxjs": "^6.6.3",
     "tslib": "^2.0.1",
