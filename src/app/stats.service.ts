@@ -20,7 +20,7 @@ export class StatsService {
       statisticsPromise.then((stats: string) => {
         const parsedStats: ISummarizedTimeEntries[] = this.sessionStorageSerializationService.deSerialize(stats);
         if (!parsedStats || !parsedStats.length) {
-          console.log('no stats received');
+          console.error('no stats received');
           return;
         }
         this.summarizedTasksByCategory = [];
@@ -52,8 +52,8 @@ export class StatsService {
           let taskIdIndex = 0;
           const loop = () => {
             if (taskIdIndex >= taskIds.length) {
-              // TODO:
-              console.log(JSON.stringify(tasks, null, 4));
+              // 
+              // console.log(JSON.stringify(tasks, null, 4));
 
               const category = oneParsedStatistics.taskCategory;
               const lines: ITaskLine[] = [];
@@ -92,7 +92,7 @@ export class StatsService {
             const oneTaskPromise = this.commitService.getTaskByTaskId(oneTaskId);
             oneTaskPromise.then((oneRawTask: string) => {
               // DEBUGGING
-              console.log(oneRawTask);
+              // console.log(oneRawTask);
 
               const oneParsedTask: ITasksDocument[] = this.sessionStorageSerializationService.deSerialize(oneRawTask);
               if (oneParsedTask && oneParsedTask.length === 1) {
