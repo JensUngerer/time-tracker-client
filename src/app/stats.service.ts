@@ -3,6 +3,7 @@ import { ISummarizedTimeEntries } from '../../../common/typescript/iSummarizedTi
 import { ITasksDocument } from '../../../common/typescript/mongoDB/iTasksDocument';
 import { ISummarizedTasks, ITaskLine } from '../../../common/typescript/summarizedData';
 import { CommitService } from './commit.service';
+import { ConfigurationService } from './configuration.service';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 
 @Injectable({
@@ -12,7 +13,8 @@ export class StatsService {
   summarizedTasksByCategory: ISummarizedTasks[] = [];
 
   constructor(private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private configurationService: ConfigurationService) { }
 
   getStatsData(utcStartTime: Date, utcEndTime: Date) {
     return new Promise<ISummarizedTasks[]>((resolve: (value: ISummarizedTasks[]) => void) => {
@@ -59,9 +61,9 @@ export class StatsService {
               const lines: ITaskLine[] = [];
               tasks.forEach((oneTaskToMerge: ITasksDocument) => {
                 const oneTaskToMergeId = oneTaskToMerge.taskId;
-                // taskNumber
+                const baseUrl = this.configurationService.configuration.codeOrNumberBaseUrl;
                 const oneLine: ITaskLine = {
-                  taskNumberUrl: '',
+                  taskNumberUrl: baseUrl ? baseUrl + '/' + oneTaskToMerge.number : '',
                   taskNumber: oneTaskToMerge.number,
                   taskDescription: oneTaskToMerge.name,
                   durationInHours: oneParsedStatistics.durationSumByTaskId[oneTaskToMergeId],
