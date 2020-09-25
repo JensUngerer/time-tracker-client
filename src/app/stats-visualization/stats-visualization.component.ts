@@ -1,5 +1,5 @@
 import { formatNumber, formatPercent } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, NgZone, OnDestroy, QueryList, Renderer2, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, NgZone, OnDestroy, OnInit, Output, QueryList, Renderer2, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
@@ -9,13 +9,14 @@ import * as Chart from 'chart.js';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
 import { StatsTableComponent } from '../stats-table/stats-table.component';
+import { SessionStorageService } from '../session-storage.service';
 
 @Component({
   selector: 'mtt-stats-visualization',
   templateUrl: './stats-visualization.component.html',
   styleUrls: ['./stats-visualization.component.scss']
 })
-export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
+export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private static doughnutType: ChartType = 'doughnut';
   private static PAGE_INDEX_OF_CATEGORY_VIEW = 0;
   private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
@@ -27,7 +28,10 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
   // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
-  @ViewChild('canvasContainer', {static: false}) canvasContainer: ElementRef<HTMLDivElement>;
+  @ViewChild('canvasContainer', { static: false }) canvasContainer: ElementRef<HTMLDivElement>;
+
+  @Output()
+  statisticsTimeBoundaries: ITimeBoundaries;
 
   summarizedTasksByCategory: ISummarizedTasks[] = [];
   pageSizeOptions: number[] = [];
@@ -57,23 +61,24 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     private statsService: StatsService,
     private changeDetectorRef: ChangeDetectorRef,
     private configurationService: ConfigurationService,
-    private renderer: Renderer2) {
+    private renderer: Renderer2,
+    private sessionsStorageService: SessionStorageService) {
   }
 
   private destroyVisualRepresentationOfChartJs() {
     if (this.currentChart) {
-        this.currentChart.stop();
-        this.currentChart.clear();
-        this.doughnutCtx.restore();
-        // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
-        const singleChild = this.getCanvasNode();
-        this.canvasContainer.nativeElement.removeChild(singleChild);
+      this.currentChart.stop();
+      this.currentChart.clear();
+      this.doughnutCtx.restore();
+      // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
+      const singleChild = this.getCanvasNode();
+      this.canvasContainer.nativeElement.removeChild(singleChild);
 
-        const canvas = this.renderer.createElement('canvas');
-        this.renderer.addClass(canvas, 'doughnut-fixed-width');
-        // https://stackoverflow.com/questions/45085567/how-to-append-dynamic-dom-elements-from-a-directive-in-angular-2
-        this.renderer.appendChild(this.canvasContainer.nativeElement, canvas);
-        this.changeDetectorRef.detectChanges();
+      const canvas = this.renderer.createElement('canvas');
+      this.renderer.addClass(canvas, 'doughnut-fixed-width');
+      // https://stackoverflow.com/questions/45085567/how-to-append-dynamic-dom-elements-from-a-directive-in-angular-2
+      this.renderer.appendChild(this.canvasContainer.nativeElement, canvas);
+      this.changeDetectorRef.detectChanges();
     }
     this.currentChart = null;
   }
@@ -83,6 +88,10 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
+    this.sessionsStorageService.set({
+      statisticsTimeBoundaries: $event
+    });
+
     const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime);
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;
@@ -147,7 +156,7 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
         return oneChildNode;
       }
     }
-    
+
   }
 
   private openDetailedDoughnutChartForCategory(category: string) {
@@ -329,7 +338,11 @@ export class StatsVisualizationComponent implements AfterViewInit, OnDestroy {
     this.doughnutOptions = options;
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
+    const storedData = this.sessionsStorageService.get();
+    if (storedData && storedData.statisticsTimeBoundaries) {
+      this.statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
+    }
   }
 
 

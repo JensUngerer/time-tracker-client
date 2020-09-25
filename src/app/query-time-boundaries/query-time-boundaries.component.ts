@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Inject, LOCALE_ID, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 
 export interface ITimeBoundaries {
@@ -12,29 +12,46 @@ export interface ITimeBoundaries {
   templateUrl: './query-time-boundaries.component.html',
   styleUrls: ['./query-time-boundaries.component.scss']
 })
-export class QueryTimeBoundariesComponent implements OnInit {
+export class QueryTimeBoundariesComponent implements AfterViewInit {
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
 
-  queryTimeFormGroup: FormGroup;
-  
+  private initialConfig = {};
+
+  queryTimeFormGroup: FormGroup = new FormGroup(this.initialConfig);
+
+  @Input()
+  timeBoundaries: ITimeBoundaries = null;
+
   @Output()
   queryTimeBoundaries: EventEmitter<ITimeBoundaries> = new EventEmitter();
 
-  constructor(@Inject(LOCALE_ID) private currentLocale) { }
+  constructor(@Inject(LOCALE_ID) private currentLocale) { 
+    this.initialConfig[this.queryTimeStartFormControlName] = new FormControl();
+    this.initialConfig[this.queryTimeEndFormControlName] = new FormControl();
+  }
 
   private initializeTimeBoundariesQuery() {
     const configObj: { [key: string]: AbstractControl } = {};
-    const currentTime = Date.now();
     // https://stackoverflow.com/questions/35144821/angular-use-pipes-in-services-and-components
     // https://stackoverflow.com/questions/46715543/how-to-bind-date-time-form-control
     // https://stackoverflow.com/questions/50362854/how-to-change-time-from-24-to-12-hour-format-in-angular-5
-    const requiredDateTimeFormat = "yyyy-MM-ddTHH:mm"
-    // const cestOffset = "UTC";
-    const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale); // , cestOffset);
+    const requiredDateTimeFormat = "yyyy-MM-ddTHH:mm";
+    // const cestOffset = "UTC+2";
+    let startTime: string = null;
+    let endTime: string = null;
+    if (!this.timeBoundaries) {
+      const currentTime = Date.now();
+      const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale);
+      startTime = formattedCurrentTime;
+      endTime = formattedCurrentTime;
+    } else {
+      startTime = formatDate(this.timeBoundaries.utcStartTime, requiredDateTimeFormat, this.currentLocale);
+      endTime = formatDate(this.timeBoundaries.utcEndTime, requiredDateTimeFormat, this.currentLocale);
+    }
 
-    configObj[this.queryTimeStartFormControlName] = new FormControl(formattedCurrentTime);
-    configObj[this.queryTimeEndFormControlName] = new FormControl(formattedCurrentTime);
+    configObj[this.queryTimeStartFormControlName] = new FormControl(startTime);
+    configObj[this.queryTimeEndFormControlName] = new FormControl(endTime);
     this.queryTimeFormGroup = new FormGroup(configObj);
   }
 
@@ -46,7 +63,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
     return new Date(utc);
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.initializeTimeBoundariesQuery();
   }
 

@@ -1,15 +1,12 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
     <div fxLayout="column">
         <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-            <mtt-query-time-boundaries (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
+            <mtt-query-time-boundaries [timeBoundaries]="statisticsTimeBoundaries" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
             </mtt-query-time-boundaries>
         </div>
         <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
             <div fxLayout="column">
                 <div fxFlex="1 1 100%">
-                    <!-- <div fxFlex="column" *ngFor="let oneLabelsArr of doughnutChartLabels; let i = index">
-    <chart style="width: 500px" fxFlex="1 1 100" [type]="doughnutChartType" [data]="doughnutChartDataObjs[i]" [options]="doughnutChartOptionsObj" ></chart>
-    </div> -->
                     <div #canvasContainer>
                         <canvas class="doughnut-fixed-width"></canvas>
                     </div>
@@ -17,11 +14,6 @@
                 <div fxFlex="1 1 100%">
                     <mat-paginator #matPaginator [showFirstLastButtons]="true" (page)="onPageChanged($event)" [hidePageSize]="true" [length]="pageSizeOptions.length" [pageSize]="1"
                         [pageSizeOptions]="pageSizeOptions">
-                        <!-- <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-                        <div fxLayout="column"> -->
-
-                        <!-- </div>
-                    </div> -->
                     </mat-paginator>
                 </div>
             </div>
