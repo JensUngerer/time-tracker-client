@@ -184,7 +184,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     this.currentChart.render();
   }
 
-  private chartOnClick(evt: MouseEvent) {
+  private onClickAbstract(evt: MouseEvent, callback: (idx: number, label: string) => void) {
     try {
       evt.stopImmediatePropagation();
       // evt.stopPropagation();
@@ -200,12 +200,40 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       const idx = activePoints[0]['_index'];
 
       const label = chartData.labels[idx];
-      const value = chartData.datasets[0].data[idx];
+      // const value = chartData.datasets[0].data[idx];
+
+      // DEBUGGING:
+      // console.log(JSON.stringify(chartData, null, 4));
 
       // DEBUGGING
       // console.log(label);
       // console.log(value);
+      callback(idx, label);
+    } else {
+      console.error('detection of area failed');
+    }
+  }
 
+  private chartDetailOnClick(evt: MouseEvent) {
+    this.onClickAbstract(evt, (idx: number, label: string) => {
+      const category = this.doughnutTitle;
+      const foundSummary = this.summarizedTasksByCategory.find((oneCatSummary) => oneCatSummary.category === category);
+      if (!foundSummary) {
+        console.log('no summary found for:' + label + '->' + category);
+        return;
+      }
+      const foundLine = foundSummary.lines[idx];
+      if (foundLine &&
+        foundLine.taskNumberUrl) {
+          location.href = foundLine.taskNumberUrl;
+      } else {
+        console.log('no taskNumberUrl:' + foundLine.taskNumberUrl + ' for:' + foundLine.taskNumber);
+      }
+    });
+  }
+
+  private chartOverviewOnClick(evt: MouseEvent) {
+    this.onClickAbstract(evt, (idx: number, label: string) => {
       // go to specific detail(ed) doughnut chart
       // --> so switch the page control
       // --> so switch the doughnut visualization
@@ -221,9 +249,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
           console.log('do not change view as pageIndex:' + this.matPaginator.pageIndex);
           break;
       }
-    } else {
-      console.error('detection of area failed');
-    }
+    });
   }
   private generateRandomRgbBackgroundColors() {
     const backgroundColors = [];
@@ -274,10 +300,26 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isCategoryChart(currentLabel: string) {
+    const foundCorrespondingSummaryForCategories = this.summarizedTasksByCategory.find(summary => summary.category === currentLabel);
+    if (typeof foundCorrespondingSummaryForCategories !== 'undefined') {
+      return true;
+    }
+    return false
+  }
+
+  private isDetailChart(category: string) {
+    const foundCorrespondingSummaryForDetail = this.summarizedTasksByCategory.find(summary => summary.category === category);
+    if (typeof foundCorrespondingSummaryForDetail !== 'undefined') {
+      return true;
+    }
+    return false;
+  }
+
   private refreshOptions() {
     const options: ChartOptions = {
       plugins: [ChartDataLabels],
-      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOnClick.bind(this) : null,
+      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOverviewOnClick.bind(this) : this.chartDetailOnClick.bind(this),
       legend: {
         display: true,
         position: 'bottom',
@@ -303,13 +345,13 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
             let percentNumber = -1.0;
             const category = dataset.label;
             const currentLabel = labels[toolTipIndex].toString();
-            const foundCorrespondingSummaryFroDetail = this.summarizedTasksByCategory.find(summary => summary.category === category);
-            const foundCorrespondingSummaryForCategories = this.summarizedTasksByCategory.find(summary => summary.category === currentLabel);
-            if (typeof foundCorrespondingSummaryFroDetail !== 'undefined') {
+            if (this.isDetailChart(category)) {
               // use case of detail
-              percentNumber = foundCorrespondingSummaryFroDetail.lines[toolTipIndex].durationFraction;
-            } else if (typeof foundCorrespondingSummaryForCategories !== 'undefined') {
+              const foundCorrespondingSummaryForDetail = this.summarizedTasksByCategory.find(summary => summary.category === category);
+              percentNumber = foundCorrespondingSummaryForDetail.lines[toolTipIndex].durationFraction;
+            } else if (this.isCategoryChart(currentLabel)) {
               // use case of Categories
+              const foundCorrespondingSummaryForCategories = this.summarizedTasksByCategory.find(summary => summary.category === currentLabel);
               percentNumber = foundCorrespondingSummaryForCategories.durationFraction;
             } else {
               // fallback
