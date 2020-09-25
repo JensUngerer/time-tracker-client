@@ -1,7 +1,7 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
     <div fxLayout="column">
         <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-            <mtt-query-time-boundaries [timeBoundaries]="statisticsTimeBoundaries" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
+            <mtt-query-time-boundaries (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
             </mtt-query-time-boundaries>
         </div>
         <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">

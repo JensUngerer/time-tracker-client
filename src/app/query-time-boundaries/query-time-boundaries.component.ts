@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
 import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { SessionStorageService } from '../session-storage.service';
 
 export interface ITimeBoundaries {
   utcStartTime: Date;
@@ -12,26 +13,32 @@ export interface ITimeBoundaries {
   templateUrl: './query-time-boundaries.component.html',
   styleUrls: ['./query-time-boundaries.component.scss']
 })
-export class QueryTimeBoundariesComponent implements AfterViewInit {
+export class QueryTimeBoundariesComponent implements OnInit {
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
 
-  private initialConfig = {};
-
-  queryTimeFormGroup: FormGroup = new FormGroup(this.initialConfig);
-
-  @Input()
-  timeBoundaries: ITimeBoundaries = null;
+  queryTimeFormGroup: FormGroup;
 
   @Output()
   queryTimeBoundaries: EventEmitter<ITimeBoundaries> = new EventEmitter();
 
-  constructor(@Inject(LOCALE_ID) private currentLocale) { 
-    this.initialConfig[this.queryTimeStartFormControlName] = new FormControl();
-    this.initialConfig[this.queryTimeEndFormControlName] = new FormControl();
+  constructor(@Inject(LOCALE_ID) private currentLocale,
+    private sessionsStorageService: SessionStorageService) {
+  }
+
+  private getStoredDataFromStorage() {
+      // get stored data from storage
+      let statisticsTimeBoundaries: ITimeBoundaries = null;
+      const storedData = this.sessionsStorageService.get();
+      if (storedData && storedData.statisticsTimeBoundaries) {
+        statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
+      }
+      return statisticsTimeBoundaries;
   }
 
   private initializeTimeBoundariesQuery() {
+    const statisticsTimeBoundaries = this.getStoredDataFromStorage();
+
     const configObj: { [key: string]: AbstractControl } = {};
     // https://stackoverflow.com/questions/35144821/angular-use-pipes-in-services-and-components
     // https://stackoverflow.com/questions/46715543/how-to-bind-date-time-form-control
@@ -40,14 +47,14 @@ export class QueryTimeBoundariesComponent implements AfterViewInit {
     // const cestOffset = "UTC+2";
     let startTime: string = null;
     let endTime: string = null;
-    if (!this.timeBoundaries) {
+    if (!statisticsTimeBoundaries) {
       const currentTime = Date.now();
       const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale);
       startTime = formattedCurrentTime;
       endTime = formattedCurrentTime;
     } else {
-      startTime = formatDate(this.timeBoundaries.utcStartTime, requiredDateTimeFormat, this.currentLocale);
-      endTime = formatDate(this.timeBoundaries.utcEndTime, requiredDateTimeFormat, this.currentLocale);
+      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, requiredDateTimeFormat, this.currentLocale);
+      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, requiredDateTimeFormat, this.currentLocale);
     }
 
     configObj[this.queryTimeStartFormControlName] = new FormControl(startTime);
@@ -63,7 +70,7 @@ export class QueryTimeBoundariesComponent implements AfterViewInit {
     return new Date(utc);
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.initializeTimeBoundariesQuery();
   }
 
@@ -72,10 +79,14 @@ export class QueryTimeBoundariesComponent implements AfterViewInit {
     const utcStartTime = QueryTimeBoundariesComponent.convertToUtc(startTime);
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
     const utcEndTime = QueryTimeBoundariesComponent.convertToUtc(endTime);
-    this.queryTimeBoundaries.emit({
+    const outputEventData: ITimeBoundaries = {
       utcStartTime,
       utcEndTime
-    })
+    };
+    this.sessionsStorageService.set({
+      statisticsTimeBoundaries: outputEventData
+    });
+    this.queryTimeBoundaries.emit(outputEventData);
   }
 
 }

@@ -30,9 +30,6 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild('canvasContainer', { static: false }) canvasContainer: ElementRef<HTMLDivElement>;
 
-  @Output()
-  statisticsTimeBoundaries: ITimeBoundaries;
-
   summarizedTasksByCategory: ISummarizedTasks[] = [];
   pageSizeOptions: number[] = [];
 
@@ -61,8 +58,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     private statsService: StatsService,
     private changeDetectorRef: ChangeDetectorRef,
     private configurationService: ConfigurationService,
-    private renderer: Renderer2,
-    private sessionsStorageService: SessionStorageService) {
+    private renderer: Renderer2) {
   }
 
   private destroyVisualRepresentationOfChartJs() {
@@ -88,10 +84,6 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
-    this.sessionsStorageService.set({
-      statisticsTimeBoundaries: $event
-    });
-
     const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime);
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;
@@ -339,10 +331,6 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const storedData = this.sessionsStorageService.get();
-    if (storedData && storedData.statisticsTimeBoundaries) {
-      this.statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
-    }
   }
 
 
