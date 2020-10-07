@@ -81,6 +81,8 @@ export class QueryTimeBoundariesComponent implements OnInit {
 
   private createEndTimeValidatorFn() {
     return (endTimeControl: AbstractControl): ValidationErrors => {
+      endTimeControl.setErrors(null);
+
       const endTimeValue = new Date(endTimeControl.value);
       const startTimeControl = this.queryTimeFormGroup.controls[this.queryTimeStartFormControlName];
       const startTimeValue = new Date(startTimeControl.value);
@@ -88,7 +90,6 @@ export class QueryTimeBoundariesComponent implements OnInit {
         startTimeControl.setErrors({ startTimeIsLaterThanEnd: true });
       } else {
         startTimeControl.setErrors(null);
-        endTimeControl.setErrors(null);
       }
       return endTimeControl.errors;
     };
@@ -96,6 +97,8 @@ export class QueryTimeBoundariesComponent implements OnInit {
 
   private createStartTimeValidatorFn() {
     return (startTimeControl: AbstractControl): ValidationErrors => {
+      startTimeControl.setErrors(null);
+
       const startTimeValue = new Date(startTimeControl.value);
       const endTimeControl = this.queryTimeFormGroup.controls[this.queryTimeEndFormControlName];
       const endTimeValue = new Date(endTimeControl.value);
@@ -103,7 +106,6 @@ export class QueryTimeBoundariesComponent implements OnInit {
         endTimeControl.setErrors({ endTimeIsEarlierThanStart: true });
       } else {
         endTimeControl.setErrors(null);
-        startTimeControl.setErrors(null);
       }
       return startTimeControl.errors;
     };
