@@ -14,10 +14,18 @@ export interface ITimeBoundaries {
   styleUrls: ['./query-time-boundaries.component.scss']
 })
 export class QueryTimeBoundariesComponent implements OnInit {
+  private readonly requiredDateTimeFormat = "yyyy-MM-ddTHH:mm";
+
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
 
   queryTimeFormGroup: FormGroup;
+
+  @Input()
+  showTableIcon = false;
+
+  @Input()
+  showChartIcon = false;
 
   @Output()
   queryTimeBoundaries: EventEmitter<ITimeBoundaries> = new EventEmitter();
@@ -36,6 +44,12 @@ export class QueryTimeBoundariesComponent implements OnInit {
       return statisticsTimeBoundaries;
   }
 
+  private getCurrentTime(): string {
+    const currentTime = Date.now();
+    const formattedCurrentTime = formatDate(currentTime, this.requiredDateTimeFormat, this.currentLocale);
+    return formattedCurrentTime;
+  }
+
   private initializeTimeBoundariesQuery() {
     const statisticsTimeBoundaries = this.getStoredDataFromStorage();
 
@@ -43,18 +57,16 @@ export class QueryTimeBoundariesComponent implements OnInit {
     // https://stackoverflow.com/questions/35144821/angular-use-pipes-in-services-and-components
     // https://stackoverflow.com/questions/46715543/how-to-bind-date-time-form-control
     // https://stackoverflow.com/questions/50362854/how-to-change-time-from-24-to-12-hour-format-in-angular-5
-    const requiredDateTimeFormat = "yyyy-MM-ddTHH:mm";
     // const cestOffset = "UTC+2";
     let startTime: string = null;
     let endTime: string = null;
     if (!statisticsTimeBoundaries) {
-      const currentTime = Date.now();
-      const formattedCurrentTime = formatDate(currentTime, requiredDateTimeFormat, this.currentLocale);
+      const formattedCurrentTime = this.getCurrentTime();
       startTime = formattedCurrentTime;
       endTime = formattedCurrentTime;
     } else {
-      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, requiredDateTimeFormat, this.currentLocale);
-      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, requiredDateTimeFormat, this.currentLocale);
+      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, this.requiredDateTimeFormat, this.currentLocale);
+      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, this.requiredDateTimeFormat, this.currentLocale);
     }
 
     configObj[this.queryTimeStartFormControlName] = new FormControl(startTime);
@@ -87,6 +99,11 @@ export class QueryTimeBoundariesComponent implements OnInit {
       statisticsTimeBoundaries: outputEventData
     });
     this.queryTimeBoundaries.emit(outputEventData);
+  }
+
+  setToCurrentTime(formName: string) {
+    const formattedCurrentTime = this.getCurrentTime();
+    this.queryTimeFormGroup.controls[formName].setValue(formattedCurrentTime);
   }
 
 }
