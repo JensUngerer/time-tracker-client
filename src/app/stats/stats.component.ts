@@ -1,16 +1,8 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
-import { LOCALE_ID } from '@angular/core';
-import { formatDate, formatNumber } from '@angular/common';
-import { CommitService } from '../commit.service';
-import { ISummarizedTimeEntries } from './../../../../common/typescript/iSummarizedTimeEntries';
-import { SessionStorageSerializationService } from '../session-storage-serialization.service';
-import { ITasksDocument } from './../../../../common/typescript/mongoDB/iTasksDocument';
-import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/summarizedData';
-import { ChartData, ChartOptions, ChartType } from 'chart.js';
-import { Chart } from 'chart.js';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+
 import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
 import { StatsService } from '../stats.service';
+import { ISummarizedTasks } from './../../../../common/typescript/summarizedData';
 
 
 @Component({
@@ -30,7 +22,7 @@ export class StatsComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    
+
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
