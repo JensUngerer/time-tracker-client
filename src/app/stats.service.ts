@@ -20,6 +20,10 @@ export class StatsService {
     return new Promise<ISummarizedTasks[]>((resolve: (value: ISummarizedTasks[]) => void) => {
       const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime);
       statisticsPromise.then((stats: string) => {
+        if (!stats) {
+          console.error('cannot display stats as stats=' + stats);
+          return;
+        }
         const parsedStats: ISummarizedTimeEntries[] = this.sessionStorageSerializationService.deSerialize(stats);
         if (!parsedStats || !parsedStats.length) {
           console.error('no stats received');
@@ -54,7 +58,7 @@ export class StatsService {
           let taskIdIndex = 0;
           const loop = () => {
             if (taskIdIndex >= taskIds.length) {
-              // 
+              //
               // console.log(JSON.stringify(tasks, null, 4));
 
               const category = oneParsedStatistics.taskCategory;
