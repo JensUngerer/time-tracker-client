@@ -1,12 +1,13 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-    <div fxLayout="column">
-        <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-            <mtt-query-time-boundaries [showTableIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)"></mtt-query-time-boundaries>
-        </div>
-        <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
-            <div *ngFor="let item of summarizedTasksByCategory">
-                <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
-            </div>
-        </div>
+  <div fxLayout="column">
+    <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
+      <mtt-query-time-boundaries [showTableIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
+      </mtt-query-time-boundaries>
     </div>
+    <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
+      <div *ngFor="let item of summarizedTasksByCategory">
+        <mtt-stats-table [summarizedTasks]="item"></mtt-stats-table>
+      </div>
+    </div>
+  </div>
 </div>

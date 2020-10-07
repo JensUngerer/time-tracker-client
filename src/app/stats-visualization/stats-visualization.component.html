@@ -1,22 +1,22 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-    <div fxLayout="column">
-        <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-            <mtt-query-time-boundaries [showChartIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
-            </mtt-query-time-boundaries>
-        </div>
-        <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
-            <div fxLayout="column">
-                <div fxFlex="1 1 100%">
-                    <div #canvasContainer>
-                        <canvas class="doughnut-fixed-width"></canvas>
-                    </div>
-                </div>
-                <div fxFlex="1 1 100%">
-                    <mat-paginator #matPaginator [showFirstLastButtons]="true" (page)="onPageChanged($event)" [hidePageSize]="true" [length]="pageSizeOptions.length" [pageSize]="1"
-                        [pageSizeOptions]="pageSizeOptions">
-                    </mat-paginator>
-                </div>
-            </div>
-        </div>
+  <div fxLayout="column">
+    <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
+      <mtt-query-time-boundaries [showChartIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
+      </mtt-query-time-boundaries>
     </div>
+    <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
+      <div fxLayout="column">
+        <div fxFlex="1 1 100%">
+          <div #canvasContainer>
+            <canvas class="doughnut-fixed-width"></canvas>
+          </div>
+        </div>
+        <div fxFlex="1 1 100%">
+          <mat-paginator #matPaginator [showFirstLastButtons]="true" (page)="onPageChanged($event)"
+            [hidePageSize]="true" [length]="pageSizeOptions.length" [pageSize]="1" [pageSizeOptions]="pageSizeOptions">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
