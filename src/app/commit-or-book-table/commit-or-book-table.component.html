@@ -3,10 +3,10 @@
       <ng-container matColumnDef="identifer">
         <th mat-header-cell *matHeaderCellDef>{{identiferColumnName}}</th>
         <td mat-cell *matCellDef="let line">
-          <span *ngIf="(this.configurationService.configuration.taskBasedIdentifierBaseUrl || this.configurationService.configuration.bookingBasedIdentifierBaseUrl)">
+          <span *ngIf="(configurationService.configuration.taskBasedIdentifierBaseUrl || configurationService.configuration.bookingBasedIdentifierBaseUrl)">
             <a [href]="line.identifierUrl">{{line.identifier}}</a>
           </span>
-          <span *ngIf="!(this.configurationService.configuration.taskBasedIdentifierBaseUrl || this.configurationService.configuration.bookingBasedIdentifierBaseUrl)">
+          <span *ngIf="!(configurationService.configuration.taskBasedIdentifierBaseUrl || configurationService.configuration.bookingBasedIdentifierBaseUrl)">
             {{line.identifier}}
           </span>
         </td>
@@ -24,9 +24,9 @@
           {{ line.durationInHours | number : '1.2-2'}}
         </td>
       </ng-container>
-  
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  
+
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
@@ -56,4 +56,3 @@
       </tr>
     </table>
   </div>
-  
