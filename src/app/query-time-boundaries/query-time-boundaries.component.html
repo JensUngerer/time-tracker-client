@@ -4,15 +4,20 @@
       <form fxLayout="column" [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
           <div fxFlex="1 1 100%">
-            <button mat-icon-button type="button" (click)="setToCurrentTime(queryTimeStartFormControlName)">
+            <!-- <button mat-icon-button type="button" (click)="setToCurrentTime(queryTimeStartFormControlName)">
               <mat-icon>refresh</mat-icon>
-            </button>
+            </button> -->
           </div>
           <div fxFlex="1 1 100%">
             <mat-form-field>
               <mat-label>(earliest) start time</mat-label>
               <input [formControlName]="queryTimeStartFormControlName" matInput type="datetime-local" />
             </mat-form-field>
+          </div>
+          <div fxFlex="1 1 100%">
+            <!-- <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeStartFormControlName, queryTimeEndFormControlName)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button> -->
           </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
@@ -26,6 +31,11 @@
               <mat-label>(latest) end time</mat-label>
               <input [formControlName]="queryTimeEndFormControlName" matInput type="datetime-local" />
             </mat-form-field>
+          </div>
+          <div fxFlex="1 1 100%">
+            <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeEndFormControlName, queryTimeStartFormControlName)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
           </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">

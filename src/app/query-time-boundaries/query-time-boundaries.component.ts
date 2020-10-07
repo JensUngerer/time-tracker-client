@@ -142,4 +142,11 @@ export class QueryTimeBoundariesComponent implements OnInit {
     const formattedCurrentTime = this.getCurrentTime();
     this.queryTimeFormGroup.controls[formName].setValue(formattedCurrentTime);
   }
+
+  overwriteOtherValue(sourceFormName: string, targetFormName: string) {
+    const sourceControl = this.queryTimeFormGroup.controls[sourceFormName];
+    const sourceValue = sourceControl.value;
+    const targetControl = this.queryTimeFormGroup.controls[targetFormName];
+    targetControl.setValue(sourceValue);
+  }
 }
