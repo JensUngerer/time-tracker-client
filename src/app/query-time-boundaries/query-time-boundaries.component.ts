@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+
 import { SessionStorageService } from '../session-storage.service';
 
 export interface ITimeBoundaries {
@@ -35,13 +36,13 @@ export class QueryTimeBoundariesComponent implements OnInit {
   }
 
   private getStoredDataFromStorage() {
-      // get stored data from storage
-      let statisticsTimeBoundaries: ITimeBoundaries = null;
-      const storedData = this.sessionsStorageService.get();
-      if (storedData && storedData.statisticsTimeBoundaries) {
-        statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
-      }
-      return statisticsTimeBoundaries;
+    // get stored data from storage
+    let statisticsTimeBoundaries: ITimeBoundaries = null;
+    const storedData = this.sessionsStorageService.get();
+    if (storedData && storedData.statisticsTimeBoundaries) {
+      statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
+    }
+    return statisticsTimeBoundaries;
   }
 
   private getCurrentTime(): string {
@@ -69,9 +70,43 @@ export class QueryTimeBoundariesComponent implements OnInit {
       endTime = formatDate(statisticsTimeBoundaries.utcEndTime, this.requiredDateTimeFormat, this.currentLocale);
     }
 
-    configObj[this.queryTimeStartFormControlName] = new FormControl(startTime);
-    configObj[this.queryTimeEndFormControlName] = new FormControl(endTime);
+    const startTimeControl = new FormControl(startTime);
+    configObj[this.queryTimeStartFormControlName] = startTimeControl;
+    startTimeControl.setValidators(this.createStartTimeValidatorFn());
+    const endTimeControl = new FormControl(endTime);
+    configObj[this.queryTimeEndFormControlName] = endTimeControl;
+    endTimeControl.setValidators(this.createEndTimeValidatorFn())
     this.queryTimeFormGroup = new FormGroup(configObj);
+  }
+
+  private createEndTimeValidatorFn() {
+    return (endTimeControl: AbstractControl): ValidationErrors => {
+      const endTimeValue = new Date(endTimeControl.value);
+      const startTimeControl = this.queryTimeFormGroup.controls[this.queryTimeStartFormControlName];
+      const startTimeValue = new Date(startTimeControl.value);
+      if (endTimeValue < startTimeValue) {
+        startTimeControl.setErrors({ startTimeIsLaterThanEnd: true });
+      } else {
+        startTimeControl.setErrors(null);
+        endTimeControl.setErrors(null);
+      }
+      return endTimeControl.errors;
+    };
+  }
+
+  private createStartTimeValidatorFn() {
+    return (startTimeControl: AbstractControl): ValidationErrors => {
+      const startTimeValue = new Date(startTimeControl.value);
+      const endTimeControl = this.queryTimeFormGroup.controls[this.queryTimeEndFormControlName];
+      const endTimeValue = new Date(endTimeControl.value);
+      if (endTimeValue < startTimeValue) {
+        endTimeControl.setErrors({ endTimeIsEarlierThanStart: true });
+      } else {
+        endTimeControl.setErrors(null);
+        startTimeControl.setErrors(null);
+      }
+      return startTimeControl.errors;
+    };
   }
 
   // TODO: move to common
@@ -105,5 +140,4 @@ export class QueryTimeBoundariesComponent implements OnInit {
     const formattedCurrentTime = this.getCurrentTime();
     this.queryTimeFormGroup.controls[formName].setValue(formattedCurrentTime);
   }
-
 }

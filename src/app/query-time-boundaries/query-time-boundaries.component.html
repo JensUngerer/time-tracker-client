@@ -29,10 +29,10 @@
           </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
-          <button mat-icon-button *ngIf="showTableIcon" type="submit">
+          <button mat-icon-button *ngIf="showTableIcon" type="submit" [disabled]="queryTimeFormGroup.invalid">
             <mat-icon>table_chart</mat-icon>
           </button>
-          <button mat-icon-button *ngIf="showChartIcon" type="submit">
+          <button mat-icon-button *ngIf="showChartIcon" type="submit" [disabled]="queryTimeFormGroup.invalid">
             <mat-icon>show_chart</mat-icon>
           </button>
         </div>
