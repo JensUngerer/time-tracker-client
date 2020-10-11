@@ -18,8 +18,7 @@ export class StatsComponent implements OnInit {
   isQueryDataVisible = false;
 
   constructor(
-    private statsService: StatsService,
-    private changeDetectorRef: ChangeDetectorRef) { }
+    private statsService: StatsService) { }
 
   ngOnInit(): void {
 
@@ -31,9 +30,7 @@ export class StatsComponent implements OnInit {
       this.isQuerySelectionVisible = false;
       this.isQueryDataVisible = true;
 
-
       this.summarizedTasksByCategory = stats;
-      // this.changeDetectorRef.detectChanges();
     });
     statsPromise.catch((err: any) => {
       console.error(err);
