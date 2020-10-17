@@ -8,8 +8,8 @@
 
     </mat-toolbar>
   </div>
-  <div fxFlex = "1 1 100%">
-    <mat-sidenav-container fxFlexFill class="example-container">
+  <div fxFlex="1 0 100%" fxLayoutAlign="center center">
+    <mat-sidenav-container fxFlex = "1 0 100%">
 
       <mat-sidenav #sidenav fxLayout="column">
 
@@ -24,12 +24,12 @@
 
       </mat-sidenav>
 
-      <mat-sidenav-content fxFlexFill class="mat-sidenav-content-scrollbars">
+      <mat-sidenav-content fxFlex="0 1 auto" class="mat-sidenav-content-scrollbars">
         <router-outlet></router-outlet>
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  <div fxFlex = "0 1 150px">
+  <div fxFlex = "1 1 150px">
     <mtt-router-pages-switcher></mtt-router-pages-switcher>
   </div>
 </div>

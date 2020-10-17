@@ -19,14 +19,14 @@
               (submit)="onSubmit(projectFormGroup.value)"
             >
               <div fxLayout="column">
-                <div fxFlex="0 1 auto" class="spacing-around">
+                <div fxFlex="1 1 100%" class="spacing-around">
                   <input
                     type="text"
                     [required]="true"
                     [formControlName]="formControlNameProjectName"
                   />
                 </div>
-                <div fxFlex="0 1 auto" class="spacing-around">
+                <div fxFlex="1 1 100%" class="spacing-around">
                   <button type="submit" [disabled]="projectFormGroup.invalid">
                     Add project
                   </button>
