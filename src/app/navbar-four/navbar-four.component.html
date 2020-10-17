@@ -1,35 +1,41 @@
 <div fxLayout="column" fxFlexFill>
-  <div fxFlex = "0 1 auto">
+  <div fxFlex="0 1 auto">
     <mat-toolbar color="primary">
-
       <button mat-button (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
-
     </mat-toolbar>
   </div>
-  <div fxFlex="1 0 100%" fxLayoutAlign="center center">
-    <mat-sidenav-container fxFlex = "1 0 100%">
-
+  <div fxFlex="1 0 100%">
+    <mat-sidenav-container fxFlex="1 0 100%">
       <mat-sidenav #sidenav fxLayout="column">
-
         <div fxLayout="column">
+          <button mat-button (click)="sidenav.toggle()" href="#" mat-button>
+            Close
+          </button>
 
-          <button mat-button (click)="sidenav.toggle()" href="#" mat-button>Close</button>
-
-          <button *ngFor="let navItem of navItems" (click)="sidenav.toggle()" routerLink="{{navItem.path}}"
-            mat-button>{{navItem.label}}</button>
-
+          <button
+            *ngFor="let navItem of navItems"
+            (click)="sidenav.toggle()"
+            routerLink="{{ navItem.path }}"
+            mat-button
+          >
+            {{ navItem.label }}
+          </button>
         </div>
-
       </mat-sidenav>
 
-      <mat-sidenav-content fxFlex="0 1 auto" class="mat-sidenav-content-scrollbars">
+      <mat-sidenav-content
+        fxFlexFill
+        fxLayoutAlign="center center"
+        fxFlex="0 1 auto"
+        class="mat-sidenav-content-scrollbars"
+      >
         <router-outlet></router-outlet>
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  <div fxFlex = "1 1 150px">
+  <div fxFlex="1 1 150px">
     <mtt-router-pages-switcher></mtt-router-pages-switcher>
   </div>
 </div>
