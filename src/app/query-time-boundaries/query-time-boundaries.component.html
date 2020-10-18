@@ -22,8 +22,8 @@
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
           <div fxFlex="1 1 100%">
-            <button mat-icon-button type="button" (click)="setToCurrentTime(queryTimeEndFormControlName)">
-              <mat-icon>refresh</mat-icon>
+            <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeEndFormControlName, queryTimeStartFormControlName)">
+              <mat-icon>arrow_upward</mat-icon>
             </button>
           </div>
           <div fxFlex="1 1 100%">
@@ -33,8 +33,8 @@
             </mat-form-field>
           </div>
           <div fxFlex="1 1 100%">
-            <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeEndFormControlName, queryTimeStartFormControlName)">
-              <mat-icon>arrow_upward</mat-icon>
+            <button mat-icon-button type="button" (click)="setToCurrentTime(queryTimeEndFormControlName)">
+              <mat-icon>refresh</mat-icon>
             </button>
           </div>
         </div>

@@ -1,4 +1,7 @@
 .mat-sidenav-content-scrollbars {
-  // overflow-y: auto;
+  overflow-y: auto;
   overflow-x: hidden;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
 }
