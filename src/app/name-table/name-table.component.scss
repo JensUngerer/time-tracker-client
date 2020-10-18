@@ -1,10 +1,9 @@
 // https://stackoverflow.com/questions/53020792/how-to-set-width-of-mat-table-column-in-angular/53023265
 table {
-  width: 100%;
-  // overflow: hidden;
+  // https://stackoverflow.com/questions/33606565/is-it-possible-to-calculate-the-viewport-width-vw-without-scrollbar
+  width: calc(100vw - (100vw - 100%));
 }
 
-//
 .mat-column-codeOrNumber {
   word-wrap: break-word !important;
   white-space: unset !important;

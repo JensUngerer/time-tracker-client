@@ -1,85 +1,85 @@
 // https://stackoverflow.com/questions/53020792/how-to-set-width-of-mat-table-column-in-angular/53023265
 table {
-    width: 100%;
+  // https://stackoverflow.com/questions/33606565/is-it-possible-to-calculate-the-viewport-width-vw-without-scrollbar
+  width: calc(100vw - (100vw - 100%));
 }
 
 .mat-column-taskNumber {
-    word-wrap: break-word !important;
-    white-space: unset !important;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
-    word-break: break-word;
+  word-break: break-word;
 
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .mat-column-taskDescription {
-    word-wrap: break-word !important;
-    white-space: unset !important;
-    flex: 0 0 55% !important;
-    width: 55% !important;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 55% !important;
+  width: 55% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
-    word-break: break-word;
+  word-break: break-word;
 
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .mat-column-durationInHours {
-    word-wrap: break-word !important;
-    white-space: unset !important;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
-    word-break: break-word;
+  word-break: break-word;
 
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .mat-column-durationFraction {
-    word-wrap: break-word !important;
-    white-space: unset !important;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
-    word-break: break-word;
+  word-break: break-word;
 
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .column-taskNumber {
-    width: 15%;
+  width: 15%;
 }
 
 .column-taskDescription {
-    width: 55%;
+  width: 55%;
 }
 
 .column-durationInHours {
-    width: 15%;
+  width: 15%;
 }
 
 .column-durationFraction {
-    width: 15%;
+  width: 15%;
 }
-
