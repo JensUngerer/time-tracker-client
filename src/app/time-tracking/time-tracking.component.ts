@@ -23,7 +23,7 @@ import { ProjectService } from '../project.service';
 import { ViewPaths } from '../viewPathsEnum';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
+  // encapsulation: ViewEncapsulation.None,
   selector: 'mtt-time-tracking',
   templateUrl: './time-tracking.component.html',
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']

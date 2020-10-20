@@ -1,10 +1,10 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxFlex="0 1 auto">
+  <div fxFlex="1 1 100%">
     <div fxLayout="column">
-      <div fxFlex="0 1 auto">
+      <div fxFlex="1 1 100%">
         <form [formGroup]="formGroup" (submit)="onSubmit(formGroup.value)">
           <div fxLayout="column">
-            <div fxFlex="0 1 auto">
+            <div fxFlex="1 1 100%">
               <mat-select
                 (selectionChange)="onDaySelectionChanged($event)"
                 [formControlName]="formGroupControlNames[0]"
@@ -18,7 +18,7 @@
                 </mat-option>
               </mat-select>
             </div>
-            <div fxFlex="0 1 auto">
+            <div fxFlex="1 1 100%">
               <mtt-commit-or-book-table
                 [isTaskBased]="isTaskBased"
                 [isBookingBased]="isBookingBased"

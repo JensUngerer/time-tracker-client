@@ -1,8 +1,8 @@
-<div fxLayout="row" fxFlexFill fxLayoutAlign="center center" class="overflow-hidden">
-  <div fxFlex="1 1 100%">
+<div fxFlex="1 1 0" fxLayout="row" fxFlexFill fxLayoutAlign="center center" class="overflow-hidden">
+  <div fxFlex="1 1 0">
     <form [formGroup]="timeTrackingUserSelectionForm">
       <div fxLayout="column">
-        <div fxFlex="1 1 100%" class="space-around">
+        <div fxFlex="1 1 0" class="space-around">
           <mat-select
             placeholder="Project"
             matInput
@@ -18,13 +18,12 @@
             </mat-option>
           </mat-select>
         </div>
-        <div fxFlex="1 1 100%" class="space-around" fxLayoutAlign="center center">
+        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
           <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{bookingDeclarationDescription}}</label>
         </div>
-        <div fxFlex="1 1 100%">
+        <div>
           <mtt-name-table
             *ngIf="isTasksTableVisible"
-            fxFlex="1 1 100%"
             [currentId]="currentTaskId"
             columnName="Task-Name"
             [gridLines]="gridLines"
@@ -32,7 +31,7 @@
             (deleteRowClicked)="onDeleteRowClicked($event)"
           ></mtt-name-table>
         </div>
-        <div fxFlex="1 1 100%" class="space-around">
+        <div fxFlex="1 1 0" class="space-around">
           <mat-select
             placeholder="Task"
             matInput
@@ -48,7 +47,7 @@
             </mat-option>
           </mat-select>
         </div>
-        <div fxFlex="1 1 100%" class="space-around" fxLayoutAlign="center center">
+        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
           <button
             type="button"
             (click)="onStartStopButtonClicked()"
@@ -63,9 +62,9 @@
             {{ startStopButtonLabel }}
           </button>
         </div>
-        <div fxFlex="1 1 100%" class="space-around" fxLayoutAlign="center center" *ngIf="currentTimeEntryDuration">
+        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center" *ngIf="currentTimeEntryDuration">
           <div fxLayout="row" fxLayoutAlign="center center">
-            <div fxFlex="1 1 100%">{{currentTimeEntryDuration}}</div>
+            <div fxFlex="1 1 0">{{currentTimeEntryDuration}}</div>
           </div>
         </div>
       </div>
