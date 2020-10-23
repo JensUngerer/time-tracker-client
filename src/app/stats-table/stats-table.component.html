@@ -5,7 +5,8 @@
     <ng-container matColumnDef="taskNumber">
         <th mat-header-cell *matHeaderCellDef>Number</th>
         <td mat-cell *matCellDef="let row">
-            {{row.taskNumber}}
+            <div *ngIf="!row.taskNumberUrl">{{row.taskNumber}}</div>
+            <div *ngIf="row.taskNumberUrl"><a [href]="row.taskNumberUrl">{{row.taskNumber}}</a></div>
         </td>
     </ng-container>
     <ng-container matColumnDef="taskDescription">
