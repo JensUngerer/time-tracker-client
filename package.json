@@ -5,7 +5,7 @@
   "license": "GPL",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --prod=true --optimization=false --sourceMap=true",
     "build": "ng build --prod --sourceMap=true",
     "test": "ng test",
     "lint": "ng lint",

@@ -21,6 +21,8 @@ import { IBookingDeclarationOption, BookingDeclarationOption } from '../typescri
 import { ConfigurationService } from '../configuration.service';
 import { ProjectService } from '../project.service';
 import { ITaskCategoryOption } from '../typescript/taskCategoryOption';
+import { IGroupCategoryOption } from '../typescript/iGroupCategoryOption';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'mtt-task',
@@ -29,6 +31,8 @@ import { ITaskCategoryOption } from '../typescript/taskCategoryOption';
 })
 export class TaskComponent implements OnInit, OnDestroy {
   private projectId: string;
+
+  private configChangedSubscription: Subscription;
 
   private projectChangesSubscription: Subscription = null;
   //private isMemoryReadySubscription: Subscription = null;
@@ -46,6 +50,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public formControlNameTaskCategory = 'theTaskCategory';
 
+  public formControlNameGroupCategory = 'theGroupCategory';
+
   public projectOptions: IProjectOption[] = [];
 
   public bookingDeclarationOptions: IBookingDeclarationOption[] = [];
@@ -53,6 +59,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   public gridLines: IGridLine[] = [];
 
   public taskCategoryOptions: ITaskCategoryOption[] = [];
+
+  public groupCategoryOptions: IGroupCategoryOption[] = [];
 
   public onSubmit(values: any) {
     const newNewTaskName = values[this.formControlNameTaskName];
@@ -65,12 +73,15 @@ export class TaskComponent implements OnInit, OnDestroy {
 
     const taskCategory: string = values[this.formControlNameTaskCategory];
 
-    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId, taskNumber, taskCategory);
+    const groupCategory: string = values[this.formControlNameGroupCategory];
+
+    const task: ITask = this.taskService.createTask(newNewTaskName, projectId, bookingDeclarationId, taskNumber, taskCategory, groupCategory);
 
     // clear input field (and so disable button)
     this.taskFormGroup.controls[this.formControlNameTaskName].setValue('');
     this.taskFormGroup.controls[this.formControlNameTaskNumber].setValue('');
     this.taskFormGroup.controls[this.formControlNameTaskCategory].setValue('');
+    this.taskFormGroup.controls[this.formControlNameGroupCategory].setValue('');
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
@@ -112,17 +123,36 @@ export class TaskComponent implements OnInit, OnDestroy {
     configObj[this.formControlNameBookingDeclaration] = new FormControl('');
     configObj[this.formControlNameTaskNumber] = new FormControl('');
     configObj[this.formControlNameTaskCategory] = new FormControl('');
+    configObj[this.formControlNameGroupCategory] = new FormControl('');
 
-    if (this.configurationService &&
-      this.configurationService.configuration &&
-      this.configurationService.configuration.taskCategories) {
-      this.configurationService.configuration.taskCategories.forEach((oneCategory: string) => {
-        this.taskCategoryOptions.push({
-          value: oneCategory,
-          viewValue: oneCategory
+    this.configChangedSubscription = this.configurationService.configurationReceived$.pipe(tap(() => {
+      if (this.configurationService &&
+        this.configurationService.configuration &&
+        this.configurationService.configuration.taskCategories) {
+        this.taskCategoryOptions = [];
+        this.configurationService.configuration.taskCategories.forEach((oneCategory: string) => {
+          this.taskCategoryOptions.push({
+            value: oneCategory,
+            viewValue: oneCategory
+          });
         });
-      });
-    }
+      }
+
+      if (this.configurationService &&
+        this.configurationService.configuration &&
+        this.configurationService.configuration.groupCategories) {
+        this.groupCategoryOptions = [];
+        this.configurationService.configuration.groupCategories.forEach((oneGroupCategory: string) => {
+          this.groupCategoryOptions.push({
+            value: oneGroupCategory,
+            viewValue: oneGroupCategory
+          });
+        });
+      }
+    })).subscribe();
+
+
+
 
     this.taskFormGroup = new FormGroup(configObj);
 
@@ -294,8 +324,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     if (this.projectChangesSubscription) {
       this.projectChangesSubscription.unsubscribe();
     }
-    // if (this.isMemoryReadySubscription) {
-    //   this.isMemoryReadySubscription.unsubscribe();
-    // }
+    if (this.configChangedSubscription) {
+      this.configChangedSubscription.unsubscribe();
+    }
   }
 }
