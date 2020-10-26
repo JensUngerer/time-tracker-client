@@ -17,6 +17,8 @@ export class StatsComponent implements OnInit {
   isQuerySelectionVisible = true;
   isQueryDataVisible = false;
 
+  currentGroupCategory = 'Team1';
+
   constructor(
     private statsService: StatsService) { }
 
@@ -25,7 +27,7 @@ export class StatsComponent implements OnInit {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
-    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime);
+    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, this.currentGroupCategory);
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;
       this.isQueryDataVisible = true;

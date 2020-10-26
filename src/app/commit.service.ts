@@ -30,14 +30,18 @@ export class CommitService {
     return this.httpGet(url);
   }
 
-  getStatistics(utcStartTime: Date, utcEndTime: Date) {
-    const url = this.getTimeEntriesUrl() + routes.timeEntriesStatisticsSufffix + '/' + routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' + routes.endDateProperty + '=' + utcEndTime.getTime();
+  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string) {
+    const url = this.getTimeEntriesUrl() +
+    routes.timeEntriesStatisticsSufffix + '/' +
+    routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+    routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
+    routes.groupCategoryPropertyName + '=' + groupCategory;
     return this.httpGet(url);
   }
 
   getTaskById(projectId: string)  {
     const url = this.getTaskUrl() + '/' + projectId;
-    return this.httpGet(url); 
+    return this.httpGet(url);
   }
 
   getTimeEntryById(timeEntryId: string){
@@ -49,7 +53,7 @@ export class CommitService {
     const url = environment.httpBaseUrl + environment.port + routes.project + routes.projectByTaskIdSuffix + '/' + taskId;
     return this.httpGet(url);
   }
-  
+
   getRunningTimeEntry() {
     const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesRunningSuffix;
     return this.httpGet(url);

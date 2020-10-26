@@ -17,9 +17,9 @@ export class StatsService {
     private sessionStorageSerializationService: SessionStorageSerializationService,
     private configurationService: ConfigurationService) { }
 
-  getStatsData(utcStartTime: Date, utcEndTime: Date) {
+  getStatsData(utcStartTime: Date, utcEndTime: Date, groupCategory: string) {
     return new Promise<ISummarizedTasks[]>((resolve: (value: ISummarizedTasks[]) => void) => {
-      const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime);
+      const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime, groupCategory);
       statisticsPromise.then((stats: string) => {
         if (!stats) {
           console.error('cannot display stats as stats=' + stats);
@@ -30,7 +30,7 @@ export class StatsService {
           console.error('no stats received');
           return;
         }
-        const firstData = parsedStats['Team1']['hotfix'];
+        const firstData = parsedStats['hotfix'];
         this.summarizedTasksByCategory = [
           {
             category: firstData.taskCategory,
