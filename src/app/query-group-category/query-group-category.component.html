@@ -1,0 +1,16 @@
+<div fxLayout="column" *ngIf="isVisible">
+  <div fxFlex="1 1 100%">
+    <form [formGroup]="queryGroupCategoryFormGroup">
+      <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
+        <mat-form-field>
+          <mat-label>Group Category</mat-label>
+          <mat-select (selectionChange)="onSelectionChange($event)" [formControlName]="formControlNameTeamCat">
+            <mat-option *ngFor="let oneGroupCategory of groupCategories" [value]="oneGroupCategory.value">
+              {{ oneGroupCategory.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+</div>

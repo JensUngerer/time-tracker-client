@@ -39,6 +39,7 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { QueryTimeBoundariesComponent } from './query-time-boundaries/query-time-boundaries.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { QueryGroupCategoryComponent } from './query-group-category/query-group-category.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -69,7 +70,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     StatsComponent,
     StatsTableComponent,
     StatsVisualizationComponent,
-    QueryTimeBoundariesComponent
+    QueryTimeBoundariesComponent,
+    QueryGroupCategoryComponent
   ],
   imports: [
     CommonModule,

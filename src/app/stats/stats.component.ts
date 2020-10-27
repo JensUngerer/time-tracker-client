@@ -12,12 +12,12 @@ import { ISummarizedTasks } from './../../../../common/typescript/summarizedData
 })
 export class StatsComponent implements OnInit {
 
+  private groupCategory = '';
+
   summarizedTasksByCategory: ISummarizedTasks[] = [];
 
   isQuerySelectionVisible = true;
   isQueryDataVisible = false;
-
-  currentGroupCategory = 'Team1';
 
   constructor(
     private statsService: StatsService) { }
@@ -27,7 +27,7 @@ export class StatsComponent implements OnInit {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
-    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, this.currentGroupCategory);
+    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, this.groupCategory);
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;
       this.isQueryDataVisible = true;
@@ -38,5 +38,11 @@ export class StatsComponent implements OnInit {
       console.error(err);
       console.error(JSON.stringify(err, null, 4));
     });
+  }
+
+  onQueryGroupCategory(groupCategory: string) {
+    // DEBUGGING:
+    // console.log(groupCategory);
+    this.groupCategory = groupCategory;
   }
 }

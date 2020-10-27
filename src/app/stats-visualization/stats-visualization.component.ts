@@ -84,7 +84,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   onQueryTimeBoundaries($event: ITimeBoundaries) {
-    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime);
+    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, 'Team1');
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;
       this.isPieChartVisible = true;
