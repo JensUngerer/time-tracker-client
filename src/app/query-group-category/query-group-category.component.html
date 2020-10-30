@@ -1,16 +1,20 @@
-<div fxLayout="column" *ngIf="isVisible">
-  <div fxFlex="1 1 100%">
-    <form [formGroup]="queryGroupCategoryFormGroup">
-      <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
-        <mat-form-field>
-          <mat-label>Group</mat-label>
-          <mat-select (selectionChange)="onSelectionChange($event)" [formControlName]="formControlNameTeamCat">
-            <mat-option *ngFor="let oneGroupCategory of groupCategories" [value]="oneGroupCategory.value">
-              {{ oneGroupCategory.viewValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+<!-- <div fxLayout="column">
+  <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
+    <div fxFlex="1 1 100%" fxLayout="column">
+      <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
+        <div fxFlex="1 1 100%">
+          <mat-checkbox [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
+            {{oneGroupCategory.viewValue}}</mat-checkbox>
+        </div>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
+</div> -->
+<div fxLayout="column" fxLayoutAlign="center center" *ngIf="isVisible">
+  <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
+    <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
+      <mat-checkbox [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
+        {{oneGroupCategory.viewValue}}</mat-checkbox>
+    </div>
+  </form>
 </div>

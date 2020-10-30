@@ -17,8 +17,11 @@ export class QueryGroupCategoryComponent implements OnInit {
 
   isVisible = false;
 
+  // @Output()
+  // formControlNameTeamCat = 'theTeamCategoryFormGroupName';
+
   @Output()
-  formControlNameTeamCat = 'theTeamCategoryFormGroupName';
+  formControlNameGroupIds: string[] = [];
 
   @Output()
   queryGroupCategory: EventEmitter<string> = new EventEmitter();
@@ -40,17 +43,25 @@ export class QueryGroupCategoryComponent implements OnInit {
     });
   }
 
-  private setInitialValue() {
-    const initialValue = this.groupCategories[0].value;
-    this.queryGroupCategoryFormGroup.controls[this.formControlNameTeamCat].setValue(initialValue);
-    this.queryGroupCategory.emit(initialValue);
+  private setInitialValues() {
+    const initialValue = true;
+    this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
+      this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
+    });
+    // this.queryGroupCategory.emit(initialValue);
   }
 
   private createFormGroup() {
     const configObj = {};
-    configObj[this.formControlNameTeamCat] = new FormControl('');
+    const baseName = 'theFromControlGroupId';
+    this.formControlNameGroupIds = this.groupCategories.map((oneGroupCat, index: number) => {
+      const concatName = baseName + index;
+      configObj[concatName] = new FormControl(false);
+      return concatName;
+    });
+    // configObj[this.formControlNameTeamCat] = new FormControl('');
     this.queryGroupCategoryFormGroup = new FormGroup(configObj);
-    this.setInitialValue();
+    this.setInitialValues();
   }
 
   private configurationSubscription(nextValue: boolean) {
