@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
@@ -11,14 +11,11 @@ import { ITeamCategoryOption } from '../typescript/iTeamCategoryOption';
   templateUrl: './query-group-category.component.html',
   styleUrls: ['./query-group-category.component.scss']
 })
-export class QueryGroupCategoryComponent implements OnInit {
+export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
   isVisible = false;
-
-  // @Output()
-  // formControlNameTeamCat = 'theTeamCategoryFormGroupName';
 
   @Output()
   formControlNameGroupIds: string[] = [];
@@ -34,6 +31,12 @@ export class QueryGroupCategoryComponent implements OnInit {
 
   constructor(private configurationService: ConfigurationService) { }
 
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
   private createTeamCategories() {
     this.groupCategories = this.configurationService.configuration.groupCategories.map((oneTeamCat: string) => {
       return {
@@ -48,7 +51,6 @@ export class QueryGroupCategoryComponent implements OnInit {
     this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
       this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
     });
-    // this.queryGroupCategory.emit(initialValue);
   }
 
   private createFormGroup() {
@@ -59,7 +61,6 @@ export class QueryGroupCategoryComponent implements OnInit {
       configObj[concatName] = new FormControl(false);
       return concatName;
     });
-    // configObj[this.formControlNameTeamCat] = new FormControl('');
     this.queryGroupCategoryFormGroup = new FormGroup(configObj);
     this.setInitialValues();
   }

@@ -1,15 +1,3 @@
-<!-- <div fxLayout="column">
-  <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
-    <div fxFlex="1 1 100%" fxLayout="column">
-      <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
-        <div fxFlex="1 1 100%">
-          <mat-checkbox [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
-            {{oneGroupCategory.viewValue}}</mat-checkbox>
-        </div>
-      </div>
-    </div>
-  </form>
-</div> -->
 <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isVisible">
   <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
     <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
