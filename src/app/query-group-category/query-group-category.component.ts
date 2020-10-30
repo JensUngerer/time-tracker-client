@@ -17,16 +17,13 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
 
   isVisible = false;
 
-  @Output()
   formControlNameGroupIds: string[] = [];
 
   @Output()
-  queryGroupCategory: EventEmitter<string> = new EventEmitter();
+  queryGroupCategory: EventEmitter<string[]> = new EventEmitter();
 
-  @Output()
   queryGroupCategoryFormGroup: FormGroup;
 
-  @Output()
   groupCategories: ITeamCategoryOption[];
 
   constructor(private configurationService: ConfigurationService) { }
@@ -72,6 +69,11 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     this.createTeamCategories(),
     this.createFormGroup();
     this.isVisible = true;
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    // set initial data to parent component
+    this.onSelectionChange();
   }
 
   ngOnInit(): void {
@@ -80,7 +82,20 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     )).subscribe();
   }
 
-  onSelectionChange($event: MatSelectChange) {
-    this.queryGroupCategory.emit($event.value)
+  onSelectionChange() {
+    const selectedGroupCategories = [];
+    const controls = this.queryGroupCategoryFormGroup.controls;
+    let index = 0;
+    for (const key in controls) {
+      if (Object.prototype.hasOwnProperty.call(controls, key)) {
+        const oneFormElement = controls[key];
+        if (oneFormElement.value === true) {
+          selectedGroupCategories.push(this.groupCategories[index].value);
+        }
+      }
+      index++;
+    }
+
+    this.queryGroupCategory.emit(selectedGroupCategories);
   }
 }

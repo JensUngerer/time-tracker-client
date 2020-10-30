@@ -12,13 +12,17 @@ import { ISummarizedTasks } from './../../../../common/typescript/summarizedData
 })
 export class StatsComponent implements OnInit {
 
-  private groupCategory = '';
+  groupCategories: string[] = [];
 
-  summarizedTasksByCategory: ISummarizedTasks[] = [];
+  // summarizedTasksByCategory: ISummarizedTasks[] = [];
+
+  summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
 
   isQuerySelectionVisible = true;
   isQueryDataVisible = false;
 
+  private utcStartTime: Date;
+  private utcEndTime: Date;
   constructor(
     private statsService: StatsService) { }
 
@@ -26,23 +30,33 @@ export class StatsComponent implements OnInit {
 
   }
 
+  async loadStatsForGroupCategories() {
+    for (let index = 0; index < this.groupCategories.length; index++) {
+      try {
+        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index]);
+        const stats = await statsPromise;
+        this.summarizedTasksByCategoryBuffer.push(stats);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
   onQueryTimeBoundaries($event: ITimeBoundaries) {
-    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, this.groupCategory);
-    statsPromise.then((stats: ISummarizedTasks[]) => {
+    this.utcStartTime = $event.utcStartTime;
+    this.utcEndTime = $event.utcEndTime;
+
+    const loadPromise = this.loadStatsForGroupCategories();
+    loadPromise.then(()=>{
       this.isQuerySelectionVisible = false;
       this.isQueryDataVisible = true;
-
-      this.summarizedTasksByCategory = stats;
-    });
-    statsPromise.catch((err: any) => {
-      console.error(err);
-      console.error(JSON.stringify(err, null, 4));
     });
   }
 
-  onQueryGroupCategory(groupCategory: string) {
+  onQueryGroupCategory(groupCategories: string[]) {
     // DEBUGGING:
-    // console.log(groupCategory);
-    this.groupCategory = groupCategory;
+    console.log(groupCategories);
+
+    this.groupCategories = groupCategories;
   }
 }

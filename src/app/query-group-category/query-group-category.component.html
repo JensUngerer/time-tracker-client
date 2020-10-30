@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isVisible">
   <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
     <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
-      <mat-checkbox [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
+      <mat-checkbox (change)="onSelectionChange()" [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
         {{oneGroupCategory.viewValue}}</mat-checkbox>
     </div>
   </form>
