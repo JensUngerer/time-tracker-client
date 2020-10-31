@@ -11,10 +11,12 @@ import { SessionStorageSerializationService } from './session-storage-serializat
   providedIn: 'root'
 })
 export class StatsService {
-  summarizedTasksByCategory: ISummarizedTasks[] = [];
-
   constructor(private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  getNonCommittedDays() {
+    return this.commitService.getNonCommittedDays();
+  }
 
   getStatsData(utcStartTime: Date, utcEndTime: Date, groupCategory: string) {
     return new Promise<ISummarizedTasks[]>((resolve: (value: ISummarizedTasks[]) => void) => {
@@ -32,12 +34,16 @@ export class StatsService {
           return;
         }
 
-        this.summarizedTasksByCategory = parsedStats;
-        resolve(this.summarizedTasksByCategory);
+        const summarizedTasksByCategory = parsedStats;
+        resolve(summarizedTasksByCategory);
       });
       statisticsPromise.catch((err: any) => {
         console.error(err);
       });
     });
+  }
+
+  getCommitsByDay(day: Date, groupCategory: string) {
+
   }
 }

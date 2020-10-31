@@ -13,7 +13,7 @@ import { ITeamCategoryOption } from '../typescript/iTeamCategoryOption';
 })
 export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
 
-  private subscription: Subscription;
+  private configSubscription: Subscription;
 
   isVisible = false;
 
@@ -29,8 +29,8 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
   constructor(private configurationService: ConfigurationService) { }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.configSubscription) {
+      this.configSubscription.unsubscribe();
     }
   }
 
@@ -69,15 +69,15 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     this.createTeamCategories(),
     this.createFormGroup();
     this.isVisible = true;
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.configSubscription) {
+      this.configSubscription.unsubscribe();
     }
     // set initial data to parent component
     this.onSelectionChange();
   }
 
   ngOnInit(): void {
-    this.subscription = this.configurationService.configurationReceived$.pipe(tap(
+    this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
       this.configurationSubscription.bind(this)
     )).subscribe();
   }

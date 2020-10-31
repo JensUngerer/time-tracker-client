@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
+import { CommitComponent } from './commit/commit.component.js';
 import { ProjectComponent } from './project/project.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component.js';
 import { StatsComponent } from './stats/stats.component.js';
@@ -62,7 +63,7 @@ export class RoutingRoutes {
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
-      component: CommitOrBookComponent,
+      component: CommitComponent,
       data: {
         label: ViewLabels.commit,
         isTaskBased: true

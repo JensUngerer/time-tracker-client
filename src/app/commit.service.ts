@@ -25,6 +25,12 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  getNonCommittedDays() {
+    const url = this.getTimeEntriesUrl() +
+    routes.nonCommittedDaysSuffix;
+    return this.httpGet(url);
+  }
+
   getTaskByTaskId(taskId: string) {
     const url = this.getTaskUrl() + routes.taskIdSuffix + '/' + taskId;
     return this.httpGet(url);
