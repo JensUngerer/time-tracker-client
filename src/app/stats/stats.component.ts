@@ -67,7 +67,7 @@ export class StatsComponent implements OnInit {
 
   onQueryGroupCategory(groupCategories: string[]) {
     // DEBUGGING:
-    console.log(groupCategories);
+    // console.log(groupCategories);
 
     this.groupCategories = groupCategories;
   }
