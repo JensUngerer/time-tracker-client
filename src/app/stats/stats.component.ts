@@ -37,6 +37,10 @@ export class StatsComponent implements OnInit {
       try {
         const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index]);
         const stats = await statsPromise;
+        if(!stats) {
+          console.error('no stats for:' + this.groupCategories[index]);
+          continue;
+        }
         if (isEqual(stats, {})) {
           summarizedTasksByCategoryBuffer.push([]);
         } else {

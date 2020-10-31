@@ -22,11 +22,13 @@ export class StatsService {
       statisticsPromise.then((stats: string) => {
         if (!stats) {
           console.error('cannot display stats as stats=' + stats);
+          resolve(null);
           return;
         }
         const parsedStats: ISummarizedTasks[] = this.sessionStorageSerializationService.deSerialize(stats);
         if (!parsedStats) {
           console.error('no stats received');
+          resolve(null);
           return;
         }
 
