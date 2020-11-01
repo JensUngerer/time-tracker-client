@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import * as _ from 'underscore';
+import { uniqueId } from 'underscore';
 
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 import { ConfigurationService } from '../configuration.service';
@@ -13,11 +15,13 @@ import { ITimeInterval } from './../../../../common/typescript/iTimeInterval';
 interface ICommitDayOption {
   value: ITimeInterval;
   viewValue: Date;
+  id: string;
 }
 
 interface ICommitTeamOption {
   value: string;
   viewValue: string;
+  id: string;
 }
 
 @Component({
@@ -26,8 +30,9 @@ interface ICommitTeamOption {
   styleUrls: ['./commit.component.scss']
 })
 export class CommitComponent implements OnInit {
-  private currentGroupCategory: string;
   private currentTimeInterval: ITimeInterval;
+  private currentTimeIntervalId: string;
+  private currentGroupId: string;
 
   summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
   configSubscription: Subscription;
@@ -48,7 +53,8 @@ export class CommitComponent implements OnInit {
 
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) {
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private changeDetectorRef: ChangeDetectorRef) {
   }
 
   private createFormGroup() {
@@ -59,18 +65,34 @@ export class CommitComponent implements OnInit {
   }
 
   private initDayDropDown() {
-    const displayedValue = this.commitDayOptions[0].value;
+    if(!this.commitDayOptions || !this.commitDayOptions.length) {
+      return;
+    }
+    const displayedObj = this.commitDayOptions[0];
+    const displayedValue = displayedObj.value;
     this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(displayedValue);
-    this.onSelectionChange({
+    this.onDaySelectionChange({
       value: displayedValue,
       source: null
     })
   }
 
   private initTeamDropDown() {
+    if (!this.groupCategories || !this.groupCategories.length) {
+      return;
+    }
+    // const displayedObj =
     const displayedValue = this.groupCategories[0];
+    if (!this.commitTeamOptions || !this.commitTeamOptions.length) {
+      return;
+    }
+    // const correspondingCommitOption = this.commitTeamOptions.find(oneOption => oneOption.value === displayedValue);
+    // if (!correspondingCommitOption) {
+    //   return;
+    // }
+    // const id = correspondingCommitOption.id;
     this.commitFormGroup.controls[this.teamDropDownFormControlName].setValue(displayedValue);
-    this.onTeamSelectionChange({
+    this.onGroupSelectionChange({
       source: null,
       value: displayedValue
     });
@@ -81,7 +103,8 @@ export class CommitComponent implements OnInit {
     groupCategories.forEach((oneGroupCat: string) => {
       this.commitTeamOptions.push({
         value: oneGroupCat,
-        viewValue: oneGroupCat
+        viewValue: oneGroupCat,
+        id: uniqueId()
       });
     });
   }
@@ -93,7 +116,8 @@ export class CommitComponent implements OnInit {
     days.forEach((oneDay: ITimeInterval) => {
       this.commitDayOptions.push({
         value: oneDay,
-        viewValue: oneDay.utcStartTime
+        viewValue: oneDay.utcStartTime,
+        id: uniqueId()
       });
     });
   }
@@ -128,28 +152,55 @@ export class CommitComponent implements OnInit {
     if (!currentTimeInterval) {
       return;
     }
-
     // DEBUGGING:
     // console.log('update with:' + JSON.stringify(currentTimeInterval, null, 4));
     // console.log('and:' + this.displayedGroupCategories)
-
-    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.currentGroupCategory);
+    if (!this.groupCategories || !this.groupCategories.length) {
+      return;
+    }
+    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.displayedGroupCategories[0]);
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
       this.summarizedTasksByCategoryBuffer = [rawStats];
     });
   }
 
-  onSelectionChange($event: MatSelectChange) {
+  onDaySelectionChange($event: MatSelectChange) {
     const value: ITimeInterval = $event.value;
 
+    // this.currentTimeIntervalId = id;
     this.currentTimeInterval = value;
     this.updateBothBoundTableInputs();
   }
 
-  onTeamSelectionChange($event: MatSelectChange) {
+  onGroupSelectionChange($event: MatSelectChange) {
     const value: string = $event.value;
-    this.currentGroupCategory = value;
     this.displayedGroupCategories = [value];
+    // this.currentGroupId = id;
     this.updateBothBoundTableInputs();
+  }
+
+  onCommitButtonClicked($event: Event) {
+    // a) submit data
+
+    // b) disable table data
+    // this.currentTimeInterval = null;
+    this.summarizedTasksByCategoryBuffer = [];
+    this.displayedGroupCategories = [];
+
+    // b) remove currently displayed drop-down entries (one in each one) ???
+    // const dayOptionIndex = this.commitDayOptions.findIndex(oneDayOption => oneDayOption.id === this.currentTimeIntervalId);
+    // if (dayOptionIndex >= 0) {
+    //   this.commitDayOptions.splice(dayOptionIndex, 1);
+    //   // this.commitDayOptions = _.clone(this.commitDayOptions);
+    //   // if (dayOptionIndex + 1 < this.commitTeamOptions.length)
+    // }
+    // const groupOptionIndex = this.commitTeamOptions.findIndex(oneOption => oneOption.id === this.currentGroupId);
+    // if (groupOptionIndex >= 0) {
+    //   this.commitTeamOptions.splice(groupOptionIndex, 1);
+    //   // this.commitTeamOptions = _.clone(this.commitTeamOptions);
+    // }
+    // // this.changeDetectorRef.detectChanges();
+    // this.initDayDropDown();
+    // this.initTeamDropDown();
   }
 }

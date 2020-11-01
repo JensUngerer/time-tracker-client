@@ -1,24 +1,54 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
-      <form fxLayout="column" fxFlex="1 1 100%" [formGroup]="commitFormGroup">
+      <form
+        fxLayout="column"
+        fxFlex="1 1 100%"
+        [formGroup]="commitFormGroup"
+      >
         <div fxFlex="1 1 100%">
-          <mat-select (selectionChange)="onTeamSelectionChange($event)" placeholder="Team" matInput [formControlName]="teamDropDownFormControlName">
-            <mat-option *ngFor="let teamOption of commitTeamOptions" [value]="teamOption.value">
+          <mat-select
+            fxFlex="1 1 100%"
+            (selectionChange)="onGroupSelectionChange($event)"
+            placeholder="Team"
+            matInput
+            [formControlName]="teamDropDownFormControlName"
+          >
+            <mat-option
+              #groupSelectOption
+              *ngFor="let teamOption of commitTeamOptions"
+              [value]="teamOption.value"
+              [id]="teamOption.id"
+            >
               {{ teamOption.viewValue }}
             </mat-option>
           </mat-select>
         </div>
         <div fxFlex="1 1 100%">
-          <mat-select placeholder="Day" matInput [formControlName]="dayDropDownFormControlName"
-            (selectionChange)="onSelectionChange($event)">
-            <mat-option *ngFor="let dayOption of commitDayOptions" [value]="dayOption.value">
+          <mat-select
+            fxFlex="1 1 100%"
+            placeholder="Day"
+            matInput
+            [formControlName]="dayDropDownFormControlName"
+            (selectionChange)="onDaySelectionChange($event)"
+          >
+            <mat-option
+              #daySelectOption
+              *ngFor="let dayOption of commitDayOptions"
+              [value]="dayOption.value"
+              [id]="dayOption.id"
+            >
               {{ dayOption.viewValue | date: "yyyy-MM-dd" }}
             </mat-option>
           </mat-select>
         </div>
+        <div fxFlex="1 1 100%">
+          <button (click)="onCommitButtonClicked($event)" fxFlex="1 1 100%" class="button-full-width" type="submit" [disabled]="commitFormGroup.invalid">
+            Commit
+          </button>
+        </div>
       </form>
-      <div fxFlex="1 1 100%">
+      <div fxFlex=" 1 1 100%">
         <mtt-stats-by-category-table
           [groupCategories]="displayedGroupCategories"
           [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
