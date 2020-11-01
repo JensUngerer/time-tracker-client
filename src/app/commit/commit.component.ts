@@ -175,7 +175,18 @@ export class CommitComponent implements OnInit {
 
   onCommitButtonClicked($event: Event) {
     // a) submit data
-
+    // currentDayOption, durations
+    if (!this.summarizedTasksByCategoryBuffer || !this.summarizedTasksByCategoryBuffer.length || this.summarizedTasksByCategoryBuffer.length > 1) {
+      console.error('there is no data which could be committed!');
+      return;
+    }
+    // )
+    const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer[0], this.currentTimeInterval.utcStartTime);
+    // submitTaskBasedPromise.then((lastPostCommitResult: string) => {
+    //   // DEBUGGING:
+    //   // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
+    //   // console.log(lastPostCommitResultParsed);
+    // });
     // b) disable table data
     this.summarizedTasksByCategoryBuffer = [];
     this.displayedGroupCategories = [];

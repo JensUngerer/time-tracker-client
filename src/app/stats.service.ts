@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import { ISummarizedTimeEntries } from '../../../common/typescript/iSummarizedTimeEntries';
 import { ITimeSummary } from '../../../common/typescript/iTimeSummary';
 import { ITasksDocument } from '../../../common/typescript/mongoDB/iTasksDocument';
+import { ITimeRecordsDocumentData } from '../../../common/typescript/mongoDB/iTimeRecordsDocument';
 import { ISummarizedTasks, ITaskLine } from '../../../common/typescript/summarizedData';
 import { CommitService } from './commit.service';
 import { ConfigurationService } from './configuration.service';
@@ -66,5 +67,61 @@ export class StatsService {
       });
     });
     return enrichedStats;
+  }
+
+  submitTaskedBased(/*currentDayOption: IDurationSumBase, durations: ICommitBase[]*/summarizedTasksByCategoryBuffer: ISummarizedTasks[], day: Date) {
+    // 1) TODO: send all task - based entries to server (as routes.commitTimeRecordsCollectionName entries)
+    // 2) TODO: mark all the time-entries of the summarized tasks as disabled (for the commit view)
+    if (!summarizedTasksByCategoryBuffer || !summarizedTasksByCategoryBuffer.length) {
+      console.error('impossible to submit:' + JSON.stringify(summarizedTasksByCategoryBuffer, null, 4));
+      return;
+    }
+    const timeEntryIdsBuffers: string[][] = [];
+    summarizedTasksByCategoryBuffer.forEach((oneTaskBock) => {
+      const currentTimeEntryIds = oneTaskBock._timeEntryIds;
+      // let oneTimeEntryIdsBuffer = [];
+
+      // // if (!taskLines || !taskLines.length) {
+      // //   return; // continue!
+      // // }
+      // // let oneTimeEntryIdsBuffer = [];
+      // // taskLines.forEach((oneTaskSummaryLine) => {
+      // //   // 1)
+      // //   // const timeRecordData: ITimeRecordsDocumentData = {
+      // //   //   _bookingDeclarationId: null,
+      // //   //   _timeEntryIds: commitBase._timeEntryIds,
+      // //   //   dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+      // //   //   durationInHours: commitBase.durationInHours,
+      // //   //   durationInMilliseconds: commitBase.durationSumInMilliseconds,
+      // //   //   durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+      // //   //   _taskId: (commitBase.basis as ITask).taskId,
+      // //   // };
+
+      // //   // 2)
+      //   oneTimeEntryIdsBuffer = oneTimeEntryIdsBuffer.concat(oneTaskSummaryLine._timeEntryIds);
+      // // });
+      timeEntryIdsBuffers.push(currentTimeEntryIds);
+    });
+
+    // DEBUGGING:
+    console.log(JSON.stringify(timeEntryIdsBuffers, null, 4));
+
+    // return this.postTimeEntryService.post(routes.commitTimeRecordsCollectionName, durations, currentDayOption as ITasksDurationSum,
+    //   (currentDayOption: ITasksDurationSum) => {
+    //     this.deleteAndSwitchToNext(currentDayOption);
+    //   },
+    //   (commitBase: ICommitBase) => {
+    //     const timeRecordData: ITimeRecordsDocumentData = {
+    //       _bookingDeclarationId: null,
+    //       _timeEntryIds: commitBase._timeEntryIds,
+    //       dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
+    //       durationInHours: commitBase.durationInHours,
+    //       durationInMilliseconds: commitBase.durationSumInMilliseconds,
+    //       durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+    //       _taskId: (commitBase.basis as ITask).taskId,
+    //     };
+
+    //     return timeRecordData;
+    //   });
   }
 }
