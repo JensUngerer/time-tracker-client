@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
-import { ConfigurationService, IConfiguration } from '../configuration.service';
+import { ConfigurationService } from '../configuration.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { StatsService } from '../stats.service';
 import { ITimeInterval } from './../../../../common/typescript/iTimeInterval';
@@ -13,40 +15,72 @@ interface ICommitDayOption {
   viewValue: Date;
 }
 
+interface ICommitTeamOption {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'mtt-commit',
   templateUrl: './commit.component.html',
   styleUrls: ['./commit.component.scss']
 })
 export class CommitComponent implements OnInit {
+  private currentGroupCategory: string;
+
   summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
   configSubscription: Subscription;
   groupCategories: string[] = [];
 
   commitDayOptions: ICommitDayOption[] = [];
 
+  commitTeamOptions: ICommitTeamOption[] = [];
 
   commitFormGroup: FormGroup;
 
-  dayDropDownFormControlName = 'theDayDropDown';
+  currentlyDisplayedData: any = null;
 
-  // currentDay: ITimeInterval;
+  dayDropDownFormControlName = 'theDayDropDown';
+  teamDropDownFormControlName = 'theTeamDropDown'
 
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
     private sessionStorageSerializationService: SessionStorageSerializationService) {
-    // const config = {};
-    // config[this.dayDropDownFormControlName] = new FormControl(null);
-    // this.commitFormGroup = new FormGroup(config);
   }
 
   private createFormGroup() {
     const formGroupConfig = {};
     formGroupConfig[this.dayDropDownFormControlName] = new FormControl(null);
-    // formGroupConfig[this.dayDropDownFormControlName].setValue(this.dayDropDownFormControlName[0].value);
+    formGroupConfig[this.teamDropDownFormControlName] = new FormControl(null);
     this.commitFormGroup = new FormGroup(formGroupConfig);
-    // this.currentDay = this.commitDayOptions[0].value;
-    // this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(this.commitDayOptions[0].viewValue);
+  }
+
+  private initDayDropDown() {
+    const displayedValue = this.commitDayOptions[0].value;
+    this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(displayedValue);
+    this.onSelectionChange({
+      value: displayedValue,
+      source: null
+    })
+  }
+
+  private initTeamDropDown() {
+    const displayedValue = this.groupCategories[0];
+    this.commitFormGroup.controls[this.teamDropDownFormControlName].setValue(displayedValue);
+    this.onTeamSelectionChange({
+      source: null,
+      value: displayedValue
+    });
+  }
+
+  private createTeamDropDown(groupCategories: string[]) {
+    this.commitTeamOptions = [];
+    groupCategories.forEach((oneGroupCat: string) => {
+      this.commitTeamOptions.push({
+        value: oneGroupCat,
+        viewValue: oneGroupCat
+      });
+    });
   }
 
   private createDaysDataStructure(days: ITimeInterval[]) {
@@ -64,6 +98,8 @@ export class CommitComponent implements OnInit {
   private configurationSubscription(isReady: boolean) {
     if (isReady) {
       this.groupCategories = this.configurationService.configuration.groupCategories;
+      this.createTeamDropDown(this.groupCategories);
+      this.initTeamDropDown();
 
       const nonCommittedDaysPromise = this.statsService.getNonCommittedDays();
       nonCommittedDaysPromise.then((theDays: string) => {
@@ -72,11 +108,8 @@ export class CommitComponent implements OnInit {
 
         const parsedDays: ITimeInterval[] = this.sessionStorageSerializationService.deSerialize(theDays);
         this.createDaysDataStructure(parsedDays);
-        // this.createFormGroup();
+        this.initDayDropDown();
       });
-      // this.groupCategories.forEach((oneCategory: string) => {
-      //   this.statsService.getCommitsByDay(null, oneCategory);
-      // });
     }
   }
 
@@ -87,4 +120,16 @@ export class CommitComponent implements OnInit {
     )).subscribe();
   }
 
+  onSelectionChange($event: MatSelectChange) {
+    const value: ITimeInterval = $event.value;
+    const statsPromise = this.statsService.getStatsData(value.utcStartTime, value.utcEndTime, this.currentGroupCategory);
+    statsPromise.then((rawStats: ISummarizedTasks[]) => {
+      this.currentlyDisplayedData = rawStats;
+    });
+  }
+
+  onTeamSelectionChange($event: MatSelectChange) {
+    const value: string = $event.value;
+    this.currentGroupCategory = value;
+  }
 }

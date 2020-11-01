@@ -1,35 +1,26 @@
-<!-- <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxFlex="1 1 100%" *ngFor="let oneSummarizedTasksByCategory of summarizedTasksByCategoryBuffer; let i = index">
-    <div *ngFor="let item of oneSummarizedTasksByCategory">
-      <div fxLayout="column">
-        <div fxFlex="1 1 100%">{{groupCategories[i]}}</div>
-        <mtt-stats-table fxFlex="1 1 100%" [summarizedTasks]="item"></mtt-stats-table>
-      </div>
-    </div>
-  </div>
-</div> -->
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
-      <form [formGroup]="commitFormGroup">
+      <form fxLayout="column" fxFlex="1 1 100%" [formGroup]="commitFormGroup">
         <div fxFlex="1 1 100%">
-          <!--
-                    (selectionChange)="onDaySelectionChanged($event)"
-          [formControlName]="formGroupControlNames[0]"
-                    [ngModel]="currentDay"
-
-          -->
-          <mat-select
-          placeholder="Day"
-          matInput
-          [formControlName]="dayDropDownFormControlName">
-            <mat-option
-            *ngFor="let dayOption of commitDayOptions" [value]="dayOption.value">
+          <mat-select (selectionChange)="onTeamSelectionChange($event)" placeholder="Team" matInput [formControlName]="teamDropDownFormControlName">
+            <mat-option *ngFor="let teamOption of commitTeamOptions" [value]="teamOption.value">
+              {{ teamOption.viewValue }}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div fxFlex="1 1 100%">
+          <mat-select placeholder="Day" matInput [formControlName]="dayDropDownFormControlName"
+            (selectionChange)="onSelectionChange($event)">
+            <mat-option *ngFor="let dayOption of commitDayOptions" [value]="dayOption.value">
               {{ dayOption.viewValue | date: "yyyy-MM-dd" }}
             </mat-option>
           </mat-select>
         </div>
       </form>
+
+      <div fxFlex="1 1 100%">
+      </div>
     </div>
   </div>
 </div>

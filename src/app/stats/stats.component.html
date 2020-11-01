@@ -6,14 +6,10 @@
       </mtt-query-time-boundaries>
     </div>
     <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
-      <div xFlex="1 1 100%" *ngFor="let oneSummarizedTasksByCategory of summarizedTasksByCategoryBuffer; let i = index">
-        <div *ngFor="let item of oneSummarizedTasksByCategory">
-          <div fxLayout="column">
-            <div fxFlex="1 1 100%">{{groupCategories[i]}}</div>
-            <mtt-stats-table fxFlex="1 1 100%" [summarizedTasks]="item"></mtt-stats-table>
-          </div>
-        </div>
-      </div>
+      <mtt-stats-by-category-table
+        [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
+        [groupCategories]="groupCategories"
+      ></mtt-stats-by-category-table>
     </div>
   </div>
 </div>
