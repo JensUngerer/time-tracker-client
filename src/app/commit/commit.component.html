@@ -18,8 +18,11 @@
           </mat-select>
         </div>
       </form>
-
       <div fxFlex="1 1 100%">
+        <mtt-stats-by-category-table
+          [groupCategories]="displayedGroupCategories"
+          [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
+        ></mtt-stats-by-category-table>
       </div>
     </div>
   </div>

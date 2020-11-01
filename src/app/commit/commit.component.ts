@@ -27,6 +27,7 @@ interface ICommitTeamOption {
 })
 export class CommitComponent implements OnInit {
   private currentGroupCategory: string;
+  private currentTimeInterval: ITimeInterval;
 
   summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
   configSubscription: Subscription;
@@ -37,6 +38,8 @@ export class CommitComponent implements OnInit {
   commitTeamOptions: ICommitTeamOption[] = [];
 
   commitFormGroup: FormGroup;
+
+  displayedGroupCategories: string[] = [];
 
   currentlyDisplayedData: any = null;
 
@@ -120,16 +123,33 @@ export class CommitComponent implements OnInit {
     )).subscribe();
   }
 
+  private updateBothBoundTableInputs() {
+    const currentTimeInterval = this.currentTimeInterval;
+    if (!currentTimeInterval) {
+      return;
+    }
+
+    // DEBUGGING:
+    console.log('update with:' + JSON.stringify(currentTimeInterval, null, 4));
+    console.log('and:' + this.displayedGroupCategories)
+
+    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.currentGroupCategory);
+    statsPromise.then((rawStats: ISummarizedTasks[]) => {
+      this.summarizedTasksByCategoryBuffer = [rawStats];
+    });
+  }
+
   onSelectionChange($event: MatSelectChange) {
     const value: ITimeInterval = $event.value;
-    const statsPromise = this.statsService.getStatsData(value.utcStartTime, value.utcEndTime, this.currentGroupCategory);
-    statsPromise.then((rawStats: ISummarizedTasks[]) => {
-      this.currentlyDisplayedData = rawStats;
-    });
+
+    this.currentTimeInterval = value;
+    this.updateBothBoundTableInputs();
   }
 
   onTeamSelectionChange($event: MatSelectChange) {
     const value: string = $event.value;
     this.currentGroupCategory = value;
+    this.displayedGroupCategories = [value];
+    this.updateBothBoundTableInputs();
   }
 }

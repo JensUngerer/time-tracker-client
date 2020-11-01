@@ -62,7 +62,7 @@ export class StatsComponent implements OnInit {
       this.summarizedTasksByCategoryBuffer = summarizedTasksByCategoryBuffer;
 
       // DEBUGGING:
-      console.log(JSON.stringify(summarizedTasksByCategoryBuffer, null, 4));
+      // console.log(JSON.stringify(summarizedTasksByCategoryBuffer, null, 4));
 
       this.isQuerySelectionVisible = false;
       this.isQueryDataVisible = true;
@@ -71,7 +71,7 @@ export class StatsComponent implements OnInit {
 
   onQueryGroupCategory(groupCategories: string[]) {
     // DEBUGGING:
-    console.log(groupCategories);
+    // console.log(groupCategories);
 
     this.groupCategories = groupCategories;
   }
