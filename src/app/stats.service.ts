@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as _ from 'underscore';
 import { ISummarizedTimeEntries } from '../../../common/typescript/iSummarizedTimeEntries';
 import { ITimeSummary } from '../../../common/typescript/iTimeSummary';
 import { ITasksDocument } from '../../../common/typescript/mongoDB/iTasksDocument';
@@ -12,7 +13,8 @@ import { SessionStorageSerializationService } from './session-storage-serializat
 })
 export class StatsService {
   constructor(private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private configurationService: ConfigurationService) { }
 
   getNonCommittedDays() {
     return this.commitService.getNonCommittedDays();
@@ -43,7 +45,26 @@ export class StatsService {
     });
   }
 
-  getCommitsByDay(day: Date, groupCategory: string) {
-
+  enrichStats(rawStats: ISummarizedTasks[]): ISummarizedTasks[][] {
+    const enrichedStats: ISummarizedTasks[][] = [];
+    if (!rawStats || !rawStats.length) {
+      return enrichedStats;
+    }
+    enrichedStats.push(_.clone(rawStats));
+    rawStats.forEach((oneRawStatistics: ISummarizedTasks, rawStatsIndex: number) => {
+      const linesToEnrich = enrichedStats[0][rawStatsIndex].lines;
+      const lines = oneRawStatistics.lines;
+      if (!lines || !lines.length) {
+        return; // continue ...
+      }
+      lines.forEach((oneLine, oneLineIndex: number) => {
+        if (this.configurationService &&
+          this.configurationService.configuration &&
+          this.configurationService.configuration.taskBasedIdentifierBaseUrl) {
+          linesToEnrich[oneLineIndex].taskNumberUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + oneLine.taskNumber;
+        }
+      });
+    });
+    return enrichedStats;
   }
 }

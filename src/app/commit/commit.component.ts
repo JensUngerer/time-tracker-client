@@ -81,16 +81,10 @@ export class CommitComponent implements OnInit {
     if (!this.groupCategories || !this.groupCategories.length) {
       return;
     }
-    // const displayedObj =
     const displayedValue = this.groupCategories[0];
     if (!this.commitTeamOptions || !this.commitTeamOptions.length) {
       return;
     }
-    // const correspondingCommitOption = this.commitTeamOptions.find(oneOption => oneOption.value === displayedValue);
-    // if (!correspondingCommitOption) {
-    //   return;
-    // }
-    // const id = correspondingCommitOption.id;
     this.commitFormGroup.controls[this.teamDropDownFormControlName].setValue(displayedValue);
     this.onGroupSelectionChange({
       source: null,
@@ -160,7 +154,7 @@ export class CommitComponent implements OnInit {
     }
     const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.displayedGroupCategories[0]);
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
-      this.summarizedTasksByCategoryBuffer = [rawStats];
+      this.summarizedTasksByCategoryBuffer = this.statsService.enrichStats(rawStats);
     });
   }
 
@@ -183,24 +177,7 @@ export class CommitComponent implements OnInit {
     // a) submit data
 
     // b) disable table data
-    // this.currentTimeInterval = null;
     this.summarizedTasksByCategoryBuffer = [];
     this.displayedGroupCategories = [];
-
-    // b) remove currently displayed drop-down entries (one in each one) ???
-    // const dayOptionIndex = this.commitDayOptions.findIndex(oneDayOption => oneDayOption.id === this.currentTimeIntervalId);
-    // if (dayOptionIndex >= 0) {
-    //   this.commitDayOptions.splice(dayOptionIndex, 1);
-    //   // this.commitDayOptions = _.clone(this.commitDayOptions);
-    //   // if (dayOptionIndex + 1 < this.commitTeamOptions.length)
-    // }
-    // const groupOptionIndex = this.commitTeamOptions.findIndex(oneOption => oneOption.id === this.currentGroupId);
-    // if (groupOptionIndex >= 0) {
-    //   this.commitTeamOptions.splice(groupOptionIndex, 1);
-    //   // this.commitTeamOptions = _.clone(this.commitTeamOptions);
-    // }
-    // // this.changeDetectorRef.detectChanges();
-    // this.initDayDropDown();
-    // this.initTeamDropDown();
   }
 }
