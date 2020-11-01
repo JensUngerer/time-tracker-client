@@ -130,8 +130,8 @@ export class CommitComponent implements OnInit {
     }
 
     // DEBUGGING:
-    console.log('update with:' + JSON.stringify(currentTimeInterval, null, 4));
-    console.log('and:' + this.displayedGroupCategories)
+    // console.log('update with:' + JSON.stringify(currentTimeInterval, null, 4));
+    // console.log('and:' + this.displayedGroupCategories)
 
     const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.currentGroupCategory);
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
