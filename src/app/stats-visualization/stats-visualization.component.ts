@@ -2,7 +2,6 @@ import { formatNumber, formatPercent } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, NgZone, OnDestroy, OnInit, Output, QueryList, Renderer2, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
-import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
 import { StatsService } from '../stats.service';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from 'chart.js';
@@ -10,6 +9,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ConfigurationService } from '../configuration.service';
 import { StatsTableComponent } from '../stats-table/stats-table.component';
 import { SessionStorageService } from '../session-storage.service';
+import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -83,7 +83,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     this.destroyVisualRepresentationOfChartJs();
   }
 
-  onQueryTimeBoundaries($event: ITimeBoundaries) {
+  onQueryTimeBoundaries($event: ITimeInterval) {
     const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, 'Team1');
     statsPromise.then((stats: ISummarizedTasks[]) => {
       this.isQuerySelectionVisible = false;

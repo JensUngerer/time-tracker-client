@@ -1,13 +1,9 @@
 import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
 import { SessionStorageService } from '../session-storage.service';
-
-export interface ITimeBoundaries {
-  utcStartTime: Date;
-  utcEndTime: Date;
-}
 
 @Component({
   selector: 'mtt-query-time-boundaries',
@@ -29,7 +25,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
   showChartIcon = false;
 
   @Output()
-  queryTimeBoundaries: EventEmitter<ITimeBoundaries> = new EventEmitter();
+  queryTimeBoundaries: EventEmitter<ITimeInterval> = new EventEmitter();
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private sessionsStorageService: SessionStorageService) {
@@ -37,7 +33,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
 
   private getStoredDataFromStorage() {
     // get stored data from storage
-    let statisticsTimeBoundaries: ITimeBoundaries = null;
+    let statisticsTimeBoundaries: ITimeInterval = null;
     const storedData = this.sessionsStorageService.get();
     if (storedData && storedData.statisticsTimeBoundaries) {
       statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
@@ -128,7 +124,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
     const utcStartTime = QueryTimeBoundariesComponent.convertToUtc(startTime);
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
     const utcEndTime = QueryTimeBoundariesComponent.convertToUtc(endTime);
-    const outputEventData: ITimeBoundaries = {
+    const outputEventData: ITimeInterval = {
       utcStartTime,
       utcEndTime
     };

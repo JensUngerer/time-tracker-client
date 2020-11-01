@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ITimeBoundaries } from './query-time-boundaries/query-time-boundaries.component';
+import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 
 export interface ITimeTrackerSessionStorageData {
-  statisticsTimeBoundaries: ITimeBoundaries;
+  statisticsTimeBoundaries: ITimeInterval;
 }
 
 @Injectable({

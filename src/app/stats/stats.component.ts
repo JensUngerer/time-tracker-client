@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { isEqual } from 'underscore';
+import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
-import { ITimeBoundaries } from '../query-time-boundaries/query-time-boundaries.component';
 import { StatsService } from '../stats.service';
 import { ISummarizedTasks } from './../../../../common/typescript/summarizedData';
 
@@ -53,7 +53,7 @@ export class StatsComponent implements OnInit {
     return summarizedTasksByCategoryBuffer;
   }
 
-  onQueryTimeBoundaries($event: ITimeBoundaries) {
+  onQueryTimeBoundaries($event: ITimeInterval) {
     this.utcStartTime = $event.utcStartTime;
     this.utcEndTime = $event.utcEndTime;
 
