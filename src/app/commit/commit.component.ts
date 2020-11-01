@@ -35,18 +35,18 @@ export class CommitComponent implements OnInit {
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
     private sessionStorageSerializationService: SessionStorageSerializationService) {
-      const config = {};
-      config[this.dayDropDownFormControlName] = new FormControl('');
-      this.commitFormGroup = new FormGroup(config);
-    }
+    // const config = {};
+    // config[this.dayDropDownFormControlName] = new FormControl(null);
+    // this.commitFormGroup = new FormGroup(config);
+  }
 
   private createFormGroup() {
     const formGroupConfig = {};
-    formGroupConfig[this.dayDropDownFormControlName] = new FormControl('');
+    formGroupConfig[this.dayDropDownFormControlName] = new FormControl(null);
     // formGroupConfig[this.dayDropDownFormControlName].setValue(this.dayDropDownFormControlName[0].value);
     this.commitFormGroup = new FormGroup(formGroupConfig);
     // this.currentDay = this.commitDayOptions[0].value;
-    this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(this.commitDayOptions[0].viewValue);
+    // this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(this.commitDayOptions[0].viewValue);
   }
 
   private createDaysDataStructure(days: ITimeInterval[]) {
@@ -72,7 +72,7 @@ export class CommitComponent implements OnInit {
 
         const parsedDays: ITimeInterval[] = this.sessionStorageSerializationService.deSerialize(theDays);
         this.createDaysDataStructure(parsedDays);
-        this.createFormGroup();
+        // this.createFormGroup();
       });
       // this.groupCategories.forEach((oneCategory: string) => {
       //   this.statsService.getCommitsByDay(null, oneCategory);
@@ -81,6 +81,7 @@ export class CommitComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.createFormGroup();
     this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
       this.configurationSubscription.bind(this)
     )).subscribe();

@@ -20,6 +20,8 @@
 
           -->
           <mat-select
+          placeholder="Day"
+          matInput
           [formControlName]="dayDropDownFormControlName">
             <mat-option
             *ngFor="let dayOption of commitDayOptions" [value]="dayOption.value">
