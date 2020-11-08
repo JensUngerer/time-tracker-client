@@ -8,15 +8,11 @@ import { uniqueId } from 'underscore';
 
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 import { ConfigurationService } from '../configuration.service';
+import { DaySelectService } from '../day-select/day-select.service';
+import { ICommitDayOption } from '../day-select/i-commit-day-option';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { StatsService } from '../stats.service';
 import { ITimeInterval } from './../../../../common/typescript/iTimeInterval';
-
-interface ICommitDayOption {
-  value: ITimeInterval;
-  viewValue: Date;
-  id: string;
-}
 
 interface ICommitTeamOption {
   value: string;
@@ -31,8 +27,8 @@ interface ICommitTeamOption {
 })
 export class CommitComponent implements OnInit {
   private currentTimeInterval: ITimeInterval;
-  private currentTimeIntervalId: string;
-  private currentGroupId: string;
+  // private currentTimeIntervalId: string;
+  // private currentGroupId: string;
 
   summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
   configSubscription: Subscription;
@@ -46,35 +42,21 @@ export class CommitComponent implements OnInit {
 
   displayedGroupCategories: string[] = [];
 
+  days: ITimeInterval[] = [];
+
   currentlyDisplayedData: any = null;
 
-  dayDropDownFormControlName = 'theDayDropDown';
   teamDropDownFormControlName = 'theTeamDropDown'
 
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
-    private sessionStorageSerializationService: SessionStorageSerializationService,
-    private changeDetectorRef: ChangeDetectorRef) {
+    private daySelectService: DaySelectService) {
   }
 
   private createFormGroup() {
     const formGroupConfig = {};
-    formGroupConfig[this.dayDropDownFormControlName] = new FormControl(null);
     formGroupConfig[this.teamDropDownFormControlName] = new FormControl(null);
     this.commitFormGroup = new FormGroup(formGroupConfig);
-  }
-
-  private initDayDropDown() {
-    if (!this.commitDayOptions || !this.commitDayOptions.length) {
-      return;
-    }
-    const displayedObj = this.commitDayOptions[0];
-    const displayedValue = displayedObj.value;
-    this.commitFormGroup.controls[this.dayDropDownFormControlName].setValue(displayedValue);
-    this.onDaySelectionChange({
-      value: displayedValue,
-      source: null
-    })
   }
 
   private initTeamDropDown() {
@@ -103,38 +85,18 @@ export class CommitComponent implements OnInit {
     });
   }
 
-  private createDaysDataStructure(days: ITimeInterval[]) {
-    // DEBUGGING
-    // console.log(days);
-
-    days.forEach((oneDay: ITimeInterval) => {
-      this.commitDayOptions.push({
-        value: oneDay,
-        viewValue: oneDay.utcStartTime,
-        id: uniqueId()
-      });
-    });
-  }
-
   private configurationSubscription(isReady: boolean) {
     if (isReady) {
       this.groupCategories = this.configurationService.configuration.groupCategories;
       this.createTeamDropDown(this.groupCategories);
       this.initTeamDropDown();
 
-      const nonCommittedDaysPromise = this.statsService.getNonCommittedDays();
-      nonCommittedDaysPromise.then((theDays: string) => {
-        // DEBUGGING:
-        // console.log(theDays);
-
-        const parsedDays: ITimeInterval[] = this.sessionStorageSerializationService.deSerialize(theDays);
-        if (!parsedDays ||
-          !parsedDays.length) {
-          console.error('no days to display:' + parsedDays);
-          return;
-        }
-        this.createDaysDataStructure(parsedDays);
-        this.initDayDropDown();
+      const daysPromise = this.daySelectService.getNonCommittedDays();
+      daysPromise.then((days: ITimeInterval[]) => {
+        this.days = days;
+      });
+      daysPromise.catch(() => {
+        console.error('days promise rejected!');
       });
     }
   }
@@ -163,9 +125,7 @@ export class CommitComponent implements OnInit {
     });
   }
 
-  onDaySelectionChange($event: MatSelectChange) {
-    const value: ITimeInterval = $event.value;
-
+  onDaySelectionChange(value: ITimeInterval) {
     // this.currentTimeIntervalId = id;
     this.currentTimeInterval = value;
     this.updateBothBoundTableInputs();
@@ -186,6 +146,8 @@ export class CommitComponent implements OnInit {
       return;
     }
     // )
+
+    // TODO: ensure that there is only on index aka index 0!
     const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer[0], this.currentTimeInterval.utcStartTime);
     submitTaskBasedPromise.then((lastPostCommitResult: string) => {
       // DEBUGGING:

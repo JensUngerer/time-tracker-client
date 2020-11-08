@@ -25,29 +25,15 @@
           </mat-select>
         </div>
         <div fxFlex="1 1 100%">
-          <mat-select
-            fxFlex="1 1 100%"
-            placeholder="Day"
-            matInput
-            [formControlName]="dayDropDownFormControlName"
-            (selectionChange)="onDaySelectionChange($event)"
-          >
-            <mat-option
-              #daySelectOption
-              *ngFor="let dayOption of commitDayOptions"
-              [value]="dayOption.value"
-              [id]="dayOption.id"
-            >
-              {{ dayOption.viewValue | date: "yyyy-MM-dd" }}
-            </mat-option>
-          </mat-select>
-        </div>
-        <div fxFlex="1 1 100%">
           <button (click)="onCommitButtonClicked($event)" fxFlex="1 1 100%" class="button-full-width" type="submit" [disabled]="commitFormGroup.invalid">
             Commit
           </button>
         </div>
       </form>
+      <mtt-day-select
+        [days]="days"
+        (daySelectionChange)="onDaySelectionChange($event)"
+      ></mtt-day-select>
       <div fxFlex=" 1 1 100%">
         <mtt-stats-by-category-table
           [groupCategories]="displayedGroupCategories"

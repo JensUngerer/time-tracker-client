@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
+import { BookingComponent } from './booking/booking.component.js';
 import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { CommitComponent } from './commit/commit.component.js';
 import { ProjectComponent } from './project/project.component';
@@ -71,7 +72,7 @@ export class RoutingRoutes {
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
-      component: CommitOrBookComponent,
+      component: BookingComponent,
       data: {
         label: ViewLabels.book,
         isBookingBased: true

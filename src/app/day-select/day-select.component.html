@@ -1,0 +1,17 @@
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlex="1 1 100%">
+    <div fxLayout="column">
+      <form fxLayout="column" fxFlex="1 1 100%" [formGroup]="dayFormGroup">
+        <div fxFlex="1 1 100%">
+          <mat-select fxFlex="1 1 100%" placeholder="Day" matInput [formControlName]="dayDropDownFormControlName"
+            (selectionChange)="onDaySelectionChange($event)">
+            <mat-option #daySelectOption *ngFor="let dayOption of commitDayOptions" [value]="dayOption.value"
+              [id]="dayOption.id">
+              {{ dayOption.viewValue | date: "yyyy-MM-dd" }}
+            </mat-option>
+          </mat-select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

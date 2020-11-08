@@ -3,7 +3,7 @@ export enum ViewLabels {
   taskManagement = 'Task-Management',
   timeTracking = 'Time-Tracking',
   bookingDeclaration = 'Booking-Declaration',
-  book = 'Book',
+  book = 'Booking',
   commit = 'Commit',
   statistics = 'Statistics',
   statisticsVisualization = 'Statistics-Visualization'

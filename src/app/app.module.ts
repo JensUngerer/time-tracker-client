@@ -42,6 +42,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { QueryGroupCategoryComponent } from './query-group-category/query-group-category.component';
 import { CommitComponent } from './commit/commit.component';
 import { StatsByCategoryTableComponent } from './stats-by-category-table/stats-by-category-table.component';
+import { BookingComponent } from './booking/booking.component';
+import { DaySelectComponent } from './day-select/day-select.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -75,7 +77,9 @@ import { StatsByCategoryTableComponent } from './stats-by-category-table/stats-b
     QueryTimeBoundariesComponent,
     QueryGroupCategoryComponent,
     CommitComponent,
-    StatsByCategoryTableComponent
+    StatsByCategoryTableComponent,
+    BookingComponent,
+    DaySelectComponent
   ],
   imports: [
     CommonModule,

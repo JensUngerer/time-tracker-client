@@ -3,7 +3,7 @@ export enum ViewPaths {
   task = 'task',
   timeTracking = 'timeTracking',
   bookingDeclaration = 'bookingDeclaration',
-  book = 'book',
+  book = 'booking',
   commit = 'commit',
   statistics = 'statistics',
   statisticsVisualization = 'visualization'
