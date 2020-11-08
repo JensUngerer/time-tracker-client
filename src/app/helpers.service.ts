@@ -26,7 +26,7 @@ export class HelpersService {
 
   public getDateStructure(theDate: Date): IDate {
     return {
-      day: theDate.getDate(),
+      dayOfMonth: theDate.getDate(),
       month: theDate.getMonth() + 1,
       year: theDate.getFullYear()
     };

@@ -61,7 +61,7 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
               private route: ActivatedRoute,
               private commitService: CommitService,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
-  
+
   ngOnDestroy(): void {
     if (this.routeDataSubscription) {
       this.routeDataSubscription.unsubscribe();
@@ -94,7 +94,7 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
   private handleInComingDaySelectPromise(daySelectPromise: Promise<string>, errorMessage: string) {
     daySelectPromise.then((receivedDurationSums: string) => {
       const parsedSums: IDurationSumBase[] = this.sessionStorageSerializationService.deSerialize(receivedDurationSums);
-      
+
       if (!parsedSums ||
           parsedSums.length === 0) {
         console.error(errorMessage);
@@ -181,8 +181,8 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
           _timeEntryIds: commitBase._timeEntryIds,
           dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
           durationInHours: commitBase.durationInHours,
-          durationInMilliseconds: commitBase.durationSumInMilliseconds,
-          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          // durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          // durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
           _taskId: (commitBase.basis as ITask).taskId,
         };
 
@@ -201,8 +201,8 @@ export class CommitOrBookComponent implements OnDestroy, OnInit, AfterViewInit {
           _timeEntryIds: commitBase._timeEntryIds,
           dateStructure: DurationCalculator.getCurrentDateStructure(new Date(currentDayOption.day)),
           durationInHours: commitBase.durationInHours,
-          durationInMilliseconds: commitBase.durationSumInMilliseconds,
-          durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+          // durationInMilliseconds: commitBase.durationSumInMilliseconds,
+          // durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
           _taskId: null,
         };
 

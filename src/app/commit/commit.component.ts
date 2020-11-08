@@ -182,11 +182,11 @@ export class CommitComponent implements OnInit {
     }
     // )
     const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer[0], this.currentTimeInterval.utcStartTime);
-    // submitTaskBasedPromise.then((lastPostCommitResult: string) => {
-    //   // DEBUGGING:
-    //   // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
-    //   // console.log(lastPostCommitResultParsed);
-    // });
+    submitTaskBasedPromise.then((lastPostCommitResult: string) => {
+      // DEBUGGING:
+      // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
+      console.log(lastPostCommitResult);
+    });
     // b) disable table data
     this.summarizedTasksByCategoryBuffer = [];
     this.displayedGroupCategories = [];
