@@ -1,1 +1,16 @@
-<p>booking works!</p>
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlex="1 1 100%">
+    <div fxLayout="column">
+      <mtt-day-select
+        [days]="days"
+        (daySelectionChange)="onDaySelectionChange($event)"
+        (invalid)="onInvalid($event)"
+      ></mtt-day-select>
+      <div fxFlex="1 1 100%">
+        <button (click)="onBookButtonClicked($event)" fxFlex="1 1 100%" type="submit" [disabled]="isInvalid">
+          Book
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

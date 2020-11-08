@@ -27,8 +27,6 @@ interface ICommitTeamOption {
 })
 export class CommitComponent implements OnInit {
   private currentTimeInterval: ITimeInterval;
-  // private currentTimeIntervalId: string;
-  // private currentGroupId: string;
 
   summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
   configSubscription: Subscription;
@@ -96,16 +94,9 @@ export class CommitComponent implements OnInit {
         this.days = days;
       });
       daysPromise.catch(() => {
-        console.error('days promise rejected!');
+        console.error('days promise rejected in commit component!');
       });
     }
-  }
-
-  ngOnInit(): void {
-    this.createFormGroup();
-    this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
-      this.configurationSubscription.bind(this)
-    )).subscribe();
   }
 
   private updateBothBoundTableInputs() {
@@ -123,6 +114,13 @@ export class CommitComponent implements OnInit {
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
       this.summarizedTasksByCategoryBuffer = this.statsService.enrichStats(rawStats);
     });
+  }
+
+  ngOnInit(): void {
+    this.createFormGroup();
+    this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
+      this.configurationSubscription.bind(this)
+    )).subscribe();
   }
 
   onDaySelectionChange(value: ITimeInterval) {

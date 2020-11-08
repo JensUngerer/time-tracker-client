@@ -1,6 +1,8 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
+import { Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { uniqueId } from 'underscore';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { ICommitDayOption } from './i-commit-day-option';
@@ -10,15 +12,21 @@ import { ICommitDayOption } from './i-commit-day-option';
   templateUrl: './day-select.component.html',
   styleUrls: ['./day-select.component.scss']
 })
-export class DaySelectComponent implements OnInit, AfterViewInit, OnChanges {
+export class DaySelectComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   days: ITimeInterval[] = [];
 
   @Output()
   daySelectionChange: EventEmitter<ITimeInterval> = new EventEmitter();
 
+  @Output()
+  invalid: EventEmitter<boolean> = new EventEmitter();
+
+  private isInvalid: boolean;
+  private statusChangesSubscription: Subscription;
+
   dayDropDownFormControlName = 'theDayDropDown';
-  dayFormGroup: FormGroup; // = new FormGroup({});
+  dayFormGroup: FormGroup;
   commitDayOptions: ICommitDayOption[] = [];
 
   constructor() { }
@@ -61,9 +69,12 @@ export class DaySelectComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngOnInit(): void {
     this.createDayFormGroup();
-  }
-
-  ngAfterViewInit(): void {
+    this.statusChangesSubscription = this.dayFormGroup.statusChanges.pipe(tap(() => {
+      if(this.dayFormGroup.invalid !== this.isInvalid) {
+        this.isInvalid = this.dayFormGroup.invalid;
+        this.invalid.emit(this.isInvalid);
+      }
+    })).subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -79,5 +90,11 @@ export class DaySelectComponent implements OnInit, AfterViewInit, OnChanges {
   onDaySelectionChange($event: MatSelectChange) {
     const dayTimeInterval: ITimeInterval = $event.value;
     this.daySelectionChange.emit(dayTimeInterval);
+  }
+
+  ngOnDestroy(): void {
+    if (this.statusChangesSubscription) {
+      this.statusChangesSubscription.unsubscribe();
+    }
   }
 }
