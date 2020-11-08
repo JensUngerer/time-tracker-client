@@ -16,11 +16,6 @@ export class StatsByCategoryTableComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngAfterViewInit(): void {
-    // this.summarizedTasksByCategoryBuffer.forEach((oneBuffers) => {
-    //   if (oneBuffers && oneBuffers.length > 0) {
-    //     this.groupCategories.push(oneBuffers[0].)
-    //   }
-    // });
   }
 
   ngOnInit(): void {
