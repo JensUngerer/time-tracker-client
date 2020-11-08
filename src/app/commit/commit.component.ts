@@ -65,7 +65,7 @@ export class CommitComponent implements OnInit {
   }
 
   private initDayDropDown() {
-    if(!this.commitDayOptions || !this.commitDayOptions.length) {
+    if (!this.commitDayOptions || !this.commitDayOptions.length) {
       return;
     }
     const displayedObj = this.commitDayOptions[0];
@@ -128,6 +128,11 @@ export class CommitComponent implements OnInit {
         // console.log(theDays);
 
         const parsedDays: ITimeInterval[] = this.sessionStorageSerializationService.deSerialize(theDays);
+        if (!parsedDays ||
+          !parsedDays.length) {
+          console.error('no days to display:' + parsedDays);
+          return;
+        }
         this.createDaysDataStructure(parsedDays);
         this.initDayDropDown();
       });

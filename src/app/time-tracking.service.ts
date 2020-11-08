@@ -30,7 +30,8 @@ export class TimeTrackingService {
 
     const startPromise = this.commitService.postTimeEntries(timeEntry);
     startPromise.then((resolvingObj: any) => {
-      console.log(resolvingObj);
+      // DEBUGGING
+      // console.log(resolvingObj);
     });
 
     return startPromise;
@@ -39,7 +40,8 @@ export class TimeTrackingService {
   public stopTimeTracking(timeEntryId: string): Promise<any> {
     const stopPromise = this.commitService.patchTimeEntriesStop(timeEntryId);
     stopPromise.then((retrievedValue: any) => {
-      console.log(retrievedValue);
+      // DEBUGGING
+      // console.log(retrievedValue);
     });
 
     return stopPromise;
