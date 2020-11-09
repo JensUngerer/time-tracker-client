@@ -8,27 +8,17 @@ import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/sum
   styleUrls: ['./stats-table.component.scss']
 })
 export class StatsTableComponent implements OnInit, AfterViewInit {
-  static formatPercent = '2.0-0';
-  static formatNumber = '1.2-2';
-
-  classInstance = StatsTableComponent;
 
   @Input()
   summarizedTasks: ISummarizedTasks = null;
 
-  @ViewChild(MatTable)
-  public theTable: MatTable<ITaskLine>;
-  
   readonly displayedColumns: string[] = ['taskNumber', 'taskDescription', 'durationInHours', 'durationFraction'];
-  dataSource: MatTableDataSource<ITaskLine> = null;
-
-  constructor() { }
+  dataSource: MatTableDataSource<ITaskLine>;
 
   ngAfterViewInit(): void {
     this.dataSource = new MatTableDataSource(this.summarizedTasks.lines);
   }
-
   ngOnInit(): void {
+    throw new Error('Method not implemented.');
   }
-
 }

@@ -72,7 +72,7 @@ export class RoutingRoutes {
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
-      component: CommitOrBookComponent,
+      component: BookingComponent,
       data: {
         label: ViewLabels.book,
         isBookingBased: true

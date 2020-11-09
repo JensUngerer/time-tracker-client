@@ -1,0 +1,50 @@
+<div>
+  {{summarizedTasks.category}}
+</div>
+<table #statsTable mat-table [dataSource]="dataSource">
+  <ng-container [matColumnDef]="displayedColumns[0]">
+      <th mat-header-cell *matHeaderCellDef>Number</th>
+      <td mat-cell *matCellDef="let row">
+          <div *ngIf="!row.taskNumberUrl">{{row.taskNumber}}</div>
+          <div *ngIf="row.taskNumberUrl"><a [href]="row.taskNumberUrl">{{row.taskNumber}}</a></div>
+      </td>
+  </ng-container>
+  <ng-container [matColumnDef]="displayedColumns[1]">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let row">
+          {{row.taskDescription}}
+      </td>
+  </ng-container>
+  <ng-container [matColumnDef]="displayedColumns[2]">
+      <th mat-header-cell *matHeaderCellDef>Duration (h)</th>
+      <td mat-cell *matCellDef="let row">
+          {{row.durationInHours | number : classInstance.formatNumber}}
+      </td>
+  </ng-container>
+  <ng-container [matColumnDef]="displayedColumns[3]">
+      <th mat-header-cell *matHeaderCellDef>Duration (%)</th>
+      <td mat-cell *matCellDef="let row">
+          {{row.durationFraction | percent : classInstance.formatPercent}}
+      </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<table>
+  <tr class="mat-row">
+      <td class="mat-cell column-taskNumber">
+          &nbsp;
+      </td>
+      <td class="mat-cell column-taskDescription">
+          &nbsp;
+      </td>
+      <td class="mat-cell column-durationInHours">
+          {{summarizedTasks.durationSum | number : classInstance.formatNumber}}
+      </td>
+      <td class="mat-cell column-durationFraction">
+          {{summarizedTasks.durationFraction | percent : classInstance.formatPercent}}
+      </td>
+  </tr>
+</table>
+<!-- https://angular.io/api/common/PercentPipe -->

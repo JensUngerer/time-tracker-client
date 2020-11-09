@@ -10,6 +10,7 @@ import { ConfigurationService } from '../configuration.service';
 import { StatsTableComponent } from '../stats-table/stats-table.component';
 import { SessionStorageService } from '../session-storage.service';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
+import { ConfigurableStatsTableComponent } from '../configurable-stats-table/configurable-stats-table.component';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -135,7 +136,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
     oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
       this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
-      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, StatsTableComponent.formatNumber);
+      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, ConfigurableStatsTableComponent.formatNumber);
       this.doughnutChartData.push(parseFloat(formattedDurationInHours));
     });
   }
@@ -268,7 +269,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
 
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels.push(oneSummarizedCategory.category);
-        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, StatsTableComponent.formatNumber);
+        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, ConfigurableStatsTableComponent.formatNumber);
         this.doughnutChartData.push(parseFloat(formattedValue));
       });
 
@@ -363,7 +364,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
               percentNumber = currentValue / total;
             }
 
-            const precentage = formatPercent(percentNumber, this.currentLocale, StatsTableComponent.formatPercent);
+            const precentage = formatPercent(percentNumber, this.currentLocale, ConfigurableStatsTableComponent.formatPercent);
             return precentage + ' ' + currentLabel;
           }
         }

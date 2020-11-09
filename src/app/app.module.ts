@@ -44,6 +44,7 @@ import { CommitComponent } from './commit/commit.component';
 import { StatsByCategoryTableComponent } from './stats-by-category-table/stats-by-category-table.component';
 import { BookingComponent } from './booking/booking.component';
 import { DaySelectComponent } from './day-select/day-select.component';
+import { ConfigurableStatsTableComponent } from './configurable-stats-table/configurable-stats-table.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -79,7 +80,8 @@ import { DaySelectComponent } from './day-select/day-select.component';
     CommitComponent,
     StatsByCategoryTableComponent,
     BookingComponent,
-    DaySelectComponent
+    DaySelectComponent,
+    ConfigurableStatsTableComponent
   ],
   imports: [
     CommonModule,
