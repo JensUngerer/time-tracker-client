@@ -20,6 +20,11 @@ export class BookingComponent implements OnInit {
     const daysPromise = this.daySelectService.getNonCommittedDays();
     daysPromise.then((days: ITimeInterval[]) => {
       this.days = days;
+
+      // // get the summary by day(s)
+      // this.days.forEach((oneDay) => {
+
+      // });
     });
     daysPromise.catch(() => {
       console.error('days promise rejected in booking component!');
@@ -27,7 +32,7 @@ export class BookingComponent implements OnInit {
 
   }
 
-  onDaySelectionChange(value: ITimeInterval) {
+  onDaySelectionChange(currentDayAsTimeInterval: ITimeInterval) {
 
   }
 

@@ -41,7 +41,8 @@ export class CommitService {
     routes.timeEntriesStatisticsSufffix + '/' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
     routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
-    routes.groupCategoryPropertyName + '=' + groupCategory;
+    routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
+    routes.isBookingBasedPropertyName + '=' + true;
     return this.httpGet(url);
   }
 
