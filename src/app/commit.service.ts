@@ -42,7 +42,7 @@ export class CommitService {
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
     routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
     routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
-    routes.isBookingBasedPropertyName + '=' + true;
+    routes.isBookingBasedPropertyName + '=' + false;
     return this.httpGet(url);
   }
 
