@@ -7,7 +7,7 @@ import { ISummarizedTasks, ITaskLine } from './../../../../common/typescript/sum
   templateUrl: './stats-table.component.html',
   styleUrls: ['./stats-table.component.scss']
 })
-export class StatsTableComponent implements OnInit, AfterViewInit {
+export class StatsTableComponent implements AfterViewInit {
 
   @Input()
   summarizedTasks: ISummarizedTasks = null;
@@ -17,8 +17,5 @@ export class StatsTableComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource = new MatTableDataSource(this.summarizedTasks.lines);
-  }
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
   }
 }
