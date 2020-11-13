@@ -50,7 +50,9 @@ export class StatsComponent implements OnInit {
             console.error('no enriched stats')
             return;
           }
-          return enrichedStats;
+          enrichedStats.forEach((oneEnrichedStats) => {
+            summarizedTasksByCategoryBuffer.push(oneEnrichedStats);
+          });
         }
       } catch (e) {
         console.error(e);
