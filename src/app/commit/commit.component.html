@@ -1,11 +1,13 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
-      <form
-        fxLayout="column"
-        fxFlex="1 1 100%"
-        [formGroup]="commitFormGroup"
-      >
+      <div fxFlex=" 1 1 100%">
+        <mtt-stats-by-category-table
+          [groupCategories]="displayedGroupCategories"
+          [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
+        ></mtt-stats-by-category-table>
+      </div>
+      <form fxLayout="column" fxFlex="1 1 100%" [formGroup]="commitFormGroup">
         <div fxFlex="1 1 100%">
           <mat-select
             fxFlex="1 1 100%"
@@ -25,7 +27,12 @@
           </mat-select>
         </div>
         <div fxFlex="1 1 100%">
-          <button (click)="onCommitButtonClicked($event)" fxFlex="1 1 100%" type="submit" [disabled]="commitFormGroup.invalid">
+          <button
+            (click)="onCommitButtonClicked($event)"
+            fxFlex="1 1 100%"
+            type="submit"
+            [disabled]="commitFormGroup.invalid"
+          >
             Commit
           </button>
         </div>
@@ -34,12 +41,6 @@
         [days]="days"
         (daySelectionChange)="onDaySelectionChange($event)"
       ></mtt-day-select>
-      <div fxFlex=" 1 1 100%">
-        <mtt-stats-by-category-table
-          [groupCategories]="displayedGroupCategories"
-          [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
-        ></mtt-stats-by-category-table>
-      </div>
     </div>
   </div>
 </div>
