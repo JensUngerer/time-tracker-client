@@ -37,6 +37,7 @@ export class StatsComponent implements OnInit {
       try {
         const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index]);
         const stats = await statsPromise;
+
         if(!stats) {
           console.error('no stats for:' + this.groupCategories[index]);
           continue;
@@ -44,7 +45,12 @@ export class StatsComponent implements OnInit {
         if (isEqual(stats, {})) {
           summarizedTasksByCategoryBuffer.push([]);
         } else {
-          summarizedTasksByCategoryBuffer.push(stats);
+          const enrichedStats = this.statsService.enrichStats(stats);
+          if (!enrichedStats || !enrichedStats.length) {
+            console.error('no enriched stats')
+            return;
+          }
+          return enrichedStats;
         }
       } catch (e) {
         console.error(e);
