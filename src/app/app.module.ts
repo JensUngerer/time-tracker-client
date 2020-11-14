@@ -35,7 +35,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { StatsComponent } from './stats/stats.component';
 import { CommonModule } from '@angular/common';
 import { MatInputModule }from '@angular/material/input';
-import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { QueryTimeBoundariesComponent } from './query-time-boundaries/query-time-boundaries.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
@@ -73,7 +72,6 @@ import { ConfigurableStatsTableComponent } from './configurable-stats-table/conf
     CommitOrBookComponent,
     CommitOrBookTableComponent,
     StatsComponent,
-    StatsTableComponent,
     StatsVisualizationComponent,
     QueryTimeBoundariesComponent,
     QueryGroupCategoryComponent,
