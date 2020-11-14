@@ -110,7 +110,7 @@ export class CommitComponent implements OnInit {
     if (!this.groupCategories || !this.groupCategories.length) {
       return;
     }
-    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.displayedGroupCategories[0]);
+    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.displayedGroupCategories[0], false);
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
       this.summarizedTasksByCategoryBuffer = this.statsService.enrichStats(rawStats);
     });

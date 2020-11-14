@@ -1,6 +1,12 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
+      <div fxFlex=" 1 1 100%">
+        <mtt-booking-table
+           [lines]="bookingLines"
+        >
+        </mtt-booking-table>
+      </div>
       <mtt-day-select
         [days]="days"
         (daySelectionChange)="onDaySelectionChange($event)"

@@ -35,7 +35,7 @@ export class StatsComponent implements OnInit {
     const summarizedTasksByCategoryBuffer = [];
     for (let index = 0; index < this.groupCategories.length; index++) {
       try {
-        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index]);
+        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index], false);
         const stats = await statsPromise;
 
         if(!stats) {

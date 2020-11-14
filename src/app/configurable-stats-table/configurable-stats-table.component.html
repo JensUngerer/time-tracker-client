@@ -1,5 +1,5 @@
 <div>
-  {{summarizedTasks.category}}
+  {{summarizedTasks ? (summarizedTasks.category) : ''}}
 </div>
 <table #statsTable mat-table [dataSource]="dataSource">
   <ng-container [matColumnDef]="displayedColumns[0]">
@@ -40,10 +40,10 @@
           &nbsp;
       </td>
       <td class="mat-cell column-durationInHours">
-          {{summarizedTasks.durationSum | number : classInstance.formatNumber}}
+          {{summarizedTasks ? (summarizedTasks.durationSum | number : classInstance.formatNumber) : ''}}
       </td>
       <td class="mat-cell column-durationFraction">
-          {{summarizedTasks.durationFraction | percent : classInstance.formatPercent}}
+          {{summarizedTasks ? (summarizedTasks.durationFraction | percent : classInstance.formatPercent) : ''}}
       </td>
   </tr>
 </table>

@@ -19,8 +19,6 @@ export class ConfigurableStatsTableComponent implements OnInit {
   @Input()
   displayedColumns: string[] = [];
 
-  // @ViewChild(MatTable)
-  // public theTable: MatTable<ITaskLine>;
   @Input()
   dataSource: MatTableDataSource<any> = null;
 
