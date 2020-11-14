@@ -10,6 +10,8 @@ import { CommitService } from './commit.service';
 import { ConfigurationService } from './configuration.service';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 import routes from './../../../common/typescript/routes.js';
+import { IStatistic } from '../../../common/typescript/iStatistic';
+import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
 
 @Injectable({
   providedIn: 'root'
@@ -182,4 +184,20 @@ export class StatsService {
       //   });
     });
   }
+
+  public async submitBookingBased(oneBookingLine: IStatistic, currentDayInterval: ITimeInterval) {
+    const timeRecordData: ITimeRecordsDocumentData = {
+      _bookingDeclarationId: oneBookingLine.uniqueId,
+      _timeEntryIds: oneBookingLine._timeEntryIds,
+      dateStructure: DurationCalculator.getCurrentDateStructure(currentDayInterval.utcStartTime),
+      durationInHours: oneBookingLine.durationInHours,
+      // durationInMilliseconds: commitBase.durationSumInMilliseconds,
+      // durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
+      _taskId: null,
+    };
+    const postCommitPromise = this.commitService.postCommit(routes.timeRecordsCollectionName, timeRecordData);
+    const postCommitServerData = await postCommitPromise;
+    return postCommitServerData;
+  }
+
 }

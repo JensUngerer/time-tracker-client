@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { on } from 'process';
 import { IStatistic } from '../../../../common/typescript/iStatistic';
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 
@@ -47,7 +46,9 @@ export class StatsByCategoryTableComponent implements OnInit, AfterViewInit, OnC
             durationFraction: oneSingleLine.durationFraction,
             durationInHours: oneSingleLine.durationInHours,
             identifier: oneSingleLine.taskNumber,
-            identifierUrl: oneSingleLine.taskNumberUrl
+            identifierUrl: oneSingleLine.taskNumberUrl,
+            uniqueId: oneSingleLine._taskId,
+            _timeEntryIds: oneSingleLine._timeEntryIds
           });
         });
       });
