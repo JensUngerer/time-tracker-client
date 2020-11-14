@@ -47,7 +47,7 @@ export class BookingComponent implements OnInit {
     const utcStartTime = this.currentDayInterval.utcStartTime;
     const utcEndTime = this.currentDayInterval.utcEndTime;
 
-    const statsPromise = this.statsService.getStatsData(utcStartTime, utcEndTime, null, true);
+    const statsPromise = this.statsService.getStatsData(utcStartTime, utcEndTime, null, true, true);
     statsPromise.then((rawStats: any[]) => {
       // DEBUGGING
       console.log(rawStats);

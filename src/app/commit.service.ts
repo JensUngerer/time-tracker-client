@@ -36,13 +36,14 @@ export class CommitService {
     return this.httpGet(url);
   }
 
-  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean) {
+  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {
     const url = this.getTimeEntriesUrl() +
     routes.timeEntriesStatisticsSufffix + '/' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
     routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
     routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
-    routes.isBookingBasedPropertyName + '=' + isBookingBased;
+    routes.isBookingBasedPropertyName + '=' + isBookingBased + '?' +
+    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled;
     return this.httpGet(url);
   }
 
