@@ -90,7 +90,7 @@ export class CommitComponent implements OnInit {
       this.createTeamDropDown(this.groupCategories);
       this.initTeamDropDown();
 
-      const daysPromise = this.daySelectService.getNonCommittedDays();
+      const daysPromise = this.daySelectService.getNonCommittedDays(false);
       daysPromise.then((days: ITimeInterval[]) => {
         this.days = days;
       });

@@ -21,8 +21,8 @@ export class StatsService {
     private sessionStorageSerializationService: SessionStorageSerializationService,
     private configurationService: ConfigurationService) { }
 
-  getNonCommittedDays() {
-    return this.commitService.getNonCommittedDays();
+  getNonCommittedDays(isBookingBased: boolean) {
+    return this.commitService.getNonCommittedDays(isBookingBased);
   }
 
   getStatsData(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {

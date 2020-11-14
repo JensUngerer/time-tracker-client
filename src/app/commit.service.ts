@@ -25,9 +25,10 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
-  getNonCommittedDays() {
+  getNonCommittedDays(isBookingBased: boolean) {
     const url = this.getTimeEntriesUrl() +
-    routes.nonCommittedDaysSuffix;
+    routes.nonCommittedDaysSuffix + '?' +
+    routes.isBookingBasedPropertyName + '=' + isBookingBased;
     return this.httpGet(url);
   }
 

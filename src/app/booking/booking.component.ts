@@ -27,7 +27,7 @@ export class BookingComponent implements OnInit {
     private statsService: StatsService) { }
 
   ngOnInit(): void {
-    const daysPromise = this.daySelectService.getNonCommittedDays();
+    const daysPromise = this.daySelectService.getNonCommittedDays(true);
     daysPromise.then((days: ITimeInterval[]) => {
       this.days = days;
 

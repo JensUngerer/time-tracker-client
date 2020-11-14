@@ -11,9 +11,9 @@ export class DaySelectService {
   constructor(private statsService: StatsService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
-  getNonCommittedDays() {
+  getNonCommittedDays(isBookingBased: boolean) {
     return new Promise<ITimeInterval[]>((resolve: (value?: ITimeInterval[]) => void) => {
-      const nonCommittedDaysPromise = this.statsService.getNonCommittedDays();
+      const nonCommittedDaysPromise = this.statsService.getNonCommittedDays(isBookingBased);
       nonCommittedDaysPromise.then((theDays: string) => {
         // DEBUGGING:
         // console.log(theDays);
