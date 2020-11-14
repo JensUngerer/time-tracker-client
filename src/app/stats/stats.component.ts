@@ -45,13 +45,14 @@ export class StatsComponent implements OnInit {
         if (isEqual(stats, {})) {
           summarizedTasksByCategoryBuffer.push([]);
         } else {
-          const enrichedStats = this.statsService.enrichStats(stats);
-          if (!enrichedStats || !enrichedStats.length) {
-            console.error('no enriched stats')
-            return;
-          }
-          enrichedStats.forEach((oneEnrichedStats) => {
-            summarizedTasksByCategoryBuffer.push(oneEnrichedStats);
+          // const enrichedStats = this.statsService.enrichStats(stats);
+          // if (!enrichedStats || !enrichedStats.length) {
+          //   console.error('no enriched stats')
+          //   return;
+          // }
+          stats.forEach((oneStats) => {
+            const enrichedStats = this.statsService.enrichStats(oneStats);
+            summarizedTasksByCategoryBuffer.push(enrichedStats);
           });
         }
       } catch (e) {

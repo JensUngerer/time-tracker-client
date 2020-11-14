@@ -50,27 +50,39 @@ export class StatsService {
     });
   }
 
-  enrichStats(rawStats: ISummarizedTasks[]): ISummarizedTasks[][] {
-    const enrichedStats: ISummarizedTasks[][] = [];
-    if (!rawStats || !rawStats.length) {
-      return enrichedStats;
-    }
-    enrichedStats.push(_.clone(rawStats));
-    rawStats.forEach((oneRawStatistics: ISummarizedTasks, rawStatsIndex: number) => {
-      const linesToEnrich = enrichedStats[0][rawStatsIndex].lines;
-      const lines = oneRawStatistics.lines;
-      if (!lines || !lines.length) {
-        return; // continue ...
+  enrichStats(oneRawStatistics: ISummarizedTasks): ISummarizedTasks {
+    // const enrichedStats: ISummarizedTasks = [];
+    // if (!oneRawStatistics || !oneRawStatistics.lines.length) {
+    //   return enrichedStats;
+    // }
+    // rawStats.forEach((oneRawStatistics: ISummarizedTasks, rawStatsIndex: number) => {
+    const enrichedLines: ITaskLine[] = [];
+    oneRawStatistics.lines.forEach((oneRawLine) => {
+      if (this.configurationService &&
+        this.configurationService.configuration &&
+        this.configurationService.configuration.taskBasedIdentifierBaseUrl) {
+        enrichedLines.push({
+          _taskId: oneRawLine._taskId,
+          durationFraction: oneRawLine.durationFraction,
+          _timeEntryIds: oneRawLine._timeEntryIds,
+          durationInHours: oneRawLine.durationInHours,
+          taskDescription: oneRawLine.taskDescription,
+          taskNumber: oneRawLine.taskNumber,
+          taskNumberUrl: this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + oneRawLine.taskNumber
+        });
       }
-      lines.forEach((oneLine, oneLineIndex: number) => {
-        if (this.configurationService &&
-          this.configurationService.configuration &&
-          this.configurationService.configuration.taskBasedIdentifierBaseUrl) {
-          linesToEnrich[oneLineIndex].taskNumberUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + oneLine.taskNumber;
-        }
-      });
+      // });
+
     });
-    return enrichedStats;
+    // return enrichedStats;
+    const enrichedValue = {
+      _timeEntryIds: oneRawStatistics._timeEntryIds,
+      category: oneRawStatistics.category,
+      durationFraction: oneRawStatistics.durationFraction,
+      durationSum: oneRawStatistics.durationSum,
+      lines: enrichedLines
+    };
+    return enrichedValue;
   }
 
   submitTaskedBased(/*currentDayOption: IDurationSumBase, durations: ICommitBase[]*/summarizedTasksByCategoryBuffer: ISummarizedTasks[], day: Date) {

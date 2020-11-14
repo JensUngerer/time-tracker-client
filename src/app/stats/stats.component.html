@@ -6,9 +6,10 @@
       </mtt-query-time-boundaries>
     </div>
     <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
+      <!-- TODO: FIX THIS -->
       <mtt-stats-by-category-table
         [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
-        [groupCategories]="groupCategories"
+        [groupCategory]="groupCategories[0]"
       ></mtt-stats-by-category-table>
     </div>
   </div>

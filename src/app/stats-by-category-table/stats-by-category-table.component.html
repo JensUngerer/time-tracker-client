@@ -1,17 +1,17 @@
-<div
-  xFlex="1 1 100%"
-  *ngFor="
+<!--
+   *ngFor="
     let oneSummarizedTasksByCategory of summarizedTasksByCategoryBuffer;
     let i = index
   "
->
-  <div *ngFor="let item of oneSummarizedTasksByCategory; let innerIndex = index">
+-->
+<div xFlex="1 1 100%">
+  <div fxFlex="1 1 100%">{{ groupCategory }}</div>
+  <div *ngFor="let item of summarizedTasksByCategoryBuffer; let i = index">
     <div fxLayout="column">
-      <div fxFlex="1 1 100%">{{ groupCategories[i] }}</div>
       <mtt-configurable-stats-table
         fxFlex="1 1 100%"
         [summarizedTasks]="item"
-        [lines]="linesBuffer[innerIndex]"
+        [lines]="linesBuffer[i]"
       ></mtt-configurable-stats-table>
     </div>
   </div>

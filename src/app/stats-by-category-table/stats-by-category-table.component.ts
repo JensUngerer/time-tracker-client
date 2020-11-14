@@ -9,10 +9,10 @@ import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 })
 export class StatsByCategoryTableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input()
-  summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
+  summarizedTasksByCategoryBuffer: ISummarizedTasks[] = [];
 
   @Input()
-  groupCategories: string[] = [];
+  groupCategory: string;
 
   linesBuffer: IStatistic[][] = [];
 
@@ -30,30 +30,59 @@ export class StatsByCategoryTableComponent implements OnInit, AfterViewInit, OnC
       !this.summarizedTasksByCategoryBuffer.length) {
       return;
     }
-    this.summarizedTasksByCategoryBuffer.forEach((oneSummarizedEntry) => {
-      if (!oneSummarizedEntry || !oneSummarizedEntry.length) {
-        return;
-      }
-      const linesOfOneSummarizedEntry: IStatistic[] = [];
-      oneSummarizedEntry.forEach((oneSummarizedInnerEntry) => {
-        if (!oneSummarizedInnerEntry.lines ||
-          !oneSummarizedInnerEntry.lines.length) {
-          return;
-        }
-        oneSummarizedInnerEntry.lines.forEach((oneSingleLine) => {
-          linesOfOneSummarizedEntry.push({
-            description: oneSingleLine.taskDescription,
-            durationFraction: oneSingleLine.durationFraction,
-            durationInHours: oneSingleLine.durationInHours,
-            identifier: oneSingleLine.taskNumber,
-            identifierUrl: oneSingleLine.taskNumberUrl,
-            uniqueId: oneSingleLine._taskId,
-            _timeEntryIds: oneSingleLine._timeEntryIds
-          });
+    // DEBUGGING:
+    // console.error(this.summarizedTasksByCategoryBuffer);
+    // console.error(this.groupCategories);
+    // console.error(this.linesBuffer);
+
+    this.summarizedTasksByCategoryBuffer.forEach((oneBuffer) => {
+      const convertedLines = [];
+      oneBuffer.lines.forEach((oneLine) => {
+        convertedLines.push({
+          description: oneLine.taskDescription,
+          durationFraction: oneLine.durationFraction,
+          durationInHours: oneLine.durationInHours,
+          identifier: oneLine.taskNumber,
+          identifierUrl: oneLine.taskNumberUrl,
+          uniqueId: oneLine._taskId,
+          _timeEntryIds: oneLine._timeEntryIds
         });
       });
-      this.linesBuffer.push(linesOfOneSummarizedEntry);
+      this.linesBuffer.push(convertedLines);
     });
+
+    // this.summarizedTasksByCategoryBuffer.forEach((oneSummarizedEntry) => {
+
+    //   const oneClonedEntry: IStatistic = {
+    //     _timeEntryIds: oneSummarizedEntry._timeEntryIds,
+    //     description: oneSummarizedEntry.
+    //   };
+    //   this.linesBuffer.push(oneClonedEntry);
+    // })
+    // this.summarizedTasksByCategoryBuffer.forEach((oneSummarizedEntry) => {
+    //   if (!oneSummarizedEntry || !oneSummarizedEntry.length) {
+    //     return;
+    //   }
+    //   const linesOfOneSummarizedEntry: IStatistic[] = [];
+    //   oneSummarizedEntry.forEach((oneSummarizedInnerEntry) => {
+    //     if (!oneSummarizedInnerEntry.lines ||
+    //       !oneSummarizedInnerEntry.lines.length) {
+    //       return;
+    //     }
+    //     oneSummarizedInnerEntry.lines.forEach((oneSingleLine) => {
+    //       linesOfOneSummarizedEntry.push({
+    //         description: oneSingleLine.taskDescription,
+    //         durationFraction: oneSingleLine.durationFraction,
+    //         durationInHours: oneSingleLine.durationInHours,
+    //         identifier: oneSingleLine.taskNumber,
+    //         identifierUrl: oneSingleLine.taskNumberUrl,
+    //         uniqueId: oneSingleLine._taskId,
+    //         _timeEntryIds: oneSingleLine._timeEntryIds
+    //       });
+    //     });
+    //   });
+    //   this.linesBuffer.push(linesOfOneSummarizedEntry);
+    // });
   }
 
   ngAfterViewInit(): void {

@@ -28,9 +28,10 @@ interface ICommitTeamOption {
 export class CommitComponent implements OnInit {
   private currentTimeInterval: ITimeInterval;
 
-  summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
+  summarizedTasksByCategoryBuffer: ISummarizedTasks[] = [];
   configSubscription: Subscription;
   groupCategories: string[] = [];
+  currentGroupCategory: string;
 
   commitDayOptions: ICommitDayOption[] = [];
 
@@ -110,9 +111,18 @@ export class CommitComponent implements OnInit {
     if (!this.groupCategories || !this.groupCategories.length) {
       return;
     }
-    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.displayedGroupCategories[0], false, true);
+    const tempBuffer = [];
+    const statsPromise = this.statsService.getStatsData(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime, this.currentGroupCategory, false, true);
     statsPromise.then((rawStats: ISummarizedTasks[]) => {
-      this.summarizedTasksByCategoryBuffer = this.statsService.enrichStats(rawStats);
+      if (!rawStats || !rawStats.length) {
+        return;
+      }
+      for (let rawStatsIndex = 0; rawStatsIndex < rawStats.length; rawStatsIndex++) {
+        const element =   rawStats[rawStatsIndex];
+        const enrichedElement = this.statsService.enrichStats(element);
+        tempBuffer.push(enrichedElement);
+      }
+      this.summarizedTasksByCategoryBuffer = tempBuffer;
     });
   }
 
@@ -131,7 +141,7 @@ export class CommitComponent implements OnInit {
 
   onGroupSelectionChange($event: MatSelectChange) {
     const value: string = $event.value;
-    this.displayedGroupCategories = [value];
+    this.currentGroupCategory = value;
     // this.currentGroupId = id;
     this.updateBothBoundTableInputs();
   }
@@ -146,7 +156,7 @@ export class CommitComponent implements OnInit {
     // )
 
     // TODO: ensure that there is only on index aka index 0!
-    const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer[0], this.currentTimeInterval.utcStartTime);
+    const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
     submitTaskBasedPromise.then((lastPostCommitResult: string) => {
       // DEBUGGING:
       // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
