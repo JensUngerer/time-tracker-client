@@ -155,7 +155,6 @@ export class CommitComponent implements OnInit {
     }
     // )
 
-    // TODO: ensure that there is only on index aka index 0!
     const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
     submitTaskBasedPromise.then((lastPostCommitResult: string) => {
       // DEBUGGING:

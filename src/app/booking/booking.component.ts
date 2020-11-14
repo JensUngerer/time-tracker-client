@@ -66,7 +66,9 @@ export class BookingComponent implements OnInit {
     for (const oneBookingLine of this.bookingLines) {
       const bookingPostResult = await this.statsService.submitBookingBased(oneBookingLine, this.currentDayInterval);
       // DEBUGGING:
-      console.log(bookingPostResult);
+      // console.log(bookingPostResult);
+
+      this.bookingLines = [];
     }
   }
 
