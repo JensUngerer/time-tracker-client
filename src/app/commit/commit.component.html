@@ -38,6 +38,7 @@
         </div>
       </form>
       <mtt-day-select
+        [deleteCurrentAndSwitchToNext]="deleteCurrentAndSwitchToNext"
         [days]="days"
         (daySelectionChange)="onDaySelectionChange($event)"
       ></mtt-day-select>

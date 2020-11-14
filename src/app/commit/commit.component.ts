@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
@@ -45,7 +45,9 @@ export class CommitComponent implements OnInit {
 
   currentlyDisplayedData: any = null;
 
-  teamDropDownFormControlName = 'theTeamDropDown'
+  teamDropDownFormControlName = 'theTeamDropDown';
+
+  deleteCurrentAndSwitchToNext = new EventEmitter<ITimeInterval>();
 
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
@@ -103,6 +105,7 @@ export class CommitComponent implements OnInit {
   private updateBothBoundTableInputs() {
     const currentTimeInterval = this.currentTimeInterval;
     if (!currentTimeInterval) {
+      this.currentGroupCategory = null;
       return;
     }
     // DEBUGGING:
@@ -159,10 +162,11 @@ export class CommitComponent implements OnInit {
     submitTaskBasedPromise.then((lastPostCommitResult: string) => {
       // DEBUGGING:
       // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
-      console.log(lastPostCommitResult);
+      // console.log(lastPostCommitResult);
+      this.deleteCurrentAndSwitchToNext.next(this.currentTimeInterval);
+      this.summarizedTasksByCategoryBuffer = [];
     });
     // b) disable table data
-    this.summarizedTasksByCategoryBuffer = [];
     // this.lines
     // this.displayedGroupCategories = [];
   }

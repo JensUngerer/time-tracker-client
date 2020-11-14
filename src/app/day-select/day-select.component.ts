@@ -12,9 +12,12 @@ import { ICommitDayOption } from './i-commit-day-option';
   templateUrl: './day-select.component.html',
   styleUrls: ['./day-select.component.scss']
 })
-export class DaySelectComponent implements OnInit, OnChanges, OnDestroy {
+export class DaySelectComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input()
   days: ITimeInterval[] = [];
+
+  @Input()
+  deleteCurrentAndSwitchToNext: EventEmitter<ITimeInterval>;
 
   @Output()
   daySelectionChange: EventEmitter<ITimeInterval> = new EventEmitter();
@@ -24,6 +27,7 @@ export class DaySelectComponent implements OnInit, OnChanges, OnDestroy {
 
   private isInvalid: boolean;
   private statusChangesSubscription: Subscription;
+  private deleteCurrentAndSwitchToNextSubscription: Subscription;
 
   dayDropDownFormControlName = 'theDayDropDown';
   dayFormGroup: FormGroup;
@@ -67,10 +71,33 @@ export class DaySelectComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  private deleteCurrentAndSwitchToNextCallback(entryToDelete: ITimeInterval) {
+    // delete current entry (visually only)
+    const indexToDelete = this.commitDayOptions.findIndex((oneDayOption) => {
+      return oneDayOption.value.utcStartTime === entryToDelete.utcStartTime &&
+        oneDayOption.value.utcEndTime === entryToDelete.utcEndTime;
+    });
+    if (indexToDelete === -1) {
+      console.error('cannot delete visually');
+      return;
+    }
+    this.commitDayOptions.splice(indexToDelete, 1);
+
+    // switch to next entry
+    let newValue: ITimeInterval;
+    if (this.commitDayOptions.length > 0) {
+      newValue = this.commitDayOptions[0].value;
+    } else {
+      newValue = null;
+    }
+    this.dayFormGroup.controls[this.dayDropDownFormControlName].setValue(newValue);
+    this.onDaySelectionChange({ value: newValue } as MatSelectChange);
+  }
+
   ngOnInit(): void {
     this.createDayFormGroup();
     this.statusChangesSubscription = this.dayFormGroup.statusChanges.pipe(tap(() => {
-      if(this.dayFormGroup.invalid !== this.isInvalid) {
+      if (this.dayFormGroup.invalid !== this.isInvalid) {
         this.isInvalid = this.dayFormGroup.invalid;
         this.invalid.emit(this.isInvalid);
       }
@@ -96,5 +123,12 @@ export class DaySelectComponent implements OnInit, OnChanges, OnDestroy {
     if (this.statusChangesSubscription) {
       this.statusChangesSubscription.unsubscribe();
     }
+    if (this.deleteCurrentAndSwitchToNextSubscription) {
+      this.deleteCurrentAndSwitchToNextSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.deleteCurrentAndSwitchToNextSubscription = this.deleteCurrentAndSwitchToNext.pipe(tap(this.deleteCurrentAndSwitchToNextCallback.bind(this))).subscribe();
   }
 }
