@@ -1,0 +1,7 @@
+:host {
+  flex: 1 1 100%;
+}
+
+::ng-deep .mat-select-value {
+  text-align: center !important;
+}
