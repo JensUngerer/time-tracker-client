@@ -149,7 +149,7 @@ export class CommitComponent implements OnInit {
   onCommitButtonClicked($event: Event) {
     // a) submit data
     // currentDayOption, durations
-    if (!this.summarizedTasksByCategoryBuffer || !this.summarizedTasksByCategoryBuffer.length || this.summarizedTasksByCategoryBuffer.length > 1) {
+    if (!this.summarizedTasksByCategoryBuffer || !this.summarizedTasksByCategoryBuffer.length) {
       console.error('there is no data which could be committed!');
       return;
     }
@@ -164,6 +164,7 @@ export class CommitComponent implements OnInit {
     });
     // b) disable table data
     this.summarizedTasksByCategoryBuffer = [];
-    this.displayedGroupCategories = [];
+    // this.lines
+    // this.displayedGroupCategories = [];
   }
 }
