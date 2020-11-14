@@ -2,10 +2,9 @@
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
       <div fxFlex=" 1 1 100%">
-        <mtt-booking-table
-           [lines]="bookingLines"
-        >
-        </mtt-booking-table>
+        <mtt-configurable-stats-table
+          [lines]="bookingLines"
+        ></mtt-configurable-stats-table>
       </div>
       <mtt-day-select
         [days]="days"
@@ -13,7 +12,12 @@
         (invalid)="onInvalid($event)"
       ></mtt-day-select>
       <div fxFlex="1 1 100%">
-        <button (click)="onBookButtonClicked($event)" fxFlex="1 1 100%" type="submit" [disabled]="isInvalid">
+        <button
+          (click)="onBookButtonClicked($event)"
+          fxFlex="1 1 100%"
+          type="submit"
+          [disabled]="isInvalid"
+        >
           Book
         </button>
       </div>

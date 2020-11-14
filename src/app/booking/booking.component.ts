@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { isEqual } from 'underscore';
+import { IStatistic } from '../../../../common/typescript/iStatistic';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 import { DaySelectService } from '../day-select/day-select.service';
@@ -16,7 +17,7 @@ export class BookingComponent implements OnInit {
 
   isInvalid = false;
 
-  bookingLines: any[];
+  bookingLines: IStatistic[];
 
   constructor(private daySelectService: DaySelectService,
               private statsService: StatsService) { }

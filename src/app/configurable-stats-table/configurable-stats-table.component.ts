@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { IStatistic } from '../../../../common/typescript/iStatistic';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 
 @Component({
@@ -7,7 +8,7 @@ import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summa
   templateUrl: './configurable-stats-table.component.html',
   styleUrls: ['./configurable-stats-table.component.scss']
 })
-export class ConfigurableStatsTableComponent implements OnInit {
+export class ConfigurableStatsTableComponent implements OnInit, OnChanges {
   static formatPercent = '2.0-0';
   static formatNumber = '1.2-2';
 
@@ -17,16 +18,32 @@ export class ConfigurableStatsTableComponent implements OnInit {
   summarizedTasks: ISummarizedTasks = null;
 
   @Input()
-  displayedColumns: string[] = [];
+  lines: IStatistic[];
 
-  @Input()
-  dataSource: MatTableDataSource<any> = null;
+  // @Input()
+  readonly displayedColumns: string[] = ['identifier', 'description', 'durationInHours', 'durationFraction'];
+
+  // @Input()
+  dataSource: MatTableDataSource<IStatistic> = null;
 
   constructor() { }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
   }
 
-  ngOnInit(): void {
+  private createDataSourceFromLines() {
+    this.dataSource = new MatTableDataSource(this.lines);
+  }
+
+  ngAfterViewInit(): void {
+    this.createDataSourceFromLines();
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes &&
+      changes.lines &&
+      changes.lines.currentValue &&
+      changes.lines.currentValue.length) {
+      this.createDataSourceFromLines();
+    }
   }
 }
