@@ -1,3 +1,4 @@
+import { coerceStringArray } from '@angular/cdk/coercion';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { isEqual } from 'underscore';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
@@ -15,9 +16,9 @@ export class StatsComponent implements OnInit {
 
   groupCategories: string[] = [];
 
-  // summarizedTasksByCategory: ISummarizedTasks[] = [];
+  categoryBufferMap: {[key: string]: ISummarizedTasks[]} = {};
 
-  summarizedTasksByCategoryBuffer: ISummarizedTasks[][] = [];
+  categoryKeys: string[] = [];
 
   isQuerySelectionVisible = true;
   isQueryDataVisible = false;
@@ -32,34 +33,34 @@ export class StatsComponent implements OnInit {
   }
 
   async loadStatsForGroupCategories() {
-    const summarizedTasksByCategoryBuffer = [];
+    this.categoryBufferMap = {};
     for (let index = 0; index < this.groupCategories.length; index++) {
       try {
-        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, this.groupCategories[index], false, false);
+        const currentGroupCategory = this.groupCategories[index];
+        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, currentGroupCategory, false, false);
         const stats = await statsPromise;
 
-        if(!stats) {
+        if (!stats) {
           console.error('no stats for:' + this.groupCategories[index]);
           continue;
         }
         if (isEqual(stats, {})) {
-          summarizedTasksByCategoryBuffer.push([]);
+          this.categoryBufferMap[currentGroupCategory] = [];
         } else {
-          // const enrichedStats = this.statsService.enrichStats(stats);
-          // if (!enrichedStats || !enrichedStats.length) {
-          //   console.error('no enriched stats')
-          //   return;
-          // }
+          const innerBuffer: ISummarizedTasks[] = [];
           stats.forEach((oneStats) => {
             const enrichedStats = this.statsService.enrichStats(oneStats);
-            summarizedTasksByCategoryBuffer.push(enrichedStats);
+            innerBuffer.push(enrichedStats);
           });
+          this.categoryBufferMap[currentGroupCategory] = innerBuffer;
         }
       } catch (e) {
         console.error(e);
+        return false;
       }
     }
-    return summarizedTasksByCategoryBuffer;
+
+    return true;
   }
 
   onQueryTimeBoundaries($event: ITimeInterval) {
@@ -67,14 +68,23 @@ export class StatsComponent implements OnInit {
     this.utcEndTime = $event.utcEndTime;
 
     const loadPromise = this.loadStatsForGroupCategories();
-    loadPromise.then((summarizedTasksByCategoryBuffer) => {
-      this.summarizedTasksByCategoryBuffer = summarizedTasksByCategoryBuffer;
+    loadPromise.then((isSuccessful) => {
+      // set externally:
 
-      // DEBUGGING:
-      // console.log(JSON.stringify(summarizedTasksByCategoryBuffer, null, 4));
+      if (isSuccessful) {
+        this.categoryKeys = Object.keys(this.categoryBufferMap);
 
-      this.isQuerySelectionVisible = false;
-      this.isQueryDataVisible = true;
+        // DEBUGGING
+        // console.log(JSON.stringify(this.categoryKeys));
+        // this.categoryKeys.forEach((oneCat)=>{
+        //   console.log(JSON.stringify(this.categoryBufferMap[oneCat], null, 4));
+        // });
+
+        this.isQuerySelectionVisible = false;
+        this.isQueryDataVisible = true;
+      } else {
+        console.error('an exception occurred -> do now show stats tables');
+      }
     });
   }
 

@@ -1,16 +1,22 @@
 <div fxFlex="1 1 100%" fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%" fxLayout="column">
     <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-      <mtt-query-group-category (queryGroupCategory)="onQueryGroupCategory($event)"></mtt-query-group-category>
-      <mtt-query-time-boundaries [showTableIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
+      <mtt-query-group-category
+        (queryGroupCategory)="onQueryGroupCategory($event)"
+      ></mtt-query-group-category>
+      <mtt-query-time-boundaries
+        [showTableIcon]="true"
+        (queryTimeBoundaries)="onQueryTimeBoundaries($event)"
+      >
       </mtt-query-time-boundaries>
     </div>
     <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
-      <!-- TODO: FIX THIS -->
-      <mtt-stats-by-category-table
-        [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
-        [groupCategory]="groupCategories[0]"
-      ></mtt-stats-by-category-table>
+      <div fxFlex="1 1 100%" *ngFor="let oneCategoryKey of categoryKeys">
+        <mtt-stats-by-category-table
+          [summarizedTasksByCategoryBuffer]="categoryBufferMap[oneCategoryKey]"
+          [groupCategory]="oneCategoryKey"
+        ></mtt-stats-by-category-table>
+      </div>
     </div>
   </div>
 </div>
