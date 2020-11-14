@@ -1,16 +1,25 @@
 import { formatNumber, formatPercent } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, NgZone, OnDestroy, OnInit, Output, QueryList, Renderer2, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
-import { ChartData, ChartOptions, ChartType } from 'chart.js';
-import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
-import { StatsService } from '../stats.service';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import * as Chart from 'chart.js';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  LOCALE_ID,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { ConfigurationService } from '../configuration.service';
-import { StatsTableComponent } from '../stats-table/stats-table.component';
-import { SessionStorageService } from '../session-storage.service';
+import { ChartData, ChartOptions, ChartType } from 'chart.js';
+import * as Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
+import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
 import { ConfigurableStatsTableComponent } from '../configurable-stats-table/configurable-stats-table.component';
+import { ConfigurationService } from '../configuration.service';
+import { StatsService } from '../stats.service';
 
 @Component({
   selector: 'mtt-stats-visualization',
