@@ -2,6 +2,7 @@
   <div fxFlex="1 1 100%" fxLayout="column">
     <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
       <mtt-query-group-category
+        [isCheckboxUseCase]="true"
         (queryGroupCategory)="onQueryGroupCategory($event)"
       ></mtt-query-group-category>
       <mtt-query-time-boundaries

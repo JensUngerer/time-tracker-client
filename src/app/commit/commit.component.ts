@@ -1,16 +1,14 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import * as _ from 'underscore';
 import { uniqueId } from 'underscore';
 
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
 import { ConfigurationService } from '../configuration.service';
 import { DaySelectService } from '../day-select/day-select.service';
 import { ICommitDayOption } from '../day-select/i-commit-day-option';
-import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { StatsService } from '../stats.service';
 import { ITimeInterval } from './../../../../common/typescript/iTimeInterval';
 

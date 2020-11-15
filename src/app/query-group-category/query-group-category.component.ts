@@ -1,9 +1,11 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+
 import { ConfigurationService } from '../configuration.service';
+import { GroupCategoryService } from '../group-category.service';
 import { ITeamCategoryOption } from '../typescript/iTeamCategoryOption';
 
 @Component({
@@ -12,8 +14,17 @@ import { ITeamCategoryOption } from '../typescript/iTeamCategoryOption';
   styleUrls: ['./query-group-category.component.scss']
 })
 export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
+  @Input()
+  isCheckboxUseCase = false;
+
+  @Input()
+  isDropDownUseCase = false;
+
+  formControlNameGroupCategory = 'theGroupDropDown';
 
   private configSubscription: Subscription;
+
+  currentGroupCategory: string;
 
   isVisible = false;
 
@@ -26,7 +37,8 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
 
   groupCategories: ITeamCategoryOption[];
 
-  constructor(private configurationService: ConfigurationService) { }
+  constructor(private configurationService: ConfigurationService,
+              private groupCategoryService: GroupCategoryService) { }
 
   ngOnDestroy(): void {
     if (this.configSubscription) {
@@ -34,30 +46,35 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  private createTeamCategories() {
-    this.groupCategories = this.configurationService.configuration.groupCategories.map((oneTeamCat: string) => {
-      return {
-        value: oneTeamCat,
-        viewValue: oneTeamCat
-      };
-    });
-  }
-
   private setInitialValues() {
-    const initialValue = true;
-    this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
-      this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
-    });
+    if (this.isCheckboxUseCase) {
+      const initialValue = true;
+      this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
+        this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
+      });
+    }
+    if (this.isDropDownUseCase) {
+      this.currentGroupCategory = this.groupCategories[0].value;
+      this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupCategory].setValue(this.groupCategories[0].value);
+
+      // DEBUGGING
+      console.log(this.isCheckboxUseCase + '->' + this.groupCategories[0].value);
+    }
   }
 
   private createFormGroup() {
     const configObj = {};
-    const baseName = 'theFromControlGroupId';
-    this.formControlNameGroupIds = this.groupCategories.map((oneGroupCat, index: number) => {
-      const concatName = baseName + index;
-      configObj[concatName] = new FormControl(false);
-      return concatName;
-    });
+    if (this.isCheckboxUseCase) {
+      const baseName = 'theFromControlGroupId';
+      this.formControlNameGroupIds = this.groupCategories.map((oneGroupCat, index: number) => {
+        const concatName = baseName + index;
+        configObj[concatName] = new FormControl(false);
+        return concatName;
+      });
+    }
+    if (this.isDropDownUseCase) {
+      configObj[this.formControlNameGroupCategory] = new FormControl();
+    }
     this.queryGroupCategoryFormGroup = new FormGroup(configObj);
     this.setInitialValues();
   }
@@ -66,7 +83,7 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     if (!nextValue) {
       return;
     }
-    this.createTeamCategories(),
+    this.groupCategories = this.groupCategoryService.createTeamCategories(),
     this.createFormGroup();
     this.isVisible = true;
     if (this.configSubscription) {
@@ -97,5 +114,11 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     }
 
     this.queryGroupCategory.emit(selectedGroupCategories);
+  }
+
+  onDropDownSelectionChanged($event: MatSelectChange) {
+    this.currentGroupCategory = $event.value;
+
+    this.queryGroupCategory.emit([this.currentGroupCategory]);
   }
 }

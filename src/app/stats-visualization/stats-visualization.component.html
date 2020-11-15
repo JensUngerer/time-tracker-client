@@ -1,8 +1,21 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxLayout="column">
-    <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible">
-      <mtt-query-time-boundaries [showChartIcon]="true" (queryTimeBoundaries)="onQueryTimeBoundaries($event)">
-      </mtt-query-time-boundaries>
+    <div *ngIf="isQuerySelectionVisible" fxFlex="1 1 100%">
+      <div fxLayout="column">
+        <mtt-query-group-category
+          fxFlex="1 1 100%"
+          [isDropDownUseCase]="true"
+          (queryGroupCategory)="onQueryGroupCategory($event)"
+        ></mtt-query-group-category>
+        <!-- </div>
+    <div fxFlex="1 1 100%" *ngIf="isQuerySelectionVisible"> -->
+        <mtt-query-time-boundaries
+          fxFlex="1 1 100%"
+          [showChartIcon]="true"
+          (queryTimeBoundaries)="onQueryTimeBoundaries($event)"
+        >
+        </mtt-query-time-boundaries>
+      </div>
     </div>
     <div fxFlex="1 1 100%" *ngIf="isPieChartVisible">
       <div fxLayout="column">
@@ -12,8 +25,15 @@
           </div>
         </div>
         <div fxFlex="1 1 100%">
-          <mat-paginator #matPaginator [showFirstLastButtons]="true" (page)="onPageChanged($event)"
-            [hidePageSize]="true" [length]="pageSizeOptions.length" [pageSize]="1" [pageSizeOptions]="pageSizeOptions">
+          <mat-paginator
+            #matPaginator
+            [showFirstLastButtons]="true"
+            (page)="onPageChanged($event)"
+            [hidePageSize]="true"
+            [length]="pageSizeOptions.length"
+            [pageSize]="1"
+            [pageSizeOptions]="pageSizeOptions"
+          >
           </mat-paginator>
         </div>
       </div>

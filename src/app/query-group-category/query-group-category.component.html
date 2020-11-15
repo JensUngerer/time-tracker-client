@@ -1,8 +1,40 @@
 <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isVisible">
-  <form fxFlex="1 1 100%" [formGroup]="queryGroupCategoryFormGroup">
+  <form
+    fxFlex="1 1 100%"
+    [formGroup]="queryGroupCategoryFormGroup"
+    *ngIf="isCheckboxUseCase"
+  >
     <div *ngFor="let oneGroupCategory of groupCategories; let index = index">
-      <mat-checkbox (change)="onSelectionChange()" [value]="oneGroupCategory.value" [formControlName]="formControlNameGroupIds[index]">
-        {{oneGroupCategory.viewValue}}</mat-checkbox>
+      <mat-checkbox
+        (change)="onSelectionChange()"
+        [value]="oneGroupCategory.value"
+        [formControlName]="formControlNameGroupIds[index]"
+      >
+        {{ oneGroupCategory.viewValue }}</mat-checkbox
+      >
     </div>
+  </form>
+  <form
+    fxFlex="1 1 100%"
+    [formGroup]="queryGroupCategoryFormGroup"
+    *ngIf="isDropDownUseCase"
+  >
+    <mat-form-field appearance="fill">
+      <mat-select
+        placeholder="Group Category"
+        [value]="currentGroupCategory"
+        matInput
+        (change)="onDropDownSelectionChanged($event)"
+        [formControlName]="formControlNameGroupCategory"
+        [required]="true"
+      >
+        <mat-option
+          *ngFor="let oneGroupCategoryOption of groupCategories"
+          [value]="oneGroupCategoryOption.value"
+        >
+          {{ oneGroupCategoryOption.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </form>
 </div>

@@ -20,6 +20,7 @@ import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summa
 import { ConfigurableStatsTableComponent } from '../configurable-stats-table/configurable-stats-table.component';
 import { ConfigurationService } from '../configuration.service';
 import { StatsService } from '../stats.service';
+import { MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -47,6 +48,8 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private doughnutChartData: number[] = [];
   private doughnutCtx: CanvasRenderingContext2D;
   private doughnutOptions: ChartOptions;
+
+  private currentGroupCategory: string;
 
   private internalDoughnutTitle: string;
   private set doughnutTitle(value: string) {
@@ -236,7 +239,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       const foundLine = foundSummary.lines[idx];
       if (foundLine &&
         foundLine.taskNumberUrl) {
-          location.href = foundLine.taskNumberUrl;
+        location.href = foundLine.taskNumberUrl;
       } else {
         console.log('no taskNumberUrl:' + foundLine.taskNumberUrl + ' for:' + foundLine.taskNumber);
       }
@@ -386,7 +389,6 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-
   onPageChanged($event: PageEvent) {
     // DEBUGGING:
     // console.log('onPageChaged');
@@ -394,5 +396,9 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
 
     const pageIndex = $event.pageIndex;
     this.showSubView(pageIndex);
+  }
+
+  onQueryGroupCategory($event: MatSelect) {
+    this.currentGroupCategory = $event.value;
   }
 }
