@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { ITeamCategoryOption } from '../typescript/iTeamCategoryOption';
   templateUrl: './query-group-category.component.html',
   styleUrls: ['./query-group-category.component.scss']
 })
-export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
+export class QueryGroupCategoryComponent implements AfterViewInit, OnDestroy {
   @Input()
   isCheckboxUseCase = false;
 
@@ -38,7 +38,13 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
   groupCategories: ITeamCategoryOption[];
 
   constructor(private configurationService: ConfigurationService,
-              private groupCategoryService: GroupCategoryService) { }
+    private groupCategoryService: GroupCategoryService) { }
+
+  ngAfterViewInit(): void {
+    this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
+      this.configurationSubscription.bind(this)
+    )).subscribe();
+  }
 
   ngOnDestroy(): void {
     if (this.configSubscription) {
@@ -49,7 +55,7 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
   private setInitialValues() {
     if (this.isCheckboxUseCase) {
       const initialValue = true;
-      this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
+      this.formControlNameGroupIds.forEach((oneGroupId: string, index: number) => {
         this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
       });
       this.onSelectionChange();
@@ -57,7 +63,7 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
     if (this.isDropDownUseCase) {
       this.currentGroupCategory = this.groupCategories[0].value;
       this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupCategory].setValue(this.groupCategories[0].value);
-      this.onDropDownSelectionChanged({value: this.groupCategories[0].value} as MatSelectChange);
+      this.onDropDownSelectionChanged({ value: this.groupCategories[0].value } as MatSelectChange);
       // DEBUGGING
       console.log(this.isCheckboxUseCase + '->' + this.groupCategories[0].value);
     }
@@ -85,19 +91,13 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
       return;
     }
     this.groupCategories = this.groupCategoryService.createTeamCategories(),
-    this.createFormGroup();
+      this.createFormGroup();
     this.isVisible = true;
     if (this.configSubscription) {
       this.configSubscription.unsubscribe();
     }
     // set initial data to parent component
     this.onSelectionChange();
-  }
-
-  ngOnInit(): void {
-    this.configSubscription = this.configurationService.configurationReceived$.pipe(tap(
-      this.configurationSubscription.bind(this)
-    )).subscribe();
   }
 
   onSelectionChange() {
