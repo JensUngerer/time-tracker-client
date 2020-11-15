@@ -11,9 +11,10 @@
       >
       </mtt-query-time-boundaries>
     </div>
-    <div fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
+    <div fxLayout="column" fxFlex="1 1 100%" *ngIf="isQueryDataVisible">
       <div fxFlex="1 1 100%" *ngFor="let oneCategoryKey of categoryKeys">
         <mtt-stats-by-category-table
+          fxFlex="1 1 100%"
           [summarizedTasksByCategoryBuffer]="categoryBufferMap[oneCategoryKey]"
           [groupCategory]="oneCategoryKey"
         ></mtt-stats-by-category-table>

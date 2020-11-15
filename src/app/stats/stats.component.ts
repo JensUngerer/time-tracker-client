@@ -12,7 +12,7 @@ import { ISummarizedTasks } from './../../../../common/typescript/summarizedData
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.scss']
 })
-export class StatsComponent implements OnInit {
+export class StatsComponent {
 
   groupCategories: string[] = [];
 
@@ -25,12 +25,7 @@ export class StatsComponent implements OnInit {
 
   private utcStartTime: Date;
   private utcEndTime: Date;
-  constructor(
-    private statsService: StatsService) { }
-
-  ngOnInit(): void {
-
-  }
+  constructor(private statsService: StatsService) { }
 
   async loadStatsForGroupCategories() {
     this.categoryBufferMap = {};
