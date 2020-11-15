@@ -33,9 +33,50 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
 
   static randomRgba() {
+    // const createInverseRedFrom = (inverseColor: number) => {
+    //   // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+    //   const hexToRgb = (hex: string) => {
+    //     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    //     return result ? {
+    //       red: parseInt(result[1], 16) ? parseInt(result[1], 16) : 0,
+    //       green: parseInt(result[2], 16) ? parseInt(result[2], 16) : 0,
+    //       blue: parseInt(result[3], 16) ? parseInt(result[3], 16) : 0
+    //     } : null;
+    //   };
+    //   return hexToRgb(inverseColor.toString(16));
+    // };
+
+    // const ensureTwoDigests = (raw: string) => {
+    //   if (raw.length === 2) {
+    //     return raw;
+    //   }
+    //   return '0' + raw;
+    // };
+
     // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
-    var o = Math.round, r = Math.random, s = 255;
-    return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+    const o = Math.round;
+    const r = Math.random;
+    const s = 255;
+
+    const red = o(r() * s);
+    const green = o(r() * s);
+    const blue = o(r() * s);
+    const roundedOpacity =  r().toFixed(1);
+    // const concatenated = '0x' + ensureTwoDigests(red.toString(16)) + ensureTwoDigests(green.toString(16)) + ensureTwoDigests(blue.toString(16));
+
+    // https://stackoverflow.com/questions/18141976/how-to-invert-an-rgb-color-in-integer-form
+    // const colorCode = parseInt(concatenated, 16);
+    // const baseColorCode = parseInt('0xFFFFFF', 16);
+    // const inverseColor = baseColorCode - colorCode;
+    // const inverseRgaValues = createInverseRedFrom(inverseColor);
+    // const inverseColorAsRgba = 'rgba(' + inverseRgaValues.red + ',' + inverseRgaValues.green + ',' + inverseRgaValues.blue + ',' + roundedOpacity + ')';
+
+    // DEBUGGING
+    // console.log(inverseColorAsRgba);
+    const colorAsRgba = 'rgba(' + red + ',' + green + ',' + blue + ',' + roundedOpacity + ')';
+
+    // https://stackoverflow.com/questions/7015302/css-hexadecimal-rgba
+    return colorAsRgba;
   }
   // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
@@ -267,10 +308,12 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   private generateRandomRgbBackgroundColors() {
     const backgroundColors = [];
     this.doughnutChartData.forEach(() => {
-      backgroundColors.push(StatsVisualizationComponent.randomRgba());
+      const colorValue = StatsVisualizationComponent.randomRgba();
+      backgroundColors.push(colorValue);
     });
     return backgroundColors;
   }
@@ -298,7 +341,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
         datasets: [{
           data: this.doughnutChartData,
           label: this.doughnutTitle,
-          backgroundColor: backgroundColors
+          backgroundColor: backgroundColors,
         }]
       };
 
@@ -333,6 +376,12 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   private refreshOptions() {
+    // https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
+    // IDEA: calculate the contrast between white all colors and black between all colors --> take black or white when the contrast
+    // min contrast ist better
+    const white = 'rgba(255, 255, 255, 1.0)';
+    const black = 'rgba(0, 0, 0, 1.0)';
+    Chart.defaults.global.defaultFontColor = black;
     const options: ChartOptions = {
       plugins: [ChartDataLabels],
       onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOverviewOnClick.bind(this) : this.chartDetailOnClick.bind(this),
@@ -380,7 +429,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
             }
 
             const precentage = formatPercent(percentNumber, this.currentLocale, ConfigurableStatsTableComponent.formatPercent);
-            return precentage + ' ' + currentLabel;
+            return /*precentage + ' ' + */ dataSetData[toolTipIndex] + 'h ' + currentLabel;
           }
         }
       }
