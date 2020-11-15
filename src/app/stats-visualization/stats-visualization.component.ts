@@ -175,12 +175,12 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   private showSubView(pageIndex: number) {
-    const categories = this.configurationService.configuration.taskCategories;
-    if (pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW) {
-      this.openCategoryDoughnutChart();
-    } else {
-      this.openDetailedDoughnutChartForCategory(categories[this.matPaginator.pageIndex - StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS]);
-    }
+    // const categories = this.configurationService.configuration.taskCategories;
+    // if (pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW) {
+    this.openCategoryDoughnutChart();
+    // } else {
+    //   this.openDetailedDoughnutChartForCategory(categories[this.matPaginator.pageIndex - StatsVisualizationComponent.START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS]);
+    // }
   }
 
   private initializeOutputProperties() {
@@ -212,7 +212,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     // DEBUGGING:
     // console.log('open detailed view for category:' + category);
     // a) paging control
-    this.matPaginator.pageIndex = this.categoryToPageIndexMap[category];
+    // this.matPaginator.pageIndex = this.categoryToPageIndexMap[category];
 
     // b) chart
     this.initializeOutputProperties();
@@ -294,18 +294,18 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       // go to specific detail(ed) doughnut chart
       // --> so switch the page control
       // --> so switch the doughnut visualization
-      switch (this.matPaginator.pageIndex) {
-        case 0:
+      // switch (this.matPaginator.pageIndex) {
+      //   case 0:
           // DEBUGGING:
           // console.log(new Error().stack);
-          this.openDetailedDoughnutChartForCategory(label);
-          break;
+          // this.openDetailedDoughnutChartForCategory(label);
+      //     break;
 
-        default:
-          // DEBUGGING:
-          console.log('do not change view as pageIndex:' + this.matPaginator.pageIndex);
-          break;
-      }
+      //   default:
+      //     // DEBUGGING:
+      //     console.log('do not change view as pageIndex:' + this.matPaginator.pageIndex);
+      //     break;
+      // }
     });
   }
 
@@ -384,7 +384,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     Chart.defaults.global.defaultFontColor = black;
     const options: ChartOptions = {
       plugins: [ChartDataLabels],
-      onClick: this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOverviewOnClick.bind(this) : this.chartDetailOnClick.bind(this),
+      // onClick: () => {console.log('onClick')},// this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOverviewOnClick.bind(this) : this.chartDetailOnClick.bind(this),
       legend: {
         display: true,
         position: 'bottom',
@@ -445,8 +445,8 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     // console.log('onPageChaged');
     // console.log($event);
 
-    const pageIndex = $event.pageIndex;
-    this.showSubView(pageIndex);
+  //   const pageIndex = $event.pageIndex;
+  //   this.showSubView(pageIndex);
   }
 
   onQueryGroupCategory(groupCategories: string[]) {
