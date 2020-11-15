@@ -22,9 +22,8 @@
     <mat-form-field appearance="fill">
       <mat-select
         placeholder="Group Category"
-        [value]="currentGroupCategory"
         matInput
-        (change)="onDropDownSelectionChanged($event)"
+        (selectionChange)="onDropDownSelectionChanged($event)"
         [formControlName]="formControlNameGroupCategory"
         [required]="true"
       >

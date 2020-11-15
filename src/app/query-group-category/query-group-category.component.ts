@@ -52,11 +52,12 @@ export class QueryGroupCategoryComponent implements OnInit, OnDestroy {
       this.formControlNameGroupIds.forEach((oneGroupId: string, index: number)=>{
         this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupIds[index]].setValue(initialValue);
       });
+      this.onSelectionChange();
     }
     if (this.isDropDownUseCase) {
       this.currentGroupCategory = this.groupCategories[0].value;
       this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupCategory].setValue(this.groupCategories[0].value);
-
+      this.onDropDownSelectionChanged({value: this.groupCategories[0].value} as MatSelectChange);
       // DEBUGGING
       console.log(this.isCheckboxUseCase + '->' + this.groupCategories[0].value);
     }

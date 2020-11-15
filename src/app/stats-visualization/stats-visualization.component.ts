@@ -97,22 +97,24 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   }
 
   onQueryTimeBoundaries($event: ITimeInterval) {
-    console.error('implement!');
-    // const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, 'Team1');
-    // statsPromise.then((stats: ISummarizedTasks[]) => {
-    //   this.isQuerySelectionVisible = false;
-    //   this.isPieChartVisible = true;
-    //   this.summarizedTasksByCategory = stats;
+    const statsPromise = this.statsService.getStatsData($event.utcStartTime, $event.utcEndTime, this.currentGroupCategory, false, false);
+    statsPromise.then((stats: ISummarizedTasks[]) => {
+      if (!stats || !stats.length) {
+        return;
+      }
+      this.isQuerySelectionVisible = false;
+      this.isPieChartVisible = true;
+      this.summarizedTasksByCategory = stats;
 
-    //   this.initializePaginator();
+      this.initializePaginator();
 
-    //   this.changeDetectorRef.detectChanges();
-    //   this.showSubView(StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW);
-    // });
-    // statsPromise.catch((err: any) => {
-    //   console.error(err);
-    //   console.error(JSON.stringify(err, null, 4));
-    // });
+      this.changeDetectorRef.detectChanges();
+      this.showSubView(StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW);
+    });
+    statsPromise.catch((err: any) => {
+      console.error(err);
+      console.error(JSON.stringify(err, null, 4));
+    });
   }
 
   private initializePaginator() {
@@ -398,7 +400,9 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     this.showSubView(pageIndex);
   }
 
-  onQueryGroupCategory($event: MatSelect) {
-    this.currentGroupCategory = $event.value;
+  onQueryGroupCategory(groupCategories: string[]) {
+    if (groupCategories && groupCategories.length && groupCategories.length === 1) {
+      this.currentGroupCategory = groupCategories[0];
+    }
   }
 }
