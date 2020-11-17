@@ -18,6 +18,7 @@ export class TaskService {
       name: taskName,
       taskId: v4(),
       _projectId: projectId,
+      durationSumInMilliseconds: 0,
       _bookingDeclarationId: bookingDeclarationId,
       taskCategory: taskCategory,
       groupCategory: groupCategory
