@@ -2,8 +2,6 @@ import { HelpersService } from './helpers.service';
 import { Injectable } from '@angular/core';
 import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { v4 } from 'uuid';
-// import { InMemoryDataService } from './in-memory-data.service';
-import { IPause } from '../../../common/typescript/iPause';
 import { CommitService } from './commit.service';
 
 @Injectable({
@@ -24,8 +22,7 @@ export class TimeTrackingService {
       endTime: null,
       timeEntryId: v4(),
       _taskId: taskId,
-      durationInMilliseconds: 0.0,
-      pauses: []
+      durationInMilliseconds: 0.0
     };
 
     const startPromise = this.commitService.postTimeEntries(timeEntry);
@@ -78,25 +75,5 @@ export class TimeTrackingService {
     });
 
     return promise;
-  }
-
-  public calculateTimeDifferenceWithoutPauses(timeEntry: ITimeEntry): number {
-    let pausesDuration = 0;
-    timeEntry.pauses.forEach((onePause: IPause) => {
-      if (onePause.startTime && onePause.endTime) {
-        pausesDuration += this.helpersService.getTimeDifferenceInMilliseconds(onePause.endTime, onePause.startTime);
-        return;
-      }
-      if (onePause.startTime && !onePause.endTime) {
-        console.error('one pause has no endTime to startTime:' + onePause.startTime);
-        pausesDuration += this.helpersService.getTimeDifferenceInMilliseconds(new Date(), onePause.startTime);
-        return;
-      }
-      console.error('pause has neither startTime nor endTime');
-    });
-    let trackedDurationInMilliseconds = this.helpersService.getTimeDifferenceInMilliseconds(timeEntry.endTime, timeEntry.startTime);
-    trackedDurationInMilliseconds = trackedDurationInMilliseconds - pausesDuration;
-
-    return trackedDurationInMilliseconds;
   }
 }
