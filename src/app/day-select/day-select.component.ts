@@ -72,6 +72,9 @@ export class DaySelectComponent implements OnInit, OnChanges, OnDestroy, AfterVi
   }
 
   private deleteCurrentAndSwitchToNextCallback(entryToDelete: ITimeInterval) {
+    if (!entryToDelete) {
+      return;
+    }
     // delete current entry (visually only)
     const indexToDelete = this.commitDayOptions.findIndex((oneDayOption) => {
       return oneDayOption.value.utcStartTime === entryToDelete.utcStartTime &&
@@ -79,6 +82,9 @@ export class DaySelectComponent implements OnInit, OnChanges, OnDestroy, AfterVi
     });
     if (indexToDelete === -1) {
       console.error('cannot delete visually');
+      return;
+    }
+    if (!this.commitDayOptions) {
       return;
     }
     this.commitDayOptions.splice(indexToDelete, 1);

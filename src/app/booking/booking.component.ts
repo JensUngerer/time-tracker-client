@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
 
 import { IStatistic } from '../../../../common/typescript/iStatistic';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
@@ -20,10 +20,13 @@ export class BookingComponent implements OnInit {
 
   bookingLines: IStatistic[];
 
+  isVisible = false;
+
   deleteCurrentAndSwitchToNext = new EventEmitter<ITimeInterval>();
 
   constructor(private daySelectService: DaySelectService,
-    private statsService: StatsService) { }
+    private statsService: StatsService,
+    private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const daysPromise = this.daySelectService.getNonCommittedDays(true);
@@ -38,6 +41,12 @@ export class BookingComponent implements OnInit {
 
   onDaySelectionChange(currentDayAsTimeInterval: ITimeInterval) {
     this.currentDayInterval = currentDayAsTimeInterval;
+    if (!this.currentDayInterval) {
+      this.bookingLines = [];
+      this.isVisible = false;
+      this.changeDetectorRef.detectChanges();
+      return;
+    }
     const utcStartTime = this.currentDayInterval.utcStartTime;
     const utcEndTime = this.currentDayInterval.utcEndTime;
 
@@ -46,22 +55,22 @@ export class BookingComponent implements OnInit {
       // DEBUGGING
       // console.log(rawStats);
       this.bookingLines = rawStats;
+      this.isVisible = true;
     });
   }
 
-  onBookButtonClicked($event: Event) {
+  async onBookButtonClicked($event: Event) {
     if (!this.bookingLines || !this.bookingLines.length) {
       return;
     }
     for (const oneBookingLine of this.bookingLines) {
-      const bookingPostResultPromise = this.statsService.submitBookingBased(oneBookingLine, this.currentDayInterval);
+      const bookingPostResultPromise = await this.statsService.submitBookingBased(oneBookingLine, this.currentDayInterval);
       // DEBUGGING:
       // console.log(bookingPostResult);
-      bookingPostResultPromise.then(() => {
-        this.deleteCurrentAndSwitchToNext.next(this.currentDayInterval);
-        this.bookingLines = [];
-      });
+      // bookingPostResultPromise.then(() => {
+      // });
     }
+    this.deleteCurrentAndSwitchToNext.next(this.currentDayInterval);
   }
 
   onInvalid(isInvalid: boolean) {
