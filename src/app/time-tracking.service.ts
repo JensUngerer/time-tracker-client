@@ -24,7 +24,7 @@ export class TimeTrackingService {
       endTime: null,
       timeEntryId: v4(),
       _taskId: taskId,
-      duration: null,
+      durationInMilliseconds: 0.0,
       pauses: []
     };
 
