@@ -45,6 +45,8 @@ export class CommitComponent implements OnInit {
 
   teamDropDownFormControlName = 'theTeamDropDown';
 
+  isTableVisible = false;
+
   deleteCurrentAndSwitchToNext = new EventEmitter<ITimeInterval>();
 
   constructor(private configurationService: ConfigurationService,
@@ -84,6 +86,13 @@ export class CommitComponent implements OnInit {
     });
   }
 
+  private initDaysDropDown() {
+    // if (!this.days || !this.days.length) {
+    //   return;
+    // }
+    // this.daySelectService
+  }
+
   private configurationSubscription(isReady: boolean) {
     if (isReady) {
       this.groupCategories = this.configurationService.configuration.groupCategories;
@@ -93,6 +102,7 @@ export class CommitComponent implements OnInit {
       const daysPromise = this.daySelectService.getNonCommittedDays(false);
       daysPromise.then((days: ITimeInterval[]) => {
         this.days = days;
+        // this.initDaysDropDown();
       });
       daysPromise.catch(() => {
         console.error('days promise rejected in commit component!');
@@ -102,8 +112,9 @@ export class CommitComponent implements OnInit {
 
   private updateBothBoundTableInputs() {
     const currentTimeInterval = this.currentTimeInterval;
-    if (!currentTimeInterval) {
-      this.currentGroupCategory = null;
+    if (typeof currentTimeInterval === 'undefined' ||
+        currentTimeInterval === null) {
+      // this.currentGroupCategory = null;
       return;
     }
     // DEBUGGING:
@@ -124,6 +135,7 @@ export class CommitComponent implements OnInit {
         tempBuffer.push(enrichedElement);
       }
       this.summarizedTasksByCategoryBuffer = tempBuffer;
+      this.isTableVisible = true;
     });
   }
 
@@ -135,19 +147,22 @@ export class CommitComponent implements OnInit {
   }
 
   onDaySelectionChange(value: ITimeInterval) {
-    // this.currentTimeIntervalId = id;
+    this.isTableVisible = false;
+
     this.currentTimeInterval = value;
     this.updateBothBoundTableInputs();
   }
 
   onGroupSelectionChange($event: MatSelectChange) {
+    this.isTableVisible = false;
+
     const value: string = $event.value;
     this.currentGroupCategory = value;
     // this.currentGroupId = id;
     this.updateBothBoundTableInputs();
   }
 
-  onCommitButtonClicked($event: Event) {
+  async onCommitButtonClicked($event: Event) {
     // a) submit data
     // currentDayOption, durations
     if (!this.summarizedTasksByCategoryBuffer || !this.summarizedTasksByCategoryBuffer.length) {
@@ -156,14 +171,15 @@ export class CommitComponent implements OnInit {
     }
     // )
 
-    const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
-    submitTaskBasedPromise.then((lastPostCommitResult: string) => {
+    const submitTaskBasedPromise = await this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
+    // submitTaskBasedPromise.then((lastPostCommitResult: string) => {
       // DEBUGGING:
       // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
       // console.log(lastPostCommitResult);
+      this.isTableVisible = false;
       this.deleteCurrentAndSwitchToNext.next(this.currentTimeInterval);
       this.summarizedTasksByCategoryBuffer = [];
-    });
+    // });
     // b) disable table data
     // this.lines
     // this.displayedGroupCategories = [];
