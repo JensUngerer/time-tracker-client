@@ -11,6 +11,7 @@ import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summa
 export class ConfigurableStatsTableComponent implements OnInit, OnChanges {
   static formatPercent = '2.0-0';
   static formatNumber = '1.2-2';
+  static formatMilliseconds: '7.0-0';
 
   classInstance = ConfigurableStatsTableComponent;
 
