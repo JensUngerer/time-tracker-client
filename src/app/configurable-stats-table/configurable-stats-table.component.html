@@ -40,7 +40,7 @@
           &nbsp;
       </td>
       <td class="mat-cell column-durationInHours">
-          {{summarizedTasks ? (summarizedTasks.durationSum | number : classInstance.formatNumber): ''}} ({{summarizedTasks.durationSum * (1000*60*60) | number : classInstance.formatMilliseconds}}  ms)
+          {{summarizedTasks ? (summarizedTasks.durationSum | number : classInstance.formatNumber): ''}} {{summarizedTasks ? (summarizedTasks.durationSum * (1000*60*60) | number : classInstance.formatMilliseconds) + 'ms' : ''}}
       </td>
       <td class="mat-cell column-durationFraction">
           {{summarizedTasks ? (summarizedTasks.durationFraction | percent : classInstance.formatPercent) : ''}}
