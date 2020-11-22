@@ -26,9 +26,15 @@
             </td>
           </ng-container>
           <ng-container [matColumnDef]="displayedColumns[2]">
-            <th mat-header-cell *matHeaderCellDef>TaskId</th>
+            <th mat-header-cell *matHeaderCellDef>Task-Number</th>
             <td mat-cell *matCellDef="let row" [style.background-color]="backgroundColorMap[row.taskId]" [style.color]="colorMap[row.taskId]">
-              {{ row.taskId }}
+              {{ row.taskNumber }}
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="displayedColumns[3]">
+            <th mat-header-cell *matHeaderCellDef>Task-Name</th>
+            <td mat-cell *matCellDef="let row" [style.background-color]="backgroundColorMap[row.taskId]" [style.color]="colorMap[row.taskId]">
+              {{ row.taskName }}
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
