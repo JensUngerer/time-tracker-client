@@ -27,7 +27,7 @@
           </ng-container>
           <ng-container [matColumnDef]="displayedColumns[2]">
             <th mat-header-cell *matHeaderCellDef>TaskId</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [style.background-color]="backgroundColorMap[row.taskId]" [style.color]="colorMap[row.taskId]">
               {{ row.taskId }}
             </td>
           </ng-container>

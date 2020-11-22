@@ -1,5 +1,6 @@
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { ColorsGenerator } from '../../../../common/typescript/helpers/colorsGenerator';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { ITimeEntryDocument } from '../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { CommitService } from '../commit.service';
@@ -22,6 +23,8 @@ export class ContextComponent implements OnInit {
   isQuerySelectionVisible = true;
   isTableVisible = false;
 
+  backgroundColorMap: {[taskId:string]: string} = {};
+  colorMap: {[taskId:string]: string} = {};
   contextLines: any[] = [];
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
@@ -84,7 +87,15 @@ export class ContextComponent implements OnInit {
           duration: duration
         }
       );
-    })
+    });
+    contextLines.forEach(oneContextLine => {
+      if(!this.backgroundColorMap[oneContextLine.taskId])  {
+        const generatedColors = ColorsGenerator.generateHexColor();
+        this.backgroundColorMap[oneContextLine.taskId] = generatedColors.color;
+        // console.log(this.backgroundColorMap[oneContextLine.taskId]);
+        this.colorMap[oneContextLine.taskId] = generatedColors.inverseColor;
+      }
+    });
     return contextLines;
   }
 

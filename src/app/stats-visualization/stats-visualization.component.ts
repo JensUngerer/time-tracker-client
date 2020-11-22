@@ -20,7 +20,7 @@ import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summa
 import { ConfigurableStatsTableComponent } from '../configurable-stats-table/configurable-stats-table.component';
 import { ConfigurationService } from '../configuration.service';
 import { StatsService } from '../stats.service';
-import { MatSelect } from '@angular/material/select';
+import { ColorsGenerator } from './../../../../common/typescript/helpers/colorsGenerator';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -32,52 +32,6 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private static PAGE_INDEX_OF_CATEGORY_VIEW = 0;
   private static START_PAGE_INDEX_OF_DETAILED_SUB_VIEWS = StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW + 1;
 
-  static randomRgba() {
-    // const createInverseRedFrom = (inverseColor: number) => {
-    //   // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-    //   const hexToRgb = (hex: string) => {
-    //     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    //     return result ? {
-    //       red: parseInt(result[1], 16) ? parseInt(result[1], 16) : 0,
-    //       green: parseInt(result[2], 16) ? parseInt(result[2], 16) : 0,
-    //       blue: parseInt(result[3], 16) ? parseInt(result[3], 16) : 0
-    //     } : null;
-    //   };
-    //   return hexToRgb(inverseColor.toString(16));
-    // };
-
-    // const ensureTwoDigests = (raw: string) => {
-    //   if (raw.length === 2) {
-    //     return raw;
-    //   }
-    //   return '0' + raw;
-    // };
-
-    // https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
-    const o = Math.round;
-    const r = Math.random;
-    const s = 255;
-
-    const red = o(r() * s);
-    const green = o(r() * s);
-    const blue = o(r() * s);
-    const roundedOpacity =  r().toFixed(1);
-    // const concatenated = '0x' + ensureTwoDigests(red.toString(16)) + ensureTwoDigests(green.toString(16)) + ensureTwoDigests(blue.toString(16));
-
-    // https://stackoverflow.com/questions/18141976/how-to-invert-an-rgb-color-in-integer-form
-    // const colorCode = parseInt(concatenated, 16);
-    // const baseColorCode = parseInt('0xFFFFFF', 16);
-    // const inverseColor = baseColorCode - colorCode;
-    // const inverseRgaValues = createInverseRedFrom(inverseColor);
-    // const inverseColorAsRgba = 'rgba(' + inverseRgaValues.red + ',' + inverseRgaValues.green + ',' + inverseRgaValues.blue + ',' + roundedOpacity + ')';
-
-    // DEBUGGING
-    // console.log(inverseColorAsRgba);
-    const colorAsRgba = 'rgba(' + red + ',' + green + ',' + blue + ',' + roundedOpacity + ')';
-
-    // https://stackoverflow.com/questions/7015302/css-hexadecimal-rgba
-    return colorAsRgba;
-  }
   // https://stackoverflow.com/questions/51341497/how-to-append-html-tags-or-elements-to-a-div-in-angular-6
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild('canvasContainer', { static: false }) canvasContainer: ElementRef<HTMLDivElement>;
@@ -296,9 +250,9 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       // --> so switch the doughnut visualization
       // switch (this.matPaginator.pageIndex) {
       //   case 0:
-          // DEBUGGING:
-          // console.log(new Error().stack);
-          // this.openDetailedDoughnutChartForCategory(label);
+      // DEBUGGING:
+      // console.log(new Error().stack);
+      // this.openDetailedDoughnutChartForCategory(label);
       //     break;
 
       //   default:
@@ -312,8 +266,8 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private generateRandomRgbBackgroundColors() {
     const backgroundColors = [];
     this.doughnutChartData.forEach(() => {
-      const colorValue = StatsVisualizationComponent.randomRgba();
-      backgroundColors.push(colorValue);
+      const colorValue = ColorsGenerator.randomRgba();
+      backgroundColors.push(colorValue[0]);
     });
     return backgroundColors;
   }
@@ -445,8 +399,8 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     // console.log('onPageChaged');
     // console.log($event);
 
-  //   const pageIndex = $event.pageIndex;
-  //   this.showSubView(pageIndex);
+    //   const pageIndex = $event.pageIndex;
+    //   this.showSubView(pageIndex);
   }
 
   onQueryGroupCategory(groupCategories: string[]) {
