@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { BookingComponent } from './booking/booking.component.js';
-import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { CommitComponent } from './commit/commit.component.js';
+import { ContextComponent } from './context/context.component.js';
 import { ProjectComponent } from './project/project.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component.js';
 import { StatsComponent } from './stats/stats.component.js';
@@ -60,6 +60,13 @@ export class RoutingRoutes {
       component: StatsVisualizationComponent,
       data: {
         label: ViewLabels.statisticsVisualization
+      }
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.context,
+      component: ContextComponent,
+      data: {
+        label: ViewLabels.context
       }
     },
     {

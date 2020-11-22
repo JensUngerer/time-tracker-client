@@ -6,5 +6,6 @@ export enum ViewLabels {
   book = 'Booking',
   commit = 'Commit',
   statistics = 'Statistics',
-  statisticsVisualization = 'Statistics-Visualization'
+  statisticsVisualization = 'Statistics-Visualization',
+  context = 'Workflow-Context'
 }

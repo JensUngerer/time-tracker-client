@@ -8,6 +8,7 @@ import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
 import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclaration';
 import { environment } from './../environments/environment';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
+import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,16 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  getTimeEntriesInInterval(timeInterval: ITimeInterval) {
+    const utcStartTime = timeInterval.utcStartTime;
+    const utcEndTime = timeInterval.utcEndTime;
+    const url = this.getTimeEntriesUrl() +
+    routes.timeEntriesIntervalSuffix + '?' +
+    routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+    routes.endDateProperty + '=' + utcEndTime.getTime();
+    return this.httpGet(url);
+  }
 
   getNonCommittedDays(isBookingBased: boolean) {
     const url = this.getTimeEntriesUrl() +

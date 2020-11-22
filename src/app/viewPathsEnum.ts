@@ -6,5 +6,6 @@ export enum ViewPaths {
   book = 'booking',
   commit = 'commit',
   statistics = 'statistics',
-  statisticsVisualization = 'visualization'
+  statisticsVisualization = 'visualization',
+  context = 'context'
 }

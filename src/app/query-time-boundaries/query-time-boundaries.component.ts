@@ -24,6 +24,9 @@ export class QueryTimeBoundariesComponent implements OnInit {
   @Input()
   showChartIcon = false;
 
+  @Input()
+  showContextIcon = false;
+
   @Output()
   queryTimeBoundaries: EventEmitter<ITimeInterval> = new EventEmitter();
 
