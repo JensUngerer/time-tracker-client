@@ -125,7 +125,7 @@ export class ContextComponent implements OnInit {
     });
   }
 
-  public static formatDate = 'yyy-MM-dd';
+  public static formatDate = 'yyy-MM-dd HH:mm:ss.SSS';
 
   dataSource: MatTableDataSource<IContextLine>;
 
