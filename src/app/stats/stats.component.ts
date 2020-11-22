@@ -16,7 +16,7 @@ export class StatsComponent {
 
   groupCategories: string[] = [];
 
-  categoryBufferMap: {[key: string]: ISummarizedTasks[]} = {};
+  categoryBufferMap: { [key: string]: ISummarizedTasks[] } = {};
 
   categoryKeys: string[] = [];
 
@@ -27,35 +27,44 @@ export class StatsComponent {
   private utcEndTime: Date;
   constructor(private statsService: StatsService) { }
 
-  async loadStatsForGroupCategories() {
-    this.categoryBufferMap = {};
-    for (let index = 0; index < this.groupCategories.length; index++) {
-      try {
+  loadStatsForGroupCategories() {
+    return new Promise((resolveStats: (value?: any) => void) => {
+      this.categoryBufferMap = {};
+      let index = 0;
+      const loop = () => {
+        if (index >= this.groupCategories.length) {
+          resolveStats(true);
+          return;
+        }
         const currentGroupCategory = this.groupCategories[index];
         const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, currentGroupCategory, false, false);
-        const stats = await statsPromise;
+        statsPromise.then((stats: ISummarizedTasks[]) => {
+          if (!stats) {
+            console.error('no stats for:' + this.groupCategories[index]);
+            // not matter what happened -> continue
+            index++;
+            loop();
 
-        if (!stats) {
-          console.error('no stats for:' + this.groupCategories[index]);
-          continue;
-        }
-        if (isEqual(stats, {})) {
-          this.categoryBufferMap[currentGroupCategory] = [];
-        } else {
-          const innerBuffer: ISummarizedTasks[] = [];
-          stats.forEach((oneStats) => {
-            const enrichedStats = this.statsService.enrichStats(oneStats);
-            innerBuffer.push(enrichedStats);
-          });
-          this.categoryBufferMap[currentGroupCategory] = innerBuffer;
-        }
-      } catch (e) {
-        console.error(e);
-        return false;
-      }
-    }
+            return;
+          }
+          if (isEqual(stats, {})) {
+            this.categoryBufferMap[currentGroupCategory] = [];
+          } else {
+            const innerBuffer: ISummarizedTasks[] = [];
+            stats.forEach((oneStats) => {
+              const enrichedStats = this.statsService.enrichStats(oneStats);
+              innerBuffer.push(enrichedStats);
+            });
+            this.categoryBufferMap[currentGroupCategory] = innerBuffer;
+          }
+          index++;
+          loop();
+        });
 
-    return true;
+      };
+      // initial call
+      loop();
+    });
   }
 
   onQueryTimeBoundaries($event: ITimeInterval) {
