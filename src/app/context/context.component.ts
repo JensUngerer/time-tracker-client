@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ColorsGenerator } from '../../../../common/typescript/helpers/colorsGenerator';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { CommitService } from '../commit.service';
+import { ConfigurationService } from '../configuration.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { IContextLine } from './../../../../common/typescript/iContextLine';
 
@@ -23,9 +24,9 @@ export class ContextComponent implements OnInit {
   colorMap: { [taskId: string]: string } = {};
   contextLines: any[] = [];
 
-  constructor(@Inject(LOCALE_ID) private currentLocale,
-    private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+  constructor(private configurationService: ConfigurationService,
+              private commitService: CommitService,
+              private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
   ngOnInit(): void { }
 
@@ -49,6 +50,8 @@ export class ContextComponent implements OnInit {
           this.backgroundColorMap[oneContextLine.taskId] = generatedColors.color;
           this.colorMap[oneContextLine.taskId] = generatedColors.inverseColor;
         }
+        // set url
+        oneContextLine.taskNumberUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + oneContextLine.taskNumber;
       });
       this.contextLines = contextLines;
 
