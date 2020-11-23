@@ -50,7 +50,7 @@ export class ContextComponent implements OnInit {
           this.backgroundColorMap[oneContextLine.taskId] = generatedColors.color;
           this.colorMap[oneContextLine.taskId] = generatedColors.inverseColor;
         }
-        // set url
+
         oneContextLine.taskNumberUrl = this.configurationService.configuration.taskBasedIdentifierBaseUrl + '/' + oneContextLine.taskNumber;
       });
       this.contextLines = contextLines;
