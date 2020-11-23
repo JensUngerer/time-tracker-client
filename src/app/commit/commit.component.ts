@@ -113,7 +113,7 @@ export class CommitComponent implements OnInit {
   private updateBothBoundTableInputs() {
     const currentTimeInterval = this.currentTimeInterval;
     if (typeof currentTimeInterval === 'undefined' ||
-        currentTimeInterval === null) {
+      currentTimeInterval === null) {
       // this.currentGroupCategory = null;
       return;
     }
@@ -130,7 +130,7 @@ export class CommitComponent implements OnInit {
         return;
       }
       for (let rawStatsIndex = 0; rawStatsIndex < rawStats.length; rawStatsIndex++) {
-        const element =   rawStats[rawStatsIndex];
+        const element = rawStats[rawStatsIndex];
         const enrichedElement = this.statsService.enrichStats(element);
         tempBuffer.push(enrichedElement);
       }
@@ -162,26 +162,24 @@ export class CommitComponent implements OnInit {
     this.updateBothBoundTableInputs();
   }
 
-  async onCommitButtonClicked($event: Event) {
-    // a) submit data
-    // currentDayOption, durations
+  onCommitButtonClicked($event: Event) {
     if (!this.summarizedTasksByCategoryBuffer || !this.summarizedTasksByCategoryBuffer.length) {
       console.error('there is no data which could be committed!');
       return;
     }
-    // )
 
-    const submitTaskBasedPromise = await this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
+    const submitTaskBasedPromise = this.statsService.submitTaskedBased(this.summarizedTasksByCategoryBuffer, this.currentTimeInterval.utcStartTime);
     // submitTaskBasedPromise.then((lastPostCommitResult: string) => {
+    // DEBUGGING:
+    // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
+    // console.log(lastPostCommitResult);
+    submitTaskBasedPromise.then((isSuccessful: boolean) => {
       // DEBUGGING:
-      // const lastPostCommitResultParsed = this.sessionStorageSerializationService.deSerialize<any>(lastPostCommitResult);
-      // console.log(lastPostCommitResult);
+      console.log(isSuccessful);
+
       this.isTableVisible = false;
       this.deleteCurrentAndSwitchToNext.next(this.currentTimeInterval);
       this.summarizedTasksByCategoryBuffer = [];
-    // });
-    // b) disable table data
-    // this.lines
-    // this.displayedGroupCategories = [];
+    });
   }
 }
