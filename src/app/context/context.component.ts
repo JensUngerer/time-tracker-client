@@ -46,7 +46,9 @@ export class ContextComponent implements OnInit {
 
       contextLines.forEach(oneContextLine => {
         if (!this.backgroundColorMap[oneContextLine.taskId]) {
+
           const generatedColors = ColorsGenerator.generateHexColor();
+
           this.backgroundColorMap[oneContextLine.taskId] = generatedColors.color;
           this.colorMap[oneContextLine.taskId] = generatedColors.inverseColor;
         }
