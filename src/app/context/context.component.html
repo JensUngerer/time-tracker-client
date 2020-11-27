@@ -1,7 +1,7 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxLayout="column" fxFlexFill fxFlex="1 1 100%">
-    <div *ngIf="isQuerySelectionVisible" fxFlex="1 1 100%">
-      <div fxLayout="column">
+  <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
+    <div *ngIf="isQuerySelectionVisible" fxFlex="1 1 100%" fxLayoutAlign="center center">
+      <div fxLayout="column" fxLayoutAlign="center center">
         <mtt-query-time-boundaries
           fxFlex="1 1 100%"
           [showContextIcon]="true"
@@ -10,8 +10,8 @@
         </mtt-query-time-boundaries>
       </div>
     </div>
-    <div fxFlex="1 1 100%" *ngIf="isTableVisible">
-      <div fxFlexFill fxLayout="column" fxFlex="1 1 100%">
+    <div fxFlexFill fxFlex="1 1 100%" fxLayoutAlign="center center" *ngIf="isTableVisible">
+      <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
         <table mat-table [dataSource]="dataSource">
           <ng-container [matColumnDef]="displayedColumns[0]">
             <th mat-header-cell *matHeaderCellDef>Start-Time</th>
