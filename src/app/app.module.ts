@@ -1,6 +1,6 @@
 import { LayoutModule } from '@angular/cdk/layout';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -111,7 +111,7 @@ import { ContextComponent } from './context/context.component';
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0
     // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
-    // {provide: LOCALE_ID, useValue: 'de-DE'}
+    {provide: LOCALE_ID, useValue: 'en-US'}
   ],
   bootstrap: [AppComponent]
 })
