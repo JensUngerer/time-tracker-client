@@ -40,10 +40,10 @@ export class ProjectService {
     return new Promise<IGridLine[]>((resolve: (value?: any) => void, reject: (value?: any) => void) => {
       const gridLines = [];
       const existingCorrespondingTasksPromise = this.commitService.getTasksByProjectId(projectId);
-  
+
       existingCorrespondingTasksPromise.then((tasksStr: string) => {
         const existingCorrespondingTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(tasksStr);
-  
+
         if (!existingCorrespondingTasks || existingCorrespondingTasks.length === 0) {
           console.error('no corresponding tasks to projectId:' + projectId);
           return;
@@ -68,7 +68,7 @@ export class ProjectService {
               deleteRow: ''
             };
           }
-          
+
           gridLines.push(taskForRow);
         });
         resolve(gridLines);
@@ -275,42 +275,4 @@ export class ProjectService {
     }
     return this.helpersService.getDateStructure(latestEndOfEntireProject);
   }
-
-  private summarizeDurationsOfOneProject(tasksByProjectId: ITask[]): number {
-    let durationOverallSum = 0;
-    tasksByProjectId.forEach((singleTask: ITask) => {
-      const durationOfOneTask: any = this.summarizeDurationsOfOneTask(singleTask);
-      durationOverallSum += durationOfOneTask;
-    });
-    return durationOverallSum;
-  }
-
-  private getDurationStructureOfOneProject(tasksByProjectId: ITask[]): IDuration {
-    const durationOverallSum = this.summarizeDurationsOfOneProject(tasksByProjectId);
-
-    const minutes = durationOverallSum % 60;
-    const hours = Math.floor(durationOverallSum / 60);
-
-    return this.helpersService.getDurationStructure(hours, minutes);
-  }
-
-  // private getTaskIdsToProjectId(projectId: string): string[] {
-  //   const allTasksInMemory: ITask[] = this.inMemoryDataService.get('tasks');
-  //   if (!allTasksInMemory || allTasksInMemory.length === 0) {
-  //     return [];
-  //   }
-  //   const correspondingTasks: ITask[] = allTasksInMemory.filter((oneTask: ITask) => {
-  //     return oneTask._projectId === projectId;
-  //   });
-  //   if (!correspondingTasks || correspondingTasks.length === 0) {
-  //     return [];
-  //   }
-  //   const theTaskIds: string[] = correspondingTasks.map((oneCorrespondingTask: ITask) => {
-  //     return oneCorrespondingTask.taskId;
-  //   });
-  //   if (!theTaskIds || theTaskIds.length === 0) {
-  //     return [];
-  //   }
-  //   return theTaskIds;
-  // }
 }

@@ -37,21 +37,6 @@ export class HelpersService {
     return theDuration;
   }
 
-  public getTimeDifferenceString(theDuration: number): string {
-    theDuration = Math.floor(theDuration / 1000);
-    const durationInSeconds = theDuration % 60;
-    theDuration = Math.floor(theDuration / 60);
-    const durationInMinutes = theDuration % 60;
-    theDuration = Math.floor(theDuration / 60);
-    const durationInHours = theDuration % 60;
-
-    return this.getDurationStr(durationInHours, durationInMinutes, durationInSeconds);
-  }
-
-  public millisecondsInMinutes(durationInMilliseconds): number {
-    return Math.floor(durationInMilliseconds / (60 * 1000));
-  }
-
   public getCurrentDateStr(theDate: Date) {
     return theDate.getDate() + ':' + (theDate.getMonth() + 1) + ':' + theDate.getFullYear();
   }
