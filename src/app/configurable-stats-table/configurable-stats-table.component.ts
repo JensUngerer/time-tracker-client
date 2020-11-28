@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { IStatistic } from '../../../../common/typescript/iStatistic';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
+import { Constants } from './../../../../common/typescript/constants';
 
 @Component({
   selector: 'mtt-configurable-stats-table',
@@ -9,11 +10,7 @@ import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summa
   styleUrls: ['./configurable-stats-table.component.scss']
 })
 export class ConfigurableStatsTableComponent implements OnInit, OnChanges {
-  static formatPercent = '2.0-0';
-  static formatNumber = '1.2-2';
-  static formatMilliseconds: '7.0-0';
-
-  classInstance = ConfigurableStatsTableComponent;
+  classInstance = Constants;
 
   @Input()
   summarizedTasks: ISummarizedTasks = null;

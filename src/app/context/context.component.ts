@@ -6,6 +6,7 @@ import { CommitService } from '../commit.service';
 import { ConfigurationService } from '../configuration.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { IContextLine } from './../../../../common/typescript/iContextLine';
+import { Constants } from './../../../../common/typescript/constants';
 
 @Component({
   selector: 'mtt-context',
@@ -13,10 +14,9 @@ import { IContextLine } from './../../../../common/typescript/iContextLine';
   styleUrls: ['./context.component.scss']
 })
 export class ContextComponent implements OnInit {
-  static formatDateDay = 'yyy-MM-dd';
-  static formatDateTime = 'HH:mm:ss';
-
   private currentTimeInterval: ITimeInterval;
+
+  classInstance = Constants;
 
   isQuerySelectionVisible = true;
   isTableVisible = false;
@@ -70,6 +70,4 @@ export class ContextComponent implements OnInit {
   dataSource: MatTableDataSource<IContextLine>;
 
   readonly displayedColumns: string[] = ['day', 'startTime', 'duration', 'taskNumber', 'taskName'];
-
-  classInstance = ContextComponent;
 }

@@ -21,6 +21,7 @@ import { ConfigurableStatsTableComponent } from '../configurable-stats-table/con
 import { ConfigurationService } from '../configuration.service';
 import { StatsService } from '../stats.service';
 import { ColorsGenerator } from './../../../../common/typescript/helpers/colorsGenerator';
+import { Constants } from './../../../../common/typescript/constants';
 
 @Component({
   selector: 'mtt-stats-visualization',
@@ -146,7 +147,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     const oneCategoryData = this.summarizedTasksByCategory.find((currentCategoryEntry) => currentCategoryEntry.category === category);
     oneCategoryData.lines.forEach((oneLine: ITaskLine) => {
       this.doughnutChartLabels.push(oneLine.taskNumber + ' ' + oneLine.taskDescription);
-      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, ConfigurableStatsTableComponent.formatNumber);
+      const formattedDurationInHours = formatNumber(oneLine.durationInHours, this.currentLocale, Constants.formatNumber);
       this.doughnutChartData.push(parseFloat(formattedDurationInHours));
     });
   }
@@ -281,7 +282,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
 
       this.summarizedTasksByCategory.forEach((oneSummarizedCategory) => {
         this.doughnutChartLabels.push(oneSummarizedCategory.category);
-        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, ConfigurableStatsTableComponent.formatNumber);
+        const formattedValue = formatNumber(oneSummarizedCategory.durationSum, this.currentLocale, Constants.formatNumber);
         this.doughnutChartData.push(parseFloat(formattedValue));
       });
 
@@ -382,7 +383,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
               percentNumber = currentValue / total;
             }
 
-            const precentage = formatPercent(percentNumber, this.currentLocale, ConfigurableStatsTableComponent.formatPercent);
+            const precentage = formatPercent(percentNumber, this.currentLocale, Constants.formatPercent);
             return /*precentage + ' ' + */ dataSetData[toolTipIndex] + 'h ' + currentLabel;
           }
         }
