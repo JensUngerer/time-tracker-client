@@ -13,7 +13,8 @@ import { IContextLine } from './../../../../common/typescript/iContextLine';
   styleUrls: ['./context.component.scss']
 })
 export class ContextComponent implements OnInit {
-  public static formatDate = 'yyy-MM-dd HH:mm:ss.SSS';
+  static formatDateDay = 'yyy-MM-dd';
+  static formatDateTime = 'HH:mm:ss';
 
   private currentTimeInterval: ITimeInterval;
 
@@ -42,6 +43,7 @@ export class ContextComponent implements OnInit {
 
       // DEBUGGING:
       // console.log(rawTimeEntries);
+
       const contextLines: IContextLine[] = this.sessionStorageSerializationService.deSerialize(rawTimeEntries);
 
       contextLines.forEach(oneContextLine => {
@@ -62,13 +64,12 @@ export class ContextComponent implements OnInit {
 
       this.isTableVisible = true;
       this.dataSource = new MatTableDataSource(this.contextLines);
-
     });
   }
 
   dataSource: MatTableDataSource<IContextLine>;
 
-  readonly displayedColumns: string[] = ['startTime', 'duration', 'taskNumber', 'taskName'];
+  readonly displayedColumns: string[] = ['day', 'startTime', 'duration', 'taskNumber', 'taskName'];
 
   classInstance = ContextComponent;
 }
