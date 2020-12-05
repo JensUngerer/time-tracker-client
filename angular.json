@@ -26,8 +26,7 @@
             "allowedCommonJsDependencies": [
               "uuid",
               "chart.js",
-              "chartjs-plugin-datalabels",
-              "luxon"
+              "chartjs-plugin-datalabels"
             ],
             "outputPath": "dist/mtt-client",
             "index": "src/index.html",
@@ -49,7 +48,6 @@
               "./node_modules/chart.js/dist/Chart.css"
             ],
             "scripts": [
-              "./node_modules/luxon/build/cjs-browser/luxon.js",
               "./node_modules/chart.js/dist/Chart.js",
               "./node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
             ]
