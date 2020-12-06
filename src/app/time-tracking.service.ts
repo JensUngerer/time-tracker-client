@@ -22,7 +22,7 @@ export class TimeTrackingService {
       endTime: null,
       timeEntryId: v4(),
       _taskId: taskId,
-      durationInMilliseconds: 0
+      durationInMilliseconds: null
     };
 
     const startPromise = this.commitService.postTimeEntries(timeEntry);
