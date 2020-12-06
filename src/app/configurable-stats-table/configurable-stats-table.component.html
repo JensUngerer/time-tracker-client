@@ -18,7 +18,7 @@
   <ng-container [matColumnDef]="displayedColumns[2]">
       <th mat-header-cell *matHeaderCellDef>Duration (h)</th>
       <td mat-cell *matCellDef="let row">
-          {{row.durationInHours | number : classInstance.formatNumber}} ({{row.durationInHours * classInstance.MILLISECONDS_IN_HOUR | number : classInstance.formatMilliseconds}} ms)
+          {{row.durationInHours | number : classInstance.formatNumber}}
       </td>
   </ng-container>
   <ng-container [matColumnDef]="displayedColumns[3]">
@@ -40,7 +40,7 @@
           &nbsp;
       </td>
       <td class="mat-cell column-durationInHours">
-          {{summarizedTasks ? (summarizedTasks.durationSum | number : classInstance.formatNumber): ''}} {{summarizedTasks ? (summarizedTasks.durationSum * classInstance.MILLISECONDS_IN_HOUR | number : classInstance.formatMilliseconds) + 'ms' : ''}}
+          {{summarizedTasks ? (summarizedTasks.durationSum | number : classInstance.formatNumber): ''}}
       </td>
       <td class="mat-cell column-durationFraction">
           {{summarizedTasks ? (summarizedTasks.durationFraction | percent : classInstance.formatPercent) : ''}}
