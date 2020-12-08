@@ -32,7 +32,8 @@ export class CommitService {
     const url = this.getTimeEntriesUrl() +
     routes.timeEntriesIntervalSuffix + '?' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-    routes.endDateProperty + '=' + utcEndTime.getTime();
+    routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
+    routes.isCsvFileWrittenProperty + '=' + timeInterval.isCsvFileWritten;
     return this.httpGet(url);
   }
 
@@ -48,14 +49,15 @@ export class CommitService {
     return this.httpGet(url);
   }
 
-  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {
+  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean, isCsvFileWritten: boolean) {
     const url = this.getTimeEntriesUrl() +
     routes.timeEntriesStatisticsSufffix + '/' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
     routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
     routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
     routes.isBookingBasedPropertyName + '=' + isBookingBased + '?' +
-    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled;
+    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled + '?' +
+    routes.isCsvFileWrittenProperty + '=' + isCsvFileWritten;
     return this.httpGet(url);
   }
 

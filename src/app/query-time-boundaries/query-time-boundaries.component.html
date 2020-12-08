@@ -3,10 +3,10 @@
     <div fxFlex="1 1 100%">
       <form fxLayout="column" [formGroup]="queryTimeFormGroup" (submit)="onQueryTime(queryTimeFormGroup.value)">
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
+          <mat-checkbox [formControlName]="formControlNameIsCsvFileWritten">Write CSV File</mat-checkbox>
+        </div>
+        <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
           <div fxFlex="1 1 100%">
-            <!-- <button mat-icon-button type="button" (click)="setToCurrentTime(queryTimeStartFormControlName)">
-              <mat-icon>refresh</mat-icon>
-            </button> -->
           </div>
           <div fxFlex="1 1 100%">
             <mat-form-field>
@@ -15,9 +15,6 @@
             </mat-form-field>
           </div>
           <div fxFlex="1 1 100%">
-            <!-- <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeStartFormControlName, queryTimeEndFormControlName)">
-              <mat-icon>arrow_downward</mat-icon>
-            </button> -->
           </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">

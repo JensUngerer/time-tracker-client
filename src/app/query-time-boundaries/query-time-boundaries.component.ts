@@ -5,6 +5,8 @@ import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
 import { SessionStorageService } from '../session-storage.service';
 
+import { DateHelper } from './../../../../common/typescript/helpers/dateHelper';
+
 @Component({
   selector: 'mtt-query-time-boundaries',
   templateUrl: './query-time-boundaries.component.html',
@@ -15,6 +17,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
 
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
+  formControlNameIsCsvFileWritten = 'theIsCsvFileWritten';
 
   queryTimeFormGroup: FormGroup;
 
@@ -72,10 +75,15 @@ export class QueryTimeBoundariesComponent implements OnInit {
     const startTimeControl = new FormControl(startTime);
     configObj[this.queryTimeStartFormControlName] = startTimeControl;
     startTimeControl.setValidators(this.createStartTimeValidatorFn());
+
     const endTimeControl = new FormControl(endTime);
     configObj[this.queryTimeEndFormControlName] = endTimeControl;
     endTimeControl.setValidators(this.createEndTimeValidatorFn())
+
+    configObj[this.formControlNameIsCsvFileWritten] = new FormControl(false);
+
     this.queryTimeFormGroup = new FormGroup(configObj);
+
   }
 
   private createEndTimeValidatorFn() {
@@ -110,26 +118,22 @@ export class QueryTimeBoundariesComponent implements OnInit {
     };
   }
 
-  // TODO: move to common
-  static convertToUtc(date: Date) {
-    // https://stackoverflow.com/questions/948532/how-do-you-convert-a-javascript-date-to-utc
-    const utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-      date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-    return new Date(utc);
-  }
-
   ngOnInit(): void {
     this.initializeTimeBoundariesQuery();
   }
 
   onQueryTime($event: any) {
     const startTime = new Date($event[this.queryTimeStartFormControlName]);
-    const utcStartTime = QueryTimeBoundariesComponent.convertToUtc(startTime);
+    const utcStartTime = DateHelper.convertToUtc(startTime);
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
-    const utcEndTime = QueryTimeBoundariesComponent.convertToUtc(endTime);
+    const utcEndTime = DateHelper.convertToUtc(endTime);
+
+    const isCsvFileWritten = $event[this.formControlNameIsCsvFileWritten];
+
     const outputEventData: ITimeInterval = {
       utcStartTime,
-      utcEndTime
+      utcEndTime,
+      isCsvFileWritten
     };
     this.sessionsStorageService.set({
       statisticsTimeBoundaries: outputEventData
