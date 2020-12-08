@@ -268,7 +268,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     const backgroundColors = [];
     this.doughnutChartData.forEach(() => {
       const colorValue = ColorsGenerator.randomRgba();
-      backgroundColors.push(colorValue[0]);
+      backgroundColors.push(colorValue);
     });
     return backgroundColors;
   }
