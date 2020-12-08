@@ -6,6 +6,12 @@
           [lines]="bookingLines"
         ></mtt-configurable-stats-table>
       </div>
+      <div fxFlex="1 1 100%">
+        <mtt-is-csv-file-written
+          [deleteCurrent]="deleteCurrentBooleans"
+          (queryBooleans)="onQueryBooleans($event)"
+        ></mtt-is-csv-file-written>
+      </div>
       <mtt-day-select
         [deleteCurrentAndSwitchToNext]="deleteCurrentAndSwitchToNext"
         [days]="days"
@@ -17,7 +23,7 @@
           (click)="onBookButtonClicked($event)"
           fxFlex="1 1 100%"
           type="submit"
-          [disabled]="isInvalid"
+          [disabled]="isInvalid || isBookingButtonDisabled"
         >
           Book
         </button>
