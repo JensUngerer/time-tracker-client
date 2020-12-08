@@ -13,7 +13,7 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import * as Chart from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { ISummarizedTasks, ITaskLine } from '../../../../common/typescript/summarizedData';
@@ -62,6 +62,9 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
   private currentChart: Chart;
 
   private categoryToPageIndexMap: { [key: string]: number } = {};
+  // private readonly white = 'rgba(255, 255, 255, 1.0)';
+  // private readonly black = 'rgba(0, 0, 0, 1.0)';
+  // private textColors: string[] = [this.white];
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
     private statsService: StatsService,
@@ -174,6 +177,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     this.fillOutputPropertiesForCategory(category);
     this.doughnutTitle = category;
     const backgroundColors = this.generateRandomRgbBackgroundColors();
+    // const foregroundColors = [this.black];
     const data: ChartData = {
       labels: this.doughnutChartLabels,
       datasets: [{
@@ -334,11 +338,10 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
     // https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
     // IDEA: calculate the contrast between white all colors and black between all colors --> take black or white when the contrast
     // min contrast ist better
-    const white = 'rgba(255, 255, 255, 1.0)';
-    const black = 'rgba(0, 0, 0, 1.0)';
-    Chart.defaults.global.defaultFontColor = black;
+
+    // const chartDataLabels: ChartDataLabels = {};
+    // Chart.defaults.global.defaultFontColor = black;
     const options: ChartOptions = {
-      plugins: [ChartDataLabels],
       // onClick: () => {console.log('onClick')},// this.matPaginator.pageIndex === StatsVisualizationComponent.PAGE_INDEX_OF_CATEGORY_VIEW ? this.chartOverviewOnClick.bind(this) : this.chartDetailOnClick.bind(this),
       legend: {
         display: true,
