@@ -6,9 +6,11 @@ import { tap } from 'rxjs/operators';
 import { uniqueId } from 'underscore';
 
 import { ISummarizedTasks } from '../../../../common/typescript/summarizedData';
+import { CommitService } from '../commit.service';
 import { ConfigurationService } from '../configuration.service';
 import { DaySelectService } from '../day-select/day-select.service';
 import { ICommitDayOption } from '../day-select/i-commit-day-option';
+import { IQueryBooleans } from '../is-csv-file-written/iQueryBooleans';
 import { StatsService } from '../stats.service';
 import { ITimeInterval } from './../../../../common/typescript/iTimeInterval';
 
@@ -25,6 +27,7 @@ interface ICommitTeamOption {
 })
 export class CommitComponent implements OnInit {
   private currentTimeInterval: ITimeInterval;
+  private isCsvFileWritten = false;
 
   summarizedTasksByCategoryBuffer: ISummarizedTasks[] = [];
   configSubscription: Subscription;
@@ -47,11 +50,15 @@ export class CommitComponent implements OnInit {
 
   isTableVisible = false;
 
+  isCommitButtonDisabled = false;
+
   deleteCurrentAndSwitchToNext = new EventEmitter<ITimeInterval>();
+  deleteCurrentBooleans = new EventEmitter<any>();
 
   constructor(private configurationService: ConfigurationService,
     private statsService: StatsService,
-    private daySelectService: DaySelectService) {
+    private daySelectService: DaySelectService,
+    private commitService: CommitService) {
   }
 
   private createFormGroup() {
@@ -86,13 +93,6 @@ export class CommitComponent implements OnInit {
     });
   }
 
-  private initDaysDropDown() {
-    // if (!this.days || !this.days.length) {
-    //   return;
-    // }
-    // this.daySelectService
-  }
-
   private configurationSubscription(isReady: boolean) {
     if (isReady) {
       this.groupCategories = this.configurationService.configuration.groupCategories;
@@ -111,16 +111,19 @@ export class CommitComponent implements OnInit {
   }
 
   private updateBothBoundTableInputs() {
+    this.isCommitButtonDisabled = true;
     const currentTimeInterval = this.currentTimeInterval;
     if (typeof currentTimeInterval === 'undefined' ||
       currentTimeInterval === null) {
       // this.currentGroupCategory = null;
+      this.isCommitButtonDisabled = true;
       return;
     }
     // DEBUGGING:
     // console.log('update with:' + JSON.stringify(currentTimeInterval, null, 4));
     // console.log('and:' + this.displayedGroupCategories)
     if (!this.groupCategories || !this.groupCategories.length) {
+      this.isCommitButtonDisabled = true;
       return;
     }
     const tempBuffer = [];
@@ -135,6 +138,7 @@ export class CommitComponent implements OnInit {
         tempBuffer.push(enrichedElement);
       }
       this.summarizedTasksByCategoryBuffer = tempBuffer;
+      this.isCommitButtonDisabled = false;
       this.isTableVisible = true;
     });
   }
@@ -181,5 +185,15 @@ export class CommitComponent implements OnInit {
       this.deleteCurrentAndSwitchToNext.next(this.currentTimeInterval);
       this.summarizedTasksByCategoryBuffer = [];
     });
+
+    if (!this.isCsvFileWritten) {
+      return;
+    }
+    this.commitService.postCsvFileTrigger(this.isCsvFileWritten, this.currentTimeInterval.utcStartTime, this.currentTimeInterval.utcEndTime);
+    this.deleteCurrentBooleans.emit();
+  }
+
+  onQueryBooleans($event: IQueryBooleans) {
+    this.isCsvFileWritten = $event.isCsvFileWritten;
   }
 }

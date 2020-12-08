@@ -235,7 +235,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
       const category = this.doughnutTitle;
       const foundSummary = this.summarizedTasksByCategory.find((oneCatSummary) => oneCatSummary.category === category);
       if (!foundSummary) {
-        console.log('no summary found for:' + label + '->' + category);
+        console.error('no summary found for:' + label + '->' + category);
         return;
       }
       const foundLine = foundSummary.lines[idx];
@@ -243,7 +243,7 @@ export class StatsVisualizationComponent implements OnInit, OnDestroy {
         foundLine.taskNumberUrl) {
         location.href = foundLine.taskNumberUrl;
       } else {
-        console.log('no taskNumberUrl:' + foundLine.taskNumberUrl + ' for:' + foundLine.taskNumber);
+        console.error('no taskNumberUrl:' + foundLine.taskNumberUrl + ' for:' + foundLine.taskNumber);
       }
     });
   }

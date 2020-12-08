@@ -71,11 +71,7 @@ export class ContextComponent implements OnInit {
     if (!this.isCsvFileWritten) {
       return;
     }
-    const csvTriggerPromise = this.commitService.postCsvFileTrigger(this.isCsvFileWritten, this.currentTimeInterval.utcStartTime, this.currentTimeInterval.utcEndTime);
-    csvTriggerPromise.then((csvTriggerResult: string) => {
-      // DEBUGGING:
-      console.log(csvTriggerResult);
-    });
+    this.commitService.postCsvFileTrigger(this.isCsvFileWritten, this.currentTimeInterval.utcStartTime, this.currentTimeInterval.utcEndTime);
   }
 
   onQueryTheBooleans($event: IQueryBooleans) {

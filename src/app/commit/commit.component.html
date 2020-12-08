@@ -1,11 +1,17 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxFlex="1 1 100%">
     <div fxLayout="column">
-      <div fxFlex=" 1 1 100%" *ngIf="isTableVisible">
+      <div fxFlex="1 1 100%" *ngIf="isTableVisible">
         <mtt-stats-by-category-table
           [groupCategory]="currentGroupCategory"
           [summarizedTasksByCategoryBuffer]="summarizedTasksByCategoryBuffer"
         ></mtt-stats-by-category-table>
+      </div>
+      <div fxFlex="1 1 100%">
+        <mtt-is-csv-file-written
+          [deleteCurrent]="deleteCurrentBooleans"
+          (queryBooleans)="onQueryBooleans($event)"
+        ></mtt-is-csv-file-written>
       </div>
       <form fxLayout="column" fxFlex="1 1 100%" [formGroup]="commitFormGroup">
         <div fxFlex="1 1 100%">
@@ -31,7 +37,7 @@
             (click)="onCommitButtonClicked($event)"
             fxFlex="1 1 100%"
             type="submit"
-            [disabled]="commitFormGroup.invalid"
+            [disabled]="commitFormGroup.invalid || isCommitButtonDisabled"
           >
             Commit
           </button>

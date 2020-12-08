@@ -65,7 +65,7 @@ export class QueryGroupCategoryComponent implements AfterViewInit, OnDestroy {
       this.queryGroupCategoryFormGroup.controls[this.formControlNameGroupCategory].setValue(this.groupCategories[0].value);
       this.onDropDownSelectionChanged({ value: this.groupCategories[0].value } as MatSelectChange);
       // DEBUGGING
-      console.log(this.isCheckboxUseCase + '->' + this.groupCategories[0].value);
+      // console.log(this.isCheckboxUseCase + '->' + this.groupCategories[0].value);
     }
   }
 
