@@ -32,8 +32,7 @@ export class CommitService {
     const url = this.getTimeEntriesUrl() +
     routes.timeEntriesIntervalSuffix + '?' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-    routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
-    routes.isCsvFileWrittenProperty + '=' + timeInterval.isCsvFileWritten;
+    routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
     return this.httpGet(url);
   }
 
@@ -49,15 +48,24 @@ export class CommitService {
     return this.httpGet(url);
   }
 
-  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean, isCsvFileWritten: boolean) {
+  postCsvFileTrigger(isCsvFileWritten: boolean, utcStartTime: Date, utcEndTime: Date) {
+    const url = this.getTimeEntriesUrl() +
+    routes.postCsvFileTriggerSuffix;
+    const bodyData = {};
+    bodyData[routes.isCsvFileWrittenProperty] = isCsvFileWritten;
+    bodyData[routes.startTimeProperty] = utcStartTime;
+    bodyData[routes.endDateProperty] = utcEndTime;
+    return this.httpPost(routes.isCsvWrittenTriggerPropertyName, bodyData, url);
+  }
+
+  getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {
     const url = this.getTimeEntriesUrl() +
     routes.timeEntriesStatisticsSufffix + '/' +
     routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
     routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
     routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
     routes.isBookingBasedPropertyName + '=' + isBookingBased + '?' +
-    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled + '?' +
-    routes.isCsvFileWrittenProperty + '=' + isCsvFileWritten;
+    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled;
     return this.httpGet(url);
   }
 

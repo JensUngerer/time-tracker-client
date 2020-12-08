@@ -25,7 +25,6 @@ export class StatsComponent {
 
   private utcStartTime: Date;
   private utcEndTime: Date;
-  private isCsvFileWritten = false;
   constructor(private statsService: StatsService) { }
 
   loadStatsForGroupCategories() {
@@ -38,7 +37,7 @@ export class StatsComponent {
           return;
         }
         const currentGroupCategory = this.groupCategories[index];
-        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, currentGroupCategory, false, false, this.isCsvFileWritten);
+        const statsPromise = this.statsService.getStatsData(this.utcStartTime, this.utcEndTime, currentGroupCategory, false, false);
         statsPromise.then((stats: ISummarizedTasks[]) => {
           if (!stats) {
             console.error('no stats for:' + this.groupCategories[index]);
@@ -71,7 +70,6 @@ export class StatsComponent {
   onQueryTimeBoundaries($event: ITimeInterval) {
     this.utcStartTime = $event.utcStartTime;
     this.utcEndTime = $event.utcEndTime;
-    this.isCsvFileWritten = $event.isCsvFileWritten;
 
     const loadPromise = this.loadStatsForGroupCategories();
     loadPromise.then((isSuccessful) => {

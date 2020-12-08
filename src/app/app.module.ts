@@ -45,6 +45,7 @@ import { BookingComponent } from './booking/booking.component';
 import { DaySelectComponent } from './day-select/day-select.component';
 import { ConfigurableStatsTableComponent } from './configurable-stats-table/configurable-stats-table.component';
 import { ContextComponent } from './context/context.component';
+import { IsCsvFileWrittenComponent } from './is-csv-file-written/is-csv-file-written.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -81,7 +82,11 @@ import { ContextComponent } from './context/context.component';
     BookingComponent,
     DaySelectComponent,
     ConfigurableStatsTableComponent,
-    ContextComponent
+    ContextComponent,
+    IsCsvFileWrittenComponent
+  ],
+  exports: [
+    IsCsvFileWrittenComponent
   ],
   imports: [
     CommonModule,

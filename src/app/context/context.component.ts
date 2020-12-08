@@ -7,6 +7,7 @@ import { ConfigurationService } from '../configuration.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { IContextLine } from './../../../../common/typescript/iContextLine';
 import { Constants } from './../../../../common/typescript/constants';
+import { IQueryBooleans } from '../is-csv-file-written/iQueryBooleans';
 
 @Component({
   selector: 'mtt-context',
@@ -15,6 +16,7 @@ import { Constants } from './../../../../common/typescript/constants';
 })
 export class ContextComponent implements OnInit {
   private currentTimeInterval: ITimeInterval;
+  private isCsvFileWritten = false;
 
   classInstance = Constants;
 
@@ -65,6 +67,22 @@ export class ContextComponent implements OnInit {
       this.isTableVisible = true;
       this.dataSource = new MatTableDataSource(this.contextLines);
     });
+
+    if (!this.isCsvFileWritten) {
+      return;
+    }
+    const csvTriggerPromise = this.commitService.postCsvFileTrigger(this.isCsvFileWritten, this.currentTimeInterval.utcStartTime, this.currentTimeInterval.utcEndTime);
+    csvTriggerPromise.then((csvTriggerResult: string) => {
+      // DEBUGGING:
+      console.log(csvTriggerResult);
+    });
+  }
+
+  onQueryTheBooleans($event: IQueryBooleans) {
+    // DEBUGGING:
+    // console.log(JSON.stringify($event, null, 4));
+
+    this.isCsvFileWritten = $event.isCsvFileWritten;
   }
 
   dataSource: MatTableDataSource<IContextLine>;

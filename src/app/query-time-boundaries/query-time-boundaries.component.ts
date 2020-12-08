@@ -17,7 +17,6 @@ export class QueryTimeBoundariesComponent implements OnInit {
 
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
-  formControlNameIsCsvFileWritten = 'theIsCsvFileWritten';
 
   queryTimeFormGroup: FormGroup;
 
@@ -80,7 +79,6 @@ export class QueryTimeBoundariesComponent implements OnInit {
     configObj[this.queryTimeEndFormControlName] = endTimeControl;
     endTimeControl.setValidators(this.createEndTimeValidatorFn())
 
-    configObj[this.formControlNameIsCsvFileWritten] = new FormControl(false);
 
     this.queryTimeFormGroup = new FormGroup(configObj);
 
@@ -128,12 +126,9 @@ export class QueryTimeBoundariesComponent implements OnInit {
     const endTime = new Date($event[this.queryTimeEndFormControlName]);
     const utcEndTime = DateHelper.convertToUtc(endTime);
 
-    const isCsvFileWritten = $event[this.formControlNameIsCsvFileWritten];
-
     const outputEventData: ITimeInterval = {
       utcStartTime,
-      utcEndTime,
-      isCsvFileWritten
+      utcEndTime
     };
     this.sessionsStorageService.set({
       statisticsTimeBoundaries: outputEventData

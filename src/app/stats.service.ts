@@ -28,9 +28,9 @@ export class StatsService {
     return this.commitService.getNonCommittedDays(isBookingBased);
   }
 
-  getStatsData(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean, isCsvFileWritten: boolean) {
+  getStatsData(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {
     return new Promise<ISummarizedTasks[]>((resolve: (value: ISummarizedTasks[]) => void) => {
-      const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime, groupCategory, isBookingBased, isTakenCareIsDisabled, isCsvFileWritten);
+      const statisticsPromise = this.commitService.getStatistics(utcStartTime, utcEndTime, groupCategory, isBookingBased, isTakenCareIsDisabled);
       statisticsPromise.then((stats: string) => {
         if (!stats) {
           console.error('cannot display stats as stats=' + stats);
