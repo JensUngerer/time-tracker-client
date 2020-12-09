@@ -72,8 +72,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public projectOptions: IProjectOption[] = [];
 
-  public timeTrackingTaskSelectionFromControl: FormControl = null;
-
   public taskOptions: ITaskOption[] = [];
 
   public timeEntryOptions: ITimeEntryOption[] = [];
@@ -171,7 +169,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
       this.isUiElementDisabled = true;
       this.timeTrackingProjectSelectionFormControl.disable();
-      this.timeTrackingTaskSelectionFromControl.disable();
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId,
         currentBookingDeclarationId);
@@ -190,7 +187,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
       this.isUiElementDisabled = false;
       this.timeTrackingProjectSelectionFormControl.enable();
-      this.timeTrackingTaskSelectionFromControl.enable();
 
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.timeEntryId);
       stopTimeTrackingPromise.then(() => {
