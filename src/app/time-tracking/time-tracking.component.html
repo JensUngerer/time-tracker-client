@@ -31,24 +31,8 @@
           ></mtt-name-table>
         </div>
         <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center" *ngIf="!isTasksTableVisible">
-          <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{currentTask.name}}</label>
+          <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{currentTask ? currentTask.name : ''}}</label>
         </div>
-        <!-- <div fxFlex="1 1 0" class="space-around">
-          <mat-select
-            placeholder="Task"
-            matInput
-            [formControl]="timeTrackingTaskSelectionFromControl"
-            [required]="true"
-            (selectionChange)="onTaskChange()"
-          >
-            <mat-option
-              *ngFor="let taskOption of taskOptions"
-              [value]="taskOption.value"
-            >
-              {{ taskOption.viewValue }}
-            </mat-option>
-          </mat-select>
-        </div> -->
         <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
           <button
             type="button"

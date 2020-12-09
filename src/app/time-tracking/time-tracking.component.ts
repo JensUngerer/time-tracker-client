@@ -107,7 +107,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   currentTaskId = this.taskService.taskId;
 
-  currentTask: IGridLine;
+  currentTask: IGridLine = this.gridLines.find((oneGridLine: IGridLine) => {
+    return oneGridLine.id === this.currentTaskId;
+  });
 
   private async redrawTableOfTasks(projectId: string) {
     if (!projectId) {
@@ -121,6 +123,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.currentTaskId = task.taskId;
     this.isStartStopButtonDisabled = false;
     this.taskService.taskId = this.currentTaskId;
+    this.currentTask = this.gridLines.find((oneGridLine: IGridLine) => {
+      return oneGridLine.id === this.currentTaskId;
+    });
   }
 
   public onProjectChange($event: any) {
@@ -285,6 +290,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       if (taskId) {
         this.currentTaskId = taskId;
         taskService.taskId = this.currentTaskId;
+        this.currentTask = this.gridLines.find((oneGridLine: IGridLine) => {
+          return oneGridLine.id === this.currentTaskId;
+        });
         this.isStartStopButtonDisabled = false;
       }
       if (!projectId) {

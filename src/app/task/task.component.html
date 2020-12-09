@@ -2,18 +2,7 @@
   <div fxLayout="column" fxFlex="1 1 100%">
     <div fxFlex="1 1 100%" fxLayoutAlign="center center">
       <div fxLayout="column" fxFlex="1 1 100%">
-        <div fxFlex="1 1 100%">
-          <mtt-name-table
-            [currentId]="taskService.taskId"
-            fxFlex="1 1 100%"
-            columnName="Task-Name"
-            [gridLines]="gridLines"
-            (nameCellClicked)="onTaskRowClicked($event)"
-            (deleteRowClicked)="onDeleteRowClicked($event)"
-          >
-          </mtt-name-table>
-        </div>
-        <div fxFlex="1 1 100%">
+        <div fxLayout="column" fxFlex="1 1 100%">
           <div fxFlex="1 1 100%" fxLayoutAlign="center center">
             <form
               fxFlex="1 1 100%"
@@ -132,6 +121,17 @@
                 </div>
               </div>
             </form>
+          </div>
+          <div fxFlex="1 1 100%">
+            <mtt-name-table
+              [currentId]="taskService.taskId"
+              fxFlex="1 1 100%"
+              columnName="Task-Name"
+              [gridLines]="gridLines"
+              (nameCellClicked)="onTaskRowClicked($event)"
+              (deleteRowClicked)="onDeleteRowClicked($event)"
+            >
+            </mtt-name-table>
           </div>
         </div>
       </div>

@@ -84,6 +84,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.taskFormGroup.controls[this.formControlNameTaskNumber].setValue('');
     this.taskFormGroup.controls[this.formControlNameTaskCategory].setValue('');
     this.taskFormGroup.controls[this.formControlNameGroupCategory].setValue('');
+    this.taskFormGroup.controls[this.formControlNameBookingDeclaration].setValue('');
 
     const createTaskPromise: Promise<any> = this.commitService.postTask(task);
     createTaskPromise.then(() => {
