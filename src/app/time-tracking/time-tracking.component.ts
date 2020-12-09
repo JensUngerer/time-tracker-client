@@ -60,7 +60,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public startStopButtonLabel = TimeTrackingState.start;
 
-  public isStartStopButtonDisabled = false;
+  public isStartStopButtonDisabled = true;
 
   public pauseResumeButtonLabel = 'Pause';
 
@@ -96,6 +96,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.currentTask = this.gridLines.find((oneGridLine) => {
       return oneGridLine.id === taskId;
     });
+
+    this.isStartStopButtonDisabled = false;
   }
 
   onDeleteRowClicked($event: any) {
@@ -119,6 +121,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public onTaskChange(task: ITask) {
     this.setBookingDescription(task._bookingDeclarationId);
     this.currentTaskId = task.taskId;
+    this.isStartStopButtonDisabled = false;
     this.taskService.taskId = this.currentTaskId;
   }
 
@@ -286,6 +289,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       if (taskId) {
         this.currentTaskId = taskId;
         taskService.taskId = this.currentTaskId;
+        this.isStartStopButtonDisabled = false;
       }
       if (!projectId) {
         return;
