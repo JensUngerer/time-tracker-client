@@ -40,6 +40,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   public taskFormGroup: FormGroup = null;
 
+  public currentTaskId = '';
+
   public formControlNameTaskNumber = 'theTaskNumber';
 
   public formControlNameTaskName = 'theTaskName';
@@ -108,7 +110,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.redrawTableOfProject(currentProject.value);
   }
 
-  constructor(private taskService: TaskService,
+  constructor(public taskService: TaskService,
     private commitService: CommitService,
     private activatedRoute: ActivatedRoute,
     public dialog: MatDialog,

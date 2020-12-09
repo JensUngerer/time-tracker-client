@@ -7,12 +7,12 @@ import { ConfigurationService } from '../configuration.service';
 @Component({
   selector: 'mtt-name-table',
   templateUrl: './name-table.component.html',
-  styleUrls: ['./name-table.component.scss']
+  styleUrls: ['./name-table.component.scss', './../css/table.scss']
 })
 export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   currentId = '';
-  
+
   @Input()
   isDeleteRowShown = false;
 
@@ -31,7 +31,7 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   public deleteRowClicked: EventEmitter<IGridLine> = new EventEmitter<IGridLine>();
 
-  public displayedColumns: string[] = ['codeOrNumber', 'name', 'deleteRow'];
+  public readonly displayedColumns: string[] = ['codeOrNumber', 'name', 'deleteRow'];
 
   public readonly faTrash = faTrash;
 
@@ -53,6 +53,7 @@ export class NameTableComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public onNameCellClicked(row: IGridLine) {
+    // this.currentId = row.id;
     this.nameCellClicked.emit(row);
   }
 

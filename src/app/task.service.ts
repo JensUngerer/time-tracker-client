@@ -8,6 +8,16 @@ import { v4 } from 'uuid';
 })
 export class TaskService {
 
+  private currentTaskId = '';
+
+  set taskId(newTaskId: string) {
+    this.currentTaskId = newTaskId;
+  }
+
+  get taskId(): string {
+    return this.currentTaskId;
+  }
+
   private readonly tasksKey = 'tasks';
 
   // constructor(private inMemoryDataService: InMemoryDataService) { }

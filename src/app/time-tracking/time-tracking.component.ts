@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -21,12 +21,14 @@ import { TimeTrackingState } from './timeTrackingState.enum';
 import { IGridLine } from '../typescript/iGridLine';
 import { ProjectService } from '../project.service';
 import { ViewPaths } from '../viewPathsEnum';
+import { ITaskLine } from '../../../../common/typescript/summarizedData';
+import { TaskService } from '../task.service';
 
 @Component({
   // encapsulation: ViewEncapsulation.None,
   selector: 'mtt-time-tracking',
   templateUrl: './time-tracking.component.html',
-  styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss']
+  styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss', './../css/table.scss']
 })
 export class TimeTrackingComponent implements OnInit, OnDestroy {
   private activatedRouteSubscription: Subscription = null;
@@ -70,8 +72,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public projectOptions: IProjectOption[] = [];
 
-  public formControlNameTaskSelectionDropDown = 'taskSelectionDropDown';
-
   public timeTrackingTaskSelectionFromControl: FormControl = null;
 
   public taskOptions: ITaskOption[] = [];
@@ -88,15 +88,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   onTaskRowClicked($event: IGridLine) {
     const taskId = $event.id;
-    this.setTask(taskId);
-    this.currentTaskId = taskId;
+    const task = this.taskOptions.find((oneTaskOption: ITaskOption) => {
+      return oneTaskOption.value.taskId === taskId;
+    });
+    this.onTaskChange(task.value);
 
-    // const url = routesConfig.viewsPrefix + ViewPaths.timeTracking;
-    // const queryParams = {};
-    // const projectId = this.activatedRoute.snapshot.queryParams[routesConfig.projectIdProperty];
-    // queryParams[routesConfig.projectIdProperty] = projectId;
-    // queryParams[routesConfig.taskIdProperty] = taskId;
-    // this.router.navigate([url], { queryParams });
+    this.currentTask = this.gridLines.find((oneGridLine) => {
+      return oneGridLine.id === taskId;
+    });
   }
 
   onDeleteRowClicked($event: any) {
@@ -106,7 +105,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   isTasksTableVisible = true;
   isUiElementDisabled = false;
 
-  currentTaskId = '';
+  currentTaskId = this.taskService.taskId;
+
+  currentTask: IGridLine;
 
   private async redrawTableOfTasks(projectId: string) {
     if (!projectId) {
@@ -115,12 +116,10 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.gridLines = await this.projectService.getTasksByProjectId(projectId);
   }
 
-  public onTaskChange() {
-    const task = this.timeTrackingUserSelectionForm
-      .controls[this.formControlNameTaskSelectionDropDown]
-      .value;
+  public onTaskChange(task: ITask) {
     this.setBookingDescription(task._bookingDeclarationId);
     this.currentTaskId = task.taskId;
+    this.taskService.taskId = this.currentTaskId;
   }
 
   public onProjectChange($event: any) {
@@ -148,7 +147,14 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
     this.isPauseResumeButtonDisabled = true;
-    const task = this.timeTrackingTaskSelectionFromControl.value;
+    const taskOption = this.taskOptions.find((oneTask: ITaskOption) => {
+      return oneTask.value.taskId === this.currentTaskId;
+    });
+    if (!taskOption) {
+      console.error('no task option for currentTaskId:' + this.currentTaskId);
+      return;
+    }
+    const task = taskOption.value;
     if (!task) {
       console.error('there is no task selected');
       return;
@@ -239,7 +245,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     });
   }
 
-  constructor(private projectService: ProjectService,
+  constructor(private taskService: TaskService,
+    private projectService: ProjectService,
     private helpersService: HelpersService,
     private timeTrackingService: TimeTrackingService,
     private formBuilder: FormBuilder,
@@ -251,9 +258,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
     this.timeTrackingProjectSelectionFormControl = new FormControl('');
     controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
-
-    this.timeTrackingTaskSelectionFromControl = new FormControl('');
-    controlsConfigObj[this.formControlNameTaskSelectionDropDown] = this.timeTrackingTaskSelectionFromControl;
 
     this.timeTrackingTimeEntrySelectionFromControl = new FormControl('');
     controlsConfigObj[this.formControlNameTimeEntrySelectionDropDown] = this.timeTrackingTimeEntrySelectionFromControl;
@@ -279,7 +283,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
 
-      this.currentTaskId = taskId;
+      if (taskId) {
+        this.currentTaskId = taskId;
+        taskService.taskId = this.currentTaskId;
+      }
+      if (!projectId) {
+        return;
+      }
 
       const initTaskDropDownPromise = this.initTasksDropDown(projectId);
       initTaskDropDownPromise.then(() => {
@@ -314,8 +324,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       return oneTaskOption.value.taskId === taskId;
     });
     if (taskOption) {
-      this.timeTrackingUserSelectionForm.controls[this.formControlNameTaskSelectionDropDown].setValue(taskOption.value);
-
       const currentTask = this.allTasks.find((oneTask: ITask) => {
         return oneTask.taskId === taskId;
       });

@@ -21,9 +21,8 @@
         <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
           <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{bookingDeclarationDescription}}</label>
         </div>
-        <div>
+        <div *ngIf="isTasksTableVisible">
           <mtt-name-table
-            *ngIf="isTasksTableVisible"
             [currentId]="currentTaskId"
             columnName="Task-Name"
             [gridLines]="gridLines"
@@ -31,7 +30,10 @@
             (deleteRowClicked)="onDeleteRowClicked($event)"
           ></mtt-name-table>
         </div>
-        <div fxFlex="1 1 0" class="space-around">
+        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center" *ngIf="!isTasksTableVisible">
+          <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{currentTask.name}}</label>
+        </div>
+        <!-- <div fxFlex="1 1 0" class="space-around">
           <mat-select
             placeholder="Task"
             matInput
@@ -46,7 +48,7 @@
               {{ taskOption.viewValue }}
             </mat-option>
           </mat-select>
-        </div>
+        </div> -->
         <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
           <button
             type="button"

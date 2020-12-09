@@ -27,7 +27,6 @@
       </ng-container>
       <!-- https://stackoverflow.com/questions/55267778/vertical-scroll-bar-and-fixed-headers-with-mat-table -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-
       <tr mat-row *matRowDef="let row; columns: displayedColumns" [ngClass]="{'highlighted-line': row.id === currentId}"></tr>
     </table>
   </div>
