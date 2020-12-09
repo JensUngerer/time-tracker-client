@@ -160,11 +160,16 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       console.error('no task option for currentTaskId:' + this.currentTaskId);
       return;
     }
+
     const task = taskOption.value;
     if (!task) {
       console.error('there is no task selected');
       return;
     }
+    this.currentTask = this.gridLines.find((singleGridLine: IGridLine) => {
+      return singleGridLine.id === task.taskId;
+    });
+
     const taskId = task.taskId;
     const currentBookingDeclarationId = task._bookingDeclarationId;
 
