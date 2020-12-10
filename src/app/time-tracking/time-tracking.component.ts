@@ -132,6 +132,10 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     const projectId = $event.value.projectId;
     this.redrawTableOfTasks(projectId);
     this.initTasksDropDown(projectId);
+    if (this.taskService.taskId) {
+      this.currentTaskId = this.taskService.taskId;
+      this.isStartStopButtonDisabled = false;
+    }
   }
 
   private visualizeStartedTimeEntry(rawTimeEntry: string) {
