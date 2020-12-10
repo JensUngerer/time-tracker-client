@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { Constants } from '../../../../common/typescript/constants';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
 import { SessionStorageService } from '../session-storage.service';
@@ -47,7 +48,9 @@ export class QueryTimeBoundariesComponent implements OnInit {
   }
 
   private getCurrentTime(): string {
-    const currentTime = Date.now();
+    let currentTime = Date.now();
+    // add one minute as time is measured < and not <=
+    currentTime+= Constants.MILLISECONDS_IN_MINUTE;
     const formattedCurrentTime = formatDate(currentTime, this.requiredDateTimeFormat, this.currentLocale);
     return formattedCurrentTime;
   }
