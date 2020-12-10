@@ -103,6 +103,7 @@ export class StatsService {
           _timeEntryIds: oneTaskBasedLine._timeEntryIds,
           dateStructure: DurationCalculator.getCurrentDateStructure(day),
           durationInHours: oneTaskBasedLine.durationInHours,
+          durationInMilliseconds: null,
           // durationInMilliseconds: null,
           // durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(currentDurationInMilliseconds), // TODO: implement
           _taskId: oneTaskBasedLine._taskId,
@@ -126,6 +127,7 @@ export class StatsService {
       _timeEntryIds: oneBookingLine._timeEntryIds,
       dateStructure: DurationCalculator.getCurrentDateStructure(currentDayInterval.utcStartTime),
       durationInHours: oneBookingLine.durationInHours,
+      durationInMilliseconds: null,
       // durationInMilliseconds: commitBase.durationSumInMilliseconds,
       // durationStructure: DurationCalculator.getSumDataStructureFromMilliseconds(commitBase.durationSumInMilliseconds),
       _taskId: null,
