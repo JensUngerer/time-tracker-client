@@ -21,8 +21,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
-import { CommitOrBookTableComponent } from './commit-or-book-table/commit-or-book-table.component';
-import { CommitOrBookComponent } from './commit-or-book/commit-or-book.component';
 import { HomeComponent } from './home/home.component';
 import { NameTableComponent } from './name-table/name-table.component';
 import { NavbarFourComponent } from './navbar-four/navbar-four.component';
@@ -71,8 +69,6 @@ import { IsCsvFileWrittenComponent } from './is-csv-file-written/is-csv-file-wri
     ProjectDeleteDialogComponent,
     NameTableComponent,
     BookingDeclarationComponent,
-    CommitOrBookComponent,
-    CommitOrBookTableComponent,
     StatsComponent,
     StatsVisualizationComponent,
     QueryTimeBoundariesComponent,
