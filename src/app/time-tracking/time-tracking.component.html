@@ -33,26 +33,9 @@
         <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center" *ngIf="!isTasksTableVisible">
           <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{currentTask ? currentTask.name : ''}}</label>
         </div>
-        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
-          <button
-            type="button"
-            (click)="onStartStopButtonClicked()"
-            mat-stroke-button
-            [disabled]="
-              !(
-                timeTrackingUserSelectionForm.valid &&
-                !isStartStopButtonDisabled
-              )
-            "
-          >
-            {{ startStopButtonLabel }}
-          </button>
-        </div>
-        <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center" *ngIf="currentTimeEntryDuration">
-          <div fxLayout="row" fxLayoutAlign="center center">
-            <div fxFlex="1 1 0">{{currentTimeEntryDuration}}</div>
-          </div>
-        </div>
+        <mtt-start-stop
+          [task]="currentTask"
+        ></mtt-start-stop>
       </div>
     </form>
   </div>
