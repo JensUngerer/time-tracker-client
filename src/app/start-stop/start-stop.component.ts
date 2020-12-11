@@ -1,11 +1,13 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Constants } from '../../../../common/typescript/constants';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
 import { CommitService } from '../commit.service';
 import { HelpersService } from '../helpers.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { TimeTrackingService } from '../time-tracking.service';
-import { TimeTrackingState } from '../time-tracking/timeTrackingState.enum';
+import { TimeMeasurement } from './time-measurement.enum';
+import { TimeTrackingState } from './timeTrackingState.enum';
 
 @Component({
   selector: 'mtt-start-stop',
@@ -25,6 +27,9 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
   @Input()
   task: ITask;
 
+  @Output()
+  state: EventEmitter<TimeMeasurement> = new EventEmitter<TimeMeasurement>();
+
   constructor(
     private sessionStorageSerializationService: SessionStorageSerializationService,
     private helpersService: HelpersService,
@@ -41,7 +46,7 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (changes &&
       (!changes.task ||
-      !changes.task.currentValue)) {
+        !changes.task.currentValue)) {
       this.isStartStopButtonDisabled = true;
       return;
     }
@@ -59,16 +64,14 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private visualizeStartedTimeEntry(rawTimeEntry: string) {
-    const resolvedValue: ITimeEntry = this.sessionStorageSerializationService.deSerialize<ITimeEntry>(rawTimeEntry);
+    const resolvedTimeEntry: ITimeEntry = this.sessionStorageSerializationService.deSerialize<ITimeEntry>(rawTimeEntry);
     // visualize current duration
-    const oneSecondInMilliseconds = 1000.0;
     this.currentTimeEntryDuration = this.helpersService.getDurationStr(0, 0, 0);
     this.durationVisualizationIntervalId = setInterval(() => {
-      this.visualizeTimeEntry(resolvedValue.timeEntryId);
-    }, oneSecondInMilliseconds);
+      this.visualizeTimeEntry(resolvedTimeEntry.timeEntryId);
+    }, Constants.MILLISECONDS_IN_SECOND);
 
-    // this.setTimeEntryId(resolvedValue.timeEntryId);
-    this.timeEntryId = resolvedValue.timeEntryId;
+    this.timeEntryId = resolvedTimeEntry.timeEntryId;
     this.isStartStopButtonDisabled = false;
   }
 
@@ -93,38 +96,46 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
     });
   }
 
+  private setStateToStopped() {
+    // set state to stopped
+    if (this.durationVisualizationIntervalId) {
+      clearInterval(this.durationVisualizationIntervalId);
+    }
+
+    this.isStartStopButtonDisabled = false;
+
+    this.visualizeTimeEntry(this.timeEntryId);
+  }
+
+  private emitStateStopped() {
+    // state changed visualized stated from stop to start
+    // -> i.e. the stop button has just been pressed --> i.e. time-measurement should be changed to "stopped"
+    // as late as possible!
+    this.state.emit(TimeMeasurement.stopped);
+  }
+
+  private emitStateRunning() {
+      // state changed visualized stated from start to stop
+      // -> i.e. the start button has just been pressed --> i.e. time-measurement is "running"
+      // as early as possible!
+      this.state.emit(TimeMeasurement.running);
+  }
+
   public onStartStopButtonClicked() {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
 
-    // TODO: how to handle tasks?
-    // const taskOption = this.taskOptions.find((oneTask: ITaskOption) => {
-    //   return oneTask.value.taskId === this.currentTaskId;
-    // });
-    // if (!taskOption) {
-    //   console.error('no task option for currentTaskId:' + this.currentTaskId);
-    //   return;
-    // }
-    // const task = taskOption.value;
     if (!this.task) {
       console.error('there is no task selected');
       return;
     }
-    // this.currentTask = this.gridLines.find((singleGridLine: IGridLine) => {
-    //   return singleGridLine.id === task.taskId;
-    // });
     const taskId = this.task.taskId;
-
-    // TODO: how to handle booking declarations?
     const currentBookingDeclarationId = this.task._bookingDeclarationId;
 
     this.startStopButtonLabel = (this.startStopButtonLabel === TimeTrackingState.start) ? TimeTrackingState.stop : TimeTrackingState.start;
-    if (this.startStopButtonLabel === TimeTrackingState.stop) {
-      // TODO: how to handle this ???
-      // this.isTasksTableVisible = false;
 
-      // this.isUiElementDisabled = true;
-      // this.timeTrackingProjectSelectionFormControl.disable();
+    if (this.startStopButtonLabel === TimeTrackingState.stop) {
+      this.emitStateRunning();
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId,
         currentBookingDeclarationId);
@@ -137,29 +148,19 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
         this.isStartStopButtonDisabled = false;
       });
 
-    } else {
-      // TODO: how to handle this?
-      // this.isTasksTableVisible = true;
-
-      // this.isUiElementDisabled = false;
-      // this.timeTrackingProjectSelectionFormControl.enable();
-
+    } else if (this.startStopButtonLabel === TimeTrackingState.start) {
       const stopTimeTrackingPromise = this.timeTrackingService.stopTimeTracking(this.timeEntryId);
       stopTimeTrackingPromise.then(() => {
-        if (this.durationVisualizationIntervalId) {
-          clearInterval(this.durationVisualizationIntervalId);
-        }
+        this.setStateToStopped();
 
-        this.isStartStopButtonDisabled = false;
-
-        this.visualizeTimeEntry(this.timeEntryId);
+        this.emitStateStopped();
       });
       stopTimeTrackingPromise.catch(() => {
         console.error('stopTimeTracking rejected');
 
-        this.isStartStopButtonDisabled = false;
+        this.setStateToStopped();
 
-        this.visualizeTimeEntry(this.timeEntryId);
+        this.emitStateStopped();
       });
     }
   }

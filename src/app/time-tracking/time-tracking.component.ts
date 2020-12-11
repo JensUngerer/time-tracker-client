@@ -17,10 +17,11 @@ import { ITaskOption, TaskOption } from './../typescript/taskOption';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
 import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
-import { TimeTrackingState } from './timeTrackingState.enum';
+import { TimeTrackingState } from '../start-stop/timeTrackingState.enum';
 import { IGridLine } from '../typescript/iGridLine';
 import { ProjectService } from '../project.service';
 import { TaskService } from '../task.service';
+import { TimeMeasurement } from '../start-stop/time-measurement.enum';
 
 @Component({
   // encapsulation: ViewEncapsulation.None,
@@ -65,6 +66,8 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public bookingDeclarationDescription = '';
 
   private currentBookingDeclarationId;
+
+  private previousTimeMeasurementState: TimeMeasurement;
 
   private setCurrentTaskViaCurrentTaskId() {
     // TODO: can be replaced
@@ -394,5 +397,26 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     if (this.inMemoryDataServiceSubscription) {
       this.inMemoryDataServiceSubscription.unsubscribe();
     }
+  }
+
+  onTimeMeasurementStateChanged(newTimeMeasurementState: TimeMeasurement) {
+    if (newTimeMeasurementState === TimeMeasurement.running) {
+      this.isTasksTableVisible = false;
+
+      // show visually as disabled ... (it is read only, btw)
+      this.isUiElementDisabled = true;
+
+      // project selection must be disabled, too
+      this.timeTrackingProjectSelectionFormControl.disable();
+    } else if (newTimeMeasurementState === TimeMeasurement.stopped) {
+      this.isTasksTableVisible = true;
+
+      this.isUiElementDisabled = false;
+      this.timeTrackingProjectSelectionFormControl.enable();
+    } else {
+      console.error('unknown new state:' + newTimeMeasurementState + ' previous state was:' + this.previousTimeMeasurementState);
+    }
+    // necessary for debugging
+    this.previousTimeMeasurementState = newTimeMeasurementState;
   }
 }

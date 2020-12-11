@@ -34,7 +34,10 @@
           <label [ngClass]="{'text-disabled-color': isUiElementDisabled}">{{currentTask ? currentTask.name : ''}}</label>
         </div>
         <mtt-start-stop
+          fxFlex="1 1 0"
+          class="space-around"
           [task]="currentTask"
+          (state)="onTimeMeasurementStateChanged($event)"
         ></mtt-start-stop>
       </div>
     </form>
