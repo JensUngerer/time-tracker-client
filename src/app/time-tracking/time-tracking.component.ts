@@ -27,7 +27,7 @@ import { TimeMeasurement } from '../start-stop/time-measurement.enum';
   // encapsulation: ViewEncapsulation.None,
   selector: 'mtt-time-tracking',
   templateUrl: './time-tracking.component.html',
-  styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss', './../css/table.scss']
+  styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss', './../css/table.scss', './../css/space-around.scss']
 })
 export class TimeTrackingComponent implements OnInit, OnDestroy {
   private activatedRouteSubscription: Subscription = null;

@@ -12,7 +12,7 @@ import { TimeTrackingState } from './timeTrackingState.enum';
 @Component({
   selector: 'mtt-start-stop',
   templateUrl: './start-stop.component.html',
-  styleUrls: ['./start-stop.component.scss']
+  styleUrls: ['./start-stop.component.scss', './../css/space-around.scss']
 })
 export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
   private durationVisualizationIntervalId: any = null;
@@ -20,13 +20,17 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
 
   isStartStopButtonDisabled = true;
 
+  // internal state
   startStopButtonLabel = TimeTrackingState.start;
 
   currentTimeEntryDuration: string;
 
+  TimeTrackingState = TimeTrackingState;
+
   @Input()
   task: ITask;
 
+  // mapping from internal state to this external state
   @Output()
   state: EventEmitter<TimeMeasurement> = new EventEmitter<TimeMeasurement>();
 
@@ -132,6 +136,7 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
     const taskId = this.task.taskId;
     const currentBookingDeclarationId = this.task._bookingDeclarationId;
 
+    // internal state changed !
     this.startStopButtonLabel = (this.startStopButtonLabel === TimeTrackingState.start) ? TimeTrackingState.stop : TimeTrackingState.start;
 
     if (this.startStopButtonLabel === TimeTrackingState.stop) {
