@@ -45,23 +45,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public timeTrackingUserSelectionForm: FormGroup = null;
 
-  public formControlNameUserSelectionDropDown = 'userSelectionDropDown';
-
-  public timeTrackingUserSelectionFormControl: AbstractControl = null;
-
   public formControlNameProjectSelectionDropDown = 'projectSelectionDropDown';
 
   public timeTrackingProjectSelectionFormControl: FormControl = null;
 
   public projectOptions: IProjectOption[] = [];
 
-  public taskOptions: ITaskOption[] = [];
-
   public timeEntryOptions: ITimeEntryOption[] = [];
-
-  public formControlNameTimeEntrySelectionDropDown = 'timeEntrySelectionDropDown';
-
-  public timeTrackingTimeEntrySelectionFromControl: AbstractControl = null;
 
   public bookingDeclarationDescription = '';
 
@@ -69,28 +59,27 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private previousTimeMeasurementState: TimeMeasurement;
 
-  private setCurrentTaskViaCurrentTaskId() {
-    // TODO: can be replaced
-    // this.currentTask = this.gridLines.find((oneGridLine: IGridLine) => {
-    //   return oneGridLine.id === this.currentTaskId;
-    // });
-    this.currentTask = this.allTasks.find((oneTask: ITask) => {
+  private getTaskFromAllTasks() {
+    return this.allTasks.find((oneTask: ITask) => {
       return oneTask.taskId === this.currentTaskId;
     });
+  }
 
+  private setCurrentTaskViaCurrentTaskId() {
+    this.currentTask = this.getTaskFromAllTasks();
+  }
+
+  private setTaskFromId(taskId: string) {
+    this.currentTaskId = taskId;
+    const task = this.getTaskFromAllTasks();
+    this.onTaskChange(task);
   }
 
   onTaskRowClicked($event: IGridLine) {
-    const taskId = $event.id;
-    const task = this.taskOptions.find((oneTaskOption: ITaskOption) => {
-      return oneTaskOption.value.taskId === taskId;
-    });
-    this.onTaskChange(task.value);
+    // disabling start stop button...
+    this.currentTask = null;
 
-    this.setCurrentTaskViaCurrentTaskId();
-
-    // TODO: necessary ?
-    // this.isStartStopButtonDisabled = false;
+    this.setTaskFromId($event.id);
   }
 
   onDeleteRowClicked($event: any) {
@@ -102,9 +91,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   currentTaskId = this.taskService.taskId;
 
-  // currentTask: IGridLine = this.gridLines.find((oneGridLine: IGridLine) => {
-  //   return oneGridLine.id === this.currentTaskId;
-  // });
   currentTask: ITask;
 
   private async redrawTableOfTasks(projectId: string) {
@@ -116,10 +102,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public onTaskChange(task: ITask) {
     this.setBookingDescription(task._bookingDeclarationId);
-    this.currentTaskId = task.taskId;
-
-    // TODO: necessary ?
-    // this.isStartStopButtonDisabled = false;
 
     this.taskService.taskId = this.currentTaskId;
 
@@ -129,47 +111,66 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   public onProjectChange($event: any) {
     const projectId = $event.value.projectId;
     this.redrawTableOfTasks(projectId);
-    this.initTasksDropDown(projectId);
+    this.initTasks(projectId);
     if (this.taskService.taskId) {
-      this.currentTaskId = this.taskService.taskId;
-
-      // TODO: necessary ?
-      // this.isStartStopButtonDisabled = false;
+      const storedTaskId = this.taskService.taskId;
+      this.setTaskFromId(storedTaskId);
     }
   }
 
-  // private displayCurrentProjectInDropDown(projectId: string) {
-  //   const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
-  //     return oneProjectOption.value.projectId === projectId;
-  //   });
-  //   if (projectOption) {
-  //     this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
-  //   } else {
-  //     console.error('no project option for: ' + projectId);
-  //   }
+  private displayCurrentProjectInDropDown(projectId: string) {
+    const projectOption: IProjectOption = this.projectOptions.find((oneProjectOption: IProjectOption) => {
+      return oneProjectOption.value.projectId === projectId;
+    });
+    if (projectOption) {
+      this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
+      this.onProjectChange(projectOption);
+    } else {
+      console.error('no project option for: ' + projectId);
+    }
+    // TODO: still necessary ??
+    // this.redrawTableOfTasks(projectId);
+  }
 
-  //   this.redrawTableOfTasks(projectId);
-  // }
-
-  private initTasksDropDown(projectId) {
+  private initTasks(projectId) {
     return new Promise((resolve: (value?: any) => void) => {
-      // init taskSelectionDropDrown data
-      this.taskOptions = [];
       this.allTasksPromise = this.commitService.getTasksByProjectId(projectId);
-      // this.allTasksPromise = this.projectService.getTasksByProjectId(projectId);
       this.allTasksPromise.then((allTasksStr: string) => {
         this.allTasks = this.sessionStorageSerializationService.deSerialize<ITask[]>(allTasksStr);
-        if (this.allTasks && this.allTasks.length > 0 && this.taskOptions.length === 0) {
-          this.allTasks.forEach((task: ITask) => {
-            this.taskOptions.push(new TaskOption(task));
-          });
-          resolve();
-        }
+        resolve();
       });
       this.allTasksPromise.catch(() => {
         console.error('get tasks rejected');
       });
     });
+  }
+
+  private initProjects() {
+    return new Promise((resolve: (value?: any) => void) => {
+      // init projectSectionDropDown data
+      this.allProjectsPromise = this.commitService.getProjects();
+      this.allProjectsPromise.then((projectsStr: string) => {
+        const allProjects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
+        if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
+          allProjects.forEach((project: IProject) => {
+            this.projectOptions.push(new ProjectOption(project));
+          });
+        }
+        resolve();
+      });
+      this.allProjectsPromise.catch(() => {
+        console.error('getProjects rejected');
+      });
+    });
+  }
+
+  private initForm() {
+    const controlsConfigObj: { [key: string]: AbstractControl } = {};
+
+    this.timeTrackingProjectSelectionFormControl = new FormControl('');
+    controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
+
+    this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
   }
 
   constructor(private taskService: TaskService,
@@ -181,76 +182,69 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) {
-    const controlsConfigObj: { [key: string]: AbstractControl } = {};
-
-    this.timeTrackingProjectSelectionFormControl = new FormControl('');
-    controlsConfigObj[this.formControlNameProjectSelectionDropDown] = this.timeTrackingProjectSelectionFormControl;
-
-    this.timeTrackingTimeEntrySelectionFromControl = new FormControl('');
-    controlsConfigObj[this.formControlNameTimeEntrySelectionDropDown] = this.timeTrackingTimeEntrySelectionFromControl;
-
-    this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
-
-    // init projectSectionDropDown data
-    this.allProjectsPromise = this.commitService.getProjects();
-    this.allProjectsPromise.then((projectsStr: string) => {
-      const allProjects = this.sessionStorageSerializationService.deSerialize<IProject[]>(projectsStr);
-      if (allProjects && allProjects.length > 0 && this.projectOptions.length === 0) {
-        allProjects.forEach((project: IProject) => {
-          this.projectOptions.push(new ProjectOption(project));
-        });
-      }
-    });
-    this.allProjectsPromise.catch(() => {
-      console.error('getProjects rejected');
-    });
-
+    this.initForm();
 
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
       const projectId = params[routesConfig.projectIdProperty];
       const taskId = params[routesConfig.taskIdProperty];
 
-      if (taskId) {
-        this.currentTaskId = taskId;
-        taskService.taskId = this.currentTaskId;
-
-        this.setCurrentTaskViaCurrentTaskId();
-
-        // TODO: necessary ???
-        // this.isStartStopButtonDisabled = false;
-      }
       if (!projectId) {
+        console.error('no project id');
         return;
       }
 
-      const initTaskDropDownPromise = this.initTasksDropDown(projectId);
-      initTaskDropDownPromise.then(() => {
+      const initProjectsPromise = this.initProjects();
+      initProjectsPromise.then(() => {
+        this.displayCurrentProjectInDropDown(projectId);
+        const initTaskPromise = this.initTasks(projectId);
+        initTaskPromise.then(() => {
+          if (!taskId) {
+            console.error('there is no task id');
+            return;
+          }
+          if (taskId) {
+            this.setTaskFromId(taskId);
+          }
 
-        this.redrawTableOfTasks(projectId);
 
-        // TODO: re-introduce this feature
-      //   const isTimeEntryRunningPromise = this.displayRunningTimeEntry();
-      //   isTimeEntryRunningPromise.then((resolvedTimeEntryValues: ITimeEntryDocument) => {
-      //     if (!resolvedTimeEntryValues) {
-      //       // there are not running timeEntries --> continue as before
-      //       this.allProjectsPromise.finally(() => {
-      //         if (projectId) {
-      //           this.displayCurrentProjectInDropDown(projectId);
-      //         }
-      //         this.allTasksPromise.finally(() => {
-      //           if (taskId) {
-      //             this.setTask(taskId);
-      //           }
-      //         });
-      //       });
-      //     }
-      //   });
+          // const redrawTablePromise = this.redrawTableOfTasks(projectId);
+          // redrawTablePromise.then(() => {
+          //   this.displayRunningTask(projectId, taskId);
+          // });
+          // redrawTablePromise.catch(() => {
+          //   console.error('redraw table failed');
+          // });
+        });
+        initTaskPromise.catch(() => {
+          console.error('initTasks failed');
+        });
       });
-      initTaskDropDownPromise.catch(() => {
-        console.error('could not get tasks');
-      });
+      initProjectsPromise.catch(() => {
+        console.error('init of projects rejected');
+      })
     });
   }
+
+  // private displayRunningTask(projectId: string, taskId: string) {
+  //   // TODO: re-introduce this feature
+  //   const isTimeEntryRunningPromise = this.displayRunningTimeEntry();
+  //   isTimeEntryRunningPromise.then((resolvedTimeEntryValues: ITimeEntryDocument) => {
+  //     if (!resolvedTimeEntryValues) {
+  //       // there are not running timeEntries --> continue as before
+  //       this.allProjectsPromise.finally(() => {
+  //         if (projectId) {
+  //           this.displayCurrentProjectInDropDown(projectId);
+  //         }
+  //         this.allTasksPromise.finally(() => {
+  //           if (taskId) {
+  //             this.setTaskFromId(taskId);
+  //             this.redrawTableOfTasks(projectId);
+  //           }
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
 
   // private setTask(taskId: string) {
   //   const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
