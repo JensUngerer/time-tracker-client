@@ -1,4 +1,3 @@
-// import { InMemoryDataService } from './in-memory-data.service';
 import { Injectable } from '@angular/core';
 import { ITask } from '../../../common/typescript/iTask';
 import { v4 } from 'uuid';
@@ -7,21 +6,6 @@ import { v4 } from 'uuid';
   providedIn: 'root'
 })
 export class TaskService {
-
-  private currentTaskId = '';
-
-  set taskId(newTaskId: string) {
-    this.currentTaskId = newTaskId;
-  }
-
-  get taskId(): string {
-    return this.currentTaskId;
-  }
-
-  private readonly tasksKey = 'tasks';
-
-  // constructor(private inMemoryDataService: InMemoryDataService) { }
-
   public createTask(taskName: string, projectId: string, bookingDeclarationId: string, taskNumber: string, taskCategory: string, groupCategory: string): ITask {
     const newTask: ITask = {
       number: taskNumber,
@@ -33,13 +17,6 @@ export class TaskService {
       taskCategory: taskCategory,
       groupCategory: groupCategory
     };
-    // this.inMemoryDataService.push(this.tasksKey, newTask);
-
     return newTask;
   }
-
-  // public getTasks(): ITask[] {
-  //   // return this.inMemoryDataService.get(this.tasksKey);
-  // }
-
 }

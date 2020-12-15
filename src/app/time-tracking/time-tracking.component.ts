@@ -1,27 +1,19 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { IProject } from '../../../../common/typescript/iProject';
 import { ITask } from '../../../../common/typescript/iTask';
-import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
-import { HelpersService } from '../helpers.service';
+import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
+import { ProjectService } from '../project.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
+import { TimeMeasurement } from '../start-stop/time-measurement.enum';
+import { IGridLine } from '../typescript/iGridLine';
 import { ITimeEntryOption } from '../typescript/iTimeEntryOption';
 import routesConfig from './../../../../common/typescript/routes.js';
 import { CommitService } from './../commit.service';
-import { TimeTrackingService } from './../time-tracking.service';
 import { IProjectOption, ProjectOption } from './../typescript/projectOption';
-import { ITaskOption, TaskOption } from './../typescript/taskOption';
-import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
-import { ITimeEntryDocument } from './../../../../common/typescript/mongoDB/iTimeEntryDocument';
-import { IProjectsDocument } from './../../../../common/typescript/mongoDB/iProjectsDocument';
-import { TimeTrackingState } from '../start-stop/timeTrackingState.enum';
-import { IGridLine } from '../typescript/iGridLine';
-import { ProjectService } from '../project.service';
-import { TaskService } from '../task.service';
-import { TimeMeasurement } from '../start-stop/time-measurement.enum';
 
 @Component({
   // encapsulation: ViewEncapsulation.None,
@@ -40,7 +32,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private allTasks: ITask[];
 
-  // @Output()
   gridLines: IGridLine[] = [];
 
   public timeTrackingUserSelectionForm: FormGroup = null;
@@ -89,7 +80,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   isTasksTableVisible = true;
   isUiElementDisabled = false;
 
-  currentTaskId = this.taskService.taskId;
+  currentTaskId;
 
   currentTask: ITask;
 
@@ -102,20 +93,16 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   public onTaskChange(task: ITask) {
     this.setBookingDescription(task._bookingDeclarationId);
-
-    this.taskService.taskId = this.currentTaskId;
-
     this.setCurrentTaskViaCurrentTaskId();
   }
 
   public onProjectChange($event: any) {
     const projectId = $event.value.projectId;
-    this.redrawTableOfTasks(projectId);
-    this.initTasks(projectId);
-    if (this.taskService.taskId) {
-      const storedTaskId = this.taskService.taskId;
-      this.setTaskFromId(storedTaskId);
-    }
+    const initTasksPromise = this.initTasks(projectId);
+    initTasksPromise.then(() => {
+      this.redrawTableOfTasks(projectId);
+    });
+    return initTasksPromise;
   }
 
   private displayCurrentProjectInDropDown(projectId: string) {
@@ -124,14 +111,17 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     });
     if (projectOption) {
       this.timeTrackingUserSelectionForm.controls[this.formControlNameProjectSelectionDropDown].setValue(projectOption.value);
-      this.onProjectChange(projectOption);
+      const initTasksPromise = this.onProjectChange(projectOption);
+      initTasksPromise.then(() => {
+        this.redrawTableOfTasks(projectId);
+      });
+      return initTasksPromise;
     } else {
       console.error('no project option for: ' + projectId);
     }
-    this.redrawTableOfTasks(projectId);
   }
 
-  private initTasks(projectId) {
+  private initTasks(projectId: string) {
     return new Promise((resolve: (value?: any) => void) => {
       this.allTasksPromise = this.commitService.getTasksByProjectId(projectId);
       this.allTasksPromise.then((allTasksStr: string) => {
@@ -155,7 +145,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
             this.projectOptions.push(new ProjectOption(project));
           });
         }
-        resolve();
+        if (!allProjects || !allProjects.length) {
+          resolve();
+          return;
+        }
+        resolve(allProjects[0]);
       });
       this.allProjectsPromise.catch(() => {
         console.error('getProjects rejected');
@@ -172,47 +166,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.timeTrackingUserSelectionForm = this.formBuilder.group(controlsConfigObj);
   }
 
-  constructor(private taskService: TaskService,
-    private projectService: ProjectService,
-    private helpersService: HelpersService,
-    private timeTrackingService: TimeTrackingService,
+  constructor(private projectService: ProjectService,
     private formBuilder: FormBuilder,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) {
-    this.initForm();
-
-    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const projectId = params[routesConfig.projectIdProperty];
-      const taskId = params[routesConfig.taskIdProperty];
-
-      if (!projectId) {
-        console.error('no project id');
-        return;
-      }
-
-      const initProjectsPromise = this.initProjects();
-      initProjectsPromise.then(() => {
-        this.displayCurrentProjectInDropDown(projectId);
-        const initTaskPromise = this.initTasks(projectId);
-        initTaskPromise.then(() => {
-          if (!taskId) {
-            console.error('there is no task id');
-            return;
-          }
-          if (taskId) {
-            this.setTaskFromId(taskId);
-          }
-        });
-        initTaskPromise.catch(() => {
-          console.error('initTasks failed');
-        });
-      });
-      initProjectsPromise.catch(() => {
-        console.error('init of projects rejected');
-      })
-    });
   }
 
   // private displayRunningTask(projectId: string, taskId: string) {
@@ -369,7 +327,57 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   //   // // this.startStopButtonLabel = TimeTrackingState.stop;
   // }
 
+  private initWithDefaults() {
+    const outerProjectPromise = this.initProjects();
+    outerProjectPromise.then((firstProject: IProject) => {
+      const initTaskPromise = this.displayCurrentProjectInDropDown(firstProject.projectId);
+      if (!initTaskPromise || typeof initTaskPromise.then !== 'function') {
+        console.error('cannot set task');
+        return;
+      }
+      initTaskPromise.then(() => {
+        // the first task of a project should be displayed ???
+        if (!this.allTasks || !this.allTasks.length) {
+          console.error('cannot display first task, as there are no ones');
+          return;
+        }
+        const firstTaskIdOfProjectId = this.allTasks[0].taskId;
+        this.setTaskFromId(firstTaskIdOfProjectId);
+      });
+    });
+  }
+
+  private initWithUrl() {
+    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe((params: Params) => {
+      const projectId = params[routesConfig.projectIdProperty];
+      const taskId = params[routesConfig.taskIdProperty];
+
+      if (!projectId || !taskId) {
+        console.error('no projectId _and_ taskId');
+        this.initWithDefaults();
+        return;
+      }
+
+      const initProjectsPromise = this.initProjects();
+      initProjectsPromise.then(() => {
+        const initTaskPromise = this.displayCurrentProjectInDropDown(projectId);
+        if (!initTaskPromise || typeof initTaskPromise.then !== 'function') {
+          console.error('cannot set task');
+          return;
+        }
+        initTaskPromise.then(() => {
+          this.setTaskFromId(taskId);
+        });
+      });
+      initProjectsPromise.catch(() => {
+        console.error('init of projects rejected');
+      })
+    });
+  }
+
   ngOnInit() {
+    this.initForm();
+    this.initWithUrl();
   }
 
   ngOnDestroy(): void {
