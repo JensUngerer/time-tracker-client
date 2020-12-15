@@ -50,6 +50,13 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
 
   private previousTimeMeasurementState: TimeMeasurement;
 
+  isTasksTableVisible = true;
+  isUiElementDisabled = false;
+
+  currentTaskId;
+
+  currentTask: ITask;
+
   private getTaskFromAllTasks() {
     return this.allTasks.find((oneTask: ITask) => {
       return oneTask.taskId === this.currentTaskId;
@@ -66,43 +73,11 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     this.onTaskChange(task);
   }
 
-  onTaskRowClicked($event: IGridLine) {
-    // disabling start stop button...
-    this.currentTask = null;
-
-    this.setTaskFromId($event.id);
-  }
-
-  onDeleteRowClicked($event: any) {
-
-  }
-
-  isTasksTableVisible = true;
-  isUiElementDisabled = false;
-
-  currentTaskId;
-
-  currentTask: ITask;
-
   private async redrawTableOfTasks(projectId: string) {
     if (!projectId) {
       return;
     }
     this.gridLines = await this.projectService.getTasksByProjectId(projectId);
-  }
-
-  public onTaskChange(task: ITask) {
-    this.setBookingDescription(task._bookingDeclarationId);
-    this.setCurrentTaskViaCurrentTaskId();
-  }
-
-  public onProjectChange($event: any) {
-    const projectId = $event.value.projectId;
-    const initTasksPromise = this.initTasks(projectId);
-    initTasksPromise.then(() => {
-      this.redrawTableOfTasks(projectId);
-    });
-    return initTasksPromise;
   }
 
   private displayCurrentProjectInDropDown(projectId: string) {
@@ -173,139 +148,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     private sessionStorageSerializationService: SessionStorageSerializationService) {
   }
 
-  // private displayRunningTask(projectId: string, taskId: string) {
-  //   // TODO: re-introduce this feature
-  //   const isTimeEntryRunningPromise = this.displayRunningTimeEntry();
-  //   isTimeEntryRunningPromise.then((resolvedTimeEntryValues: ITimeEntryDocument) => {
-  //     if (!resolvedTimeEntryValues) {
-  //       // there are not running timeEntries --> continue as before
-  //       this.allProjectsPromise.finally(() => {
-  //         if (projectId) {
-  //           this.displayCurrentProjectInDropDown(projectId);
-  //         }
-  //         this.allTasksPromise.finally(() => {
-  //           if (taskId) {
-  //             this.setTaskFromId(taskId);
-  //             this.redrawTableOfTasks(projectId);
-  //           }
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
-
-  // private setTask(taskId: string) {
-  //   const taskOption: ITaskOption = this.taskOptions.find((oneTaskOption: ITaskOption) => {
-  //     return oneTaskOption.value.taskId === taskId;
-  //   });
-  //   if (taskOption) {
-  //     const currentTask = this.allTasks.find((oneTask: ITask) => {
-  //       return oneTask.taskId === taskId;
-  //     });
-
-  //     this.setBookingDescription(currentTask._bookingDeclarationId);
-
-  //     this.redrawTableOfTasks(currentTask._projectId);
-  //   } else {
-  //     console.error('no task option for:' + taskId);
-  //   }
-  // }
-
-  // private displayRunningTimeEntry(): Promise<ITimeEntryDocument> {
-  //   return new Promise<ITimeEntryDocument>((resolve: (value?: ITimeEntryDocument) => void) => {
-  //     const getRunningPromise = this.commitService.getRunningTimeEntry();
-  //     getRunningPromise.then((runningTimeEntry: string) => {
-  //       const runningTimeEntryParsed: ITimeEntryDocument = this.sessionStorageSerializationService.deSerialize(runningTimeEntry);
-  //       if (runningTimeEntryParsed) {
-  //         resolve(runningTimeEntryParsed);
-
-  //         const timeEntryId = runningTimeEntryParsed.timeEntryId;
-  //         const projectPromise = this.commitService.getProjectByTaskId(runningTimeEntryParsed._taskId);
-  //         projectPromise.then((rawProject: string) => {
-  //           if (!rawProject) {
-  //             console.error('no project found');
-  //             return;
-  //           }
-  //           // a) project
-  //           const project: IProjectsDocument = this.sessionStorageSerializationService.deSerialize(rawProject);
-  //           this.insertProjectIfNotContained(project);
-  //           this.displayCurrentProjectInDropDown(project.projectId)
-
-  //           // b) booking-declaration
-  //           this.setBookingDescription(runningTimeEntryParsed._bookingDeclarationId);
-
-
-  //           // c) task
-  //           const taskId = runningTimeEntryParsed._taskId;
-  //           const insertTaskPromise = this.insertTaskIfNotContained(taskId);
-
-  //           insertTaskPromise.then(() => {
-  //             this.setTask(taskId);
-
-  //             // start visualization
-  //             this.startStopButtonLabel = TimeTrackingState.stop;
-  //             const timeEntryPromise = this.commitService.getTimeEntryById(timeEntryId);
-  //             timeEntryPromise.then((rawTimeEntry: string) => {
-  //               this.visualizeStartedTimeEntry(rawTimeEntry);
-  //             });
-  //             timeEntryPromise.catch(() => {
-  //               console.error('timeEntry rejected');
-  //             });
-  //           });
-  //           insertTaskPromise.catch(() => {
-  //             console.error('error when inserting missing task');
-  //           });
-  //         });
-
-  //       } else {
-  //         resolve(null);
-  //       }
-  //     });
-
-  //   });
-  // }
-
-
-  // private insertProjectIfNotContained(project: IProjectsDocument) {
-  //   if (!project) {
-  //     return;
-  //   }
-  //   if (!this.projectOptions) {
-  //     this.projectOptions = [];
-  //   }
-  //   const indexInOptions = this.projectOptions.findIndex((oneProjectOption: IProjectOption) => {
-  //     return oneProjectOption.value.projectId === project.projectId;
-  //   });
-  //   if (indexInOptions === -1) {
-  //     this.projectOptions.push(new ProjectOption(project));
-  //   }
-  // }
-
-  // private insertTaskIfNotContained(taskId: string) {
-  //   return new Promise<any>((resolve: (value?: any) => void) => {
-  //     if (!this.taskOptions) {
-  //       this.taskOptions = [];
-  //     }
-  //     const indexInTaskOptions = this.taskOptions.findIndex((oneTaskOption: TaskOption) => {
-  //       return oneTaskOption.value.taskId === taskId;
-  //     });
-  //     if (indexInTaskOptions === -1) {
-  //       const getTaskPromise = this.commitService.getTaskById(taskId);
-  //       getTaskPromise.then((rawTask: string) => {
-  //         const task: ITask = this.sessionStorageSerializationService.deSerialize(rawTask);
-  //         this.taskOptions.push(new TaskOption(task));
-  //         resolve(true);
-  //       });
-  //       getTaskPromise.catch(() => {
-  //         console.error('error when catching task');
-  //         resolve(null);
-  //       });
-  //     } else {
-  //       resolve(false);
-  //     }
-  //   });
-  // }
-
   private setBookingDescription(bookingDeclarationId: string) {
     this.currentBookingDeclarationId = bookingDeclarationId;
 
@@ -317,15 +159,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
       this.bookingDeclarationDescription = parsedDocuments[0].description;
     });
   }
-
-  // public onTimeEntryChanged($event: any) {
-  //   // DEBUGGING:
-  //   console.log($event);
-
-  //   // const value: ITimeEntryDocument = $event.value;
-  //   // this.setTimeEntryIdInUrl(value.timeEntryId);
-  //   // // this.startStopButtonLabel = TimeTrackingState.stop;
-  // }
 
   private initWithDefaults() {
     const outerProjectPromise = this.initProjects();
@@ -408,5 +241,30 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
     // necessary for debugging
     this.previousTimeMeasurementState = newTimeMeasurementState;
+  }
+
+  onTaskChange(task: ITask) {
+    this.setBookingDescription(task._bookingDeclarationId);
+    this.setCurrentTaskViaCurrentTaskId();
+  }
+
+  onProjectChange($event: any) {
+    const projectId = $event.value.projectId;
+    const initTasksPromise = this.initTasks(projectId);
+    initTasksPromise.then(() => {
+      this.redrawTableOfTasks(projectId);
+    });
+    return initTasksPromise;
+  }
+
+  onTaskRowClicked($event: IGridLine) {
+    // disabling start stop button...
+    this.currentTask = null;
+
+    this.setTaskFromId($event.id);
+  }
+
+  onDeleteRowClicked($event: any) {
+
   }
 }
