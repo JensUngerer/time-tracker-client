@@ -128,8 +128,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     } else {
       console.error('no project option for: ' + projectId);
     }
-    // TODO: still necessary ??
-    // this.redrawTableOfTasks(projectId);
+    this.redrawTableOfTasks(projectId);
   }
 
   private initTasks(projectId) {
@@ -205,15 +204,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
           if (taskId) {
             this.setTaskFromId(taskId);
           }
-
-
-          // const redrawTablePromise = this.redrawTableOfTasks(projectId);
-          // redrawTablePromise.then(() => {
-          //   this.displayRunningTask(projectId, taskId);
-          // });
-          // redrawTablePromise.catch(() => {
-          //   console.error('redraw table failed');
-          // });
         });
         initTaskPromise.catch(() => {
           console.error('initTasks failed');
@@ -380,8 +370,6 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit() {
-    // TODO: still necessary ???
-    // this.visualizeTimeEntry(null);
   }
 
   ngOnDestroy(): void {
