@@ -1,48 +1,36 @@
 <div class="container">
   <div class="flexItem">
     <div class="theInnerFlexContainer">
-      <mat-horizontal-stepper
+      <mat-vertical-stepper
         [linear]="false"
         (animationDone)="onAnimationDone()"
         #stepper
       >
         <mat-step
           *ngFor="let oneDisplayedIndex of displayedIndexes"
-          [stepControl]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup"
-          [label]="routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]].data.label : ''"
+          [stepControl]="
+            formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+              ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+              : staticFormGroup
+          "
+          [label]="
+            routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+              ? routingRoutes[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+                  .data.label
+              : ''
+          "
         >
           <form
-           [formGroup]="formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]] : staticFormGroup">
-            <ng-template matStepperIcon="edit">
-              <mat-icon>none</mat-icon>
-            </ng-template>
-            <ng-template matStepperIcon="number">
-              <mat-icon>none</mat-icon>
-            </ng-template>
-            <ng-template matStepperIcon="selected">
-              <mat-icon>none</mat-icon>
-            </ng-template>
-            <div class="buttonFlexContainer">
-              <button
-                class="buttonFlexItem"
-                *ngIf="!isBackwardButtonDisabled"
-                mat-button
-                matStepperPrevious
-              >
-                <mat-icon>navigate_before</mat-icon>
-              </button>
-              <button
-                class="buttonFlexItem"
-                *ngIf="!isForwardButtonDisabled"
-                mat-button
-                matStepperNext
-              >
-                <mat-icon>navigate_next</mat-icon>
-              </button>
-            </div>
+            [formGroup]="
+              formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+                ? formGroups[displayedIndexToRealIndexMap[oneDisplayedIndex]]
+                : staticFormGroup
+            "
+          >
+            <mat-icon>none</mat-icon>
           </form>
         </mat-step>
-      </mat-horizontal-stepper>
+      </mat-vertical-stepper>
     </div>
   </div>
 </div>
