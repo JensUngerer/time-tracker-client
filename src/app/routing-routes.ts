@@ -2,12 +2,12 @@ import { Routes } from '@angular/router';
 
 import * as routesConfig from './../../../common/typescript/routes.js';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
-import { BookingComponent } from './booking/booking.component.js';
-import { CommitComponent } from './commit/commit.component.js';
-import { ContextComponent } from './context/context.component.js';
+import { BookingComponent } from './booking/booking.component';
+import { CommitComponent } from './commit/commit.component';
+import { ContextComponent } from './context/context.component';
 import { ProjectComponent } from './project/project.component';
-import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component.js';
-import { StatsComponent } from './stats/stats.component.js';
+import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
+import { StatsComponent } from './stats/stats.component';
 import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
