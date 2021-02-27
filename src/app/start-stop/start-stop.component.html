@@ -1,9 +1,10 @@
 <div fxLayout="column">
   <div fxFlex="1 1 0" class="space-around" fxLayoutAlign="center center">
     <button
+      fxFlex="1 1 0"
       type="button"
       (click)="onStartStopButtonClicked()"
-      mat-stroke-button
+      mat-raised-button	
       [disabled]="isStartStopButtonDisabled"
     >
       {{ startStopButtonLabel }}
