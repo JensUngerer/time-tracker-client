@@ -15,7 +15,7 @@ import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
 })
 export class CommitService {
 
-  private readonly httpOptions: any = {
+  static httpOptions: any = {
     headers: {
       'Content-Type': 'text/plain'
     },
@@ -248,7 +248,7 @@ export class CommitService {
   private performHttpPatch(url: string, body: any): Promise<any> {
     const serializedBody = this.sessionStorageSerializationService.serialize(body);
     return new Promise<any>((resolve: (value: any) => void) => {
-      this.httpClient.patch(url, serializedBody, this.httpOptions).subscribe((subscriptionReturnValue: any) => {
+      this.httpClient.patch(url, serializedBody, CommitService.httpOptions).subscribe((subscriptionReturnValue: any) => {
         resolve(subscriptionReturnValue);
       });
     });
@@ -295,7 +295,7 @@ export class CommitService {
         body[routes.collectionNamePropertyName] = collectionName;
       }
       const stringifiedBody = this.sessionStorageSerializationService.serialize<any>(body);
-      this.httpClient.post(url, stringifiedBody, this.httpOptions).subscribe((subscriptionValue: any) => {
+      this.httpClient.post(url, stringifiedBody, CommitService.httpOptions).subscribe((subscriptionValue: any) => {
         resolve(subscriptionValue);
       });
     });
@@ -314,7 +314,7 @@ export class CommitService {
   private httpGet(url: string): Promise<string> {
     return new Promise<string>((resolve: (values: string) => void, reject: (value: any) => void) => {
 
-      this.httpClient.get(url, this.httpOptions).subscribe((subscriptionReceivedData: any) => {
+      this.httpClient.get(url, CommitService.httpOptions).subscribe((subscriptionReceivedData: any) => {
         resolve(subscriptionReceivedData);
       });
     });

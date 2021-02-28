@@ -7,5 +7,6 @@ export enum ViewPaths {
   commit = 'commit',
   statistics = 'statistics',
   statisticsVisualization = 'visualization',
-  context = 'context'
+  context = 'context',
+  login = 'login'
 }

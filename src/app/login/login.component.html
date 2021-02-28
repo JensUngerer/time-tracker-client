@@ -1,0 +1,27 @@
+<h1>Login Page</h1>
+<div *ngIf="isVisible">
+  <form [formGroup]="ngFormGroup" (submit)="submit(ngFormGroup.value)">
+    Enter Username:<br /><input
+      [formControlName]="userNameFormControlName"
+      id="username"
+      type="text"
+      name="username"
+      (change)="userNameChanged()"
+    />
+    <br />Enter Password:<br /><input
+      [formControlName]="passwordFormControlname"
+      id="password"
+      type="password"
+      name="password"
+    />
+    <br /><br /><button [disabled]="ngFormGroup.invalid" type="submit">
+      Submit
+    </button>
+  </form>
+  <br />
+  <br />
+  <br />
+</div>
+<div>
+  <button (click)="logout()">Logout</button>
+</div>

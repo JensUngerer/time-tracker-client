@@ -45,6 +45,7 @@ import { ConfigurableStatsTableComponent } from './configurable-stats-table/conf
 import { ContextComponent } from './context/context.component';
 import { IsCsvFileWrittenComponent } from './is-csv-file-written/is-csv-file-written.component';
 import { StartStopComponent } from './start-stop/start-stop.component';
+import { LoginComponent } from './login/login.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -81,7 +82,8 @@ import { StartStopComponent } from './start-stop/start-stop.component';
     ConfigurableStatsTableComponent,
     ContextComponent,
     IsCsvFileWrittenComponent,
-    StartStopComponent
+    StartStopComponent,
+    LoginComponent
   ],
   exports: [
     IsCsvFileWrittenComponent

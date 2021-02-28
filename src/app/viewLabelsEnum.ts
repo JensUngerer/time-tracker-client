@@ -7,5 +7,6 @@ export enum ViewLabels {
   commit = 'Commit',
   statistics = 'Statistics',
   statisticsVisualization = 'Statistics-Visualization',
-  context = 'Workflow-Context'
+  context = 'Workflow-Context',
+  login = 'Login'
 }

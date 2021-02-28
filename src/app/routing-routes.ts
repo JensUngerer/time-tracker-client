@@ -5,6 +5,7 @@ import { BookingDeclarationComponent } from './booking-declaration/booking-decla
 import { BookingComponent } from './booking/booking.component';
 import { CommitComponent } from './commit/commit.component';
 import { ContextComponent } from './context/context.component';
+import { LoginComponent } from './login/login.component';
 import { ProjectComponent } from './project/project.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { StatsComponent } from './stats/stats.component';
@@ -17,9 +18,16 @@ export class RoutingRoutes {
 
   public static viewsPrefix = routesConfig.viewsPrefix;
 
-  public static startRoute = ViewPaths.project;
+  public static startRoute = ViewPaths.login;
 
   public static routes: Routes = [
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.login,
+      component: LoginComponent,
+      data: {
+        label: ViewLabels.login
+      }
+    },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.bookingDeclaration,
       component: BookingDeclarationComponent,
