@@ -1,27 +1,26 @@
-<!-- <h1>Login</h1> -->
 <div *ngIf="isVisible">
   <form [formGroup]="ngFormGroup" (submit)="submit(ngFormGroup.value)">
-    Username:<br /><input
-      [formControlName]="userNameFormControlName"
-      id="username"
-      type="text"
-      name="username"
-      (change)="userNameChanged()"
-    />
-    <br />Password:<br /><input
-      [formControlName]="passwordFormControlname"
-      id="password"
-      type="password"
-      name="password"
-    />
-    <br /><br /><button [disabled]="ngFormGroup.invalid" type="submit">
-      Submit
-    </button>
+    <mat-form-field class="full-width">
+      <mat-label>Username</mat-label>
+      <input
+        [formControlName]="userNameFormControlName"
+        matInput
+        type="text"
+        placeholder="Username"
+      />
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-label>Password</mat-label>
+      <input
+        [formControlName]="passwordFormControlname"
+        matInput
+        type="password"
+        placeholder="Password"
+      />
+    </mat-form-field>
+    <button mat-raised-button class="full-width" [disabled]="ngFormGroup.invalid" type="submit">Login</button>
   </form>
   <br />
   <br />
   <br />
 </div>
-<!-- <div>
-  <button (click)="logout()">Logout</button>
-</div> -->
