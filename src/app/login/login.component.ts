@@ -1,10 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 import { tap } from 'rxjs/internal/operators/tap';
 import { environment } from 'src/environments/environment';
+import { AuthentificationService, ILoginStatus } from '../authentification.service';
 import { CommitService } from '../commit.service';
+import { RoutingRoutes } from '../routing-routes';
 
 @Component({
   selector: 'mtt-login',
@@ -21,9 +24,10 @@ export class LoginComponent implements AfterViewInit {
   passwordFormControlname = 'password';
 
   constructor(private formBuilder: FormBuilder,
-    private httpClient: HttpClient) {
-      this.authentificationExpressOptions = {... CommitService.httpOptions};
-      this.authentificationExpressOptions.withCredentials = true;
+    private authentificationService: AuthentificationService,
+    private router: Router) {
+      // this.authentificationExpressOptions = {... CommitService.httpOptions};
+      // this.authentificationExpressOptions.withCredentials = true;
       // {
       //  withCredentials: true
       // }
@@ -55,9 +59,9 @@ export class LoginComponent implements AfterViewInit {
     }, this.DELAY);
   }
 
-  private generateUrl(urlPostfix: string) {
-    return environment.httpBaseUrl + environment.port + urlPostfix;
-  }
+  // private generateUrl(urlPostfix: string) {
+  //   return environment.httpBaseUrl + environment.port + urlPostfix;
+  // }
 
   submit(values:  {[key: string]: string}) {
     this.ngFormGroup.reset();
@@ -67,20 +71,21 @@ export class LoginComponent implements AfterViewInit {
     let password = values[this.passwordFormControlname];
     password = CryptoJS.SHA512(password).toString();
 
-    const url = this.generateUrl('/api/login');
-    const body =  {
-      username: userName,
-      password: password
-    };
-  
-    const httpPostLogin$ = this.httpClient.post(url, JSON.stringify({
-      username: userName,
-      password: password
-    }),  this.authentificationExpressOptions);
-    httpPostLogin$.pipe(tap(
-      this.requestLoginStatus.bind(this)
-   )).subscribe();
+    const loginStatusPromise = this.authentificationService.login(userName, password);
+    loginStatusPromise.then((loginStatus: ILoginStatus) => {
+      if (loginStatus && loginStatus.isLoggedIn) {
+        const routerPromise = this.router.navigate([RoutingRoutes.routeAfterSuccesfulLogin]);
+        routerPromise.then((isSuccesFul: boolean) => {
+          if (isSuccesFul) {
+            window.location.reload();
+          }
+        });
+      } else {
+        console.error(JSON.stringify(loginStatus, null, 4));
+      }
+    });
 
+   
     // console.log(JSON.stringify({
     //   userName,
     //   password
@@ -88,15 +93,15 @@ export class LoginComponent implements AfterViewInit {
     
   }
 
-  private requestLoginStatus() {
-    const loginStatusUrl = this.generateUrl('/api/login-status');
-    const httpGetLoginStatus$ = this.httpClient.get(loginStatusUrl, CommitService.httpOptions);
-    httpGetLoginStatus$.pipe(tap(this.printLoginStatus.bind(this))).subscribe();
-  }
+  // private requestLoginStatus() {
+  //   const loginStatusUrl = this.generateUrl('/api/login-status');
+  //   const httpGetLoginStatus$ = this.httpClient.get(loginStatusUrl, CommitService.httpOptions);
+  //   httpGetLoginStatus$.pipe(tap(this.printLoginStatus.bind(this))).subscribe();
+  // }
 
-  private printLoginStatus(loginStatus: any) {
-    console.log(JSON.parse(loginStatus));
-  }
+  // private printLoginStatus(loginStatus: any) {
+  //   console.log(JSON.parse(loginStatus));
+  // }
 
   userNameChanged(){
     // console.log(this.ngFormGroup.controls[this.userNameFormControlName].valid);
@@ -104,8 +109,5 @@ export class LoginComponent implements AfterViewInit {
   }
 
   logout() {
-    const logoutUrl =  this.generateUrl('/api/logout');
-    const httpPostLogout$ = this.httpClient.post(logoutUrl, JSON.stringify({}), this.authentificationExpressOptions);
-    httpPostLogout$.pipe(tap(this.requestLoginStatus.bind(this))).subscribe();
   }
 }

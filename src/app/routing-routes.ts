@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import * as routesConfig from './../../../common/typescript/routes.js';
+import { AuthentificationService } from './authentification.service';
 import { BookingDeclarationComponent } from './booking-declaration/booking-declaration.component';
 import { BookingComponent } from './booking/booking.component';
 import { CommitComponent } from './commit/commit.component';
@@ -15,10 +16,9 @@ import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
 
 export class RoutingRoutes {
-
   public static viewsPrefix = routesConfig.viewsPrefix;
 
-  public static startRoute = ViewPaths.login;
+  private static startRoute = ViewPaths.login;
 
   public static routes: Routes = [
     {
@@ -33,49 +33,56 @@ export class RoutingRoutes {
       component: BookingDeclarationComponent,
       data: {
         label: ViewLabels.bookingDeclaration
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
-      path: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
+      path: RoutingRoutes.viewsPrefix + ViewPaths.project,
       component: ProjectComponent,
       data: {
         label: ViewLabels.projectManagement
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.task,
       component: TaskComponent,
       data: {
         label: ViewLabels.taskManagement
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.timeTracking,
       component: TimeTrackingComponent,
       data: {
         label: ViewLabels.timeTracking
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.statistics,
       component: StatsComponent,
       data: {
         label: ViewLabels.statistics
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.statisticsVisualization,
       component: StatsVisualizationComponent,
       data: {
         label: ViewLabels.statisticsVisualization
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.context,
       component: ContextComponent,
       data: {
         label: ViewLabels.context
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
@@ -83,7 +90,8 @@ export class RoutingRoutes {
       data: {
         label: ViewLabels.commit,
         isTaskBased: true
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.book,
@@ -91,7 +99,8 @@ export class RoutingRoutes {
       data: {
         label: ViewLabels.book,
         isBookingBased: true
-      }
+      },
+      canActivate: [AuthentificationService]
     },
     {
       path: '',
@@ -101,4 +110,10 @@ export class RoutingRoutes {
         label: ''
       }
     }];
+
+  private static ROUTE_INDEX_OF_PROJECT_VIEW = 2;
+  private static ROUTE_INDEX_OF_LOGIN_VIEW = 0;
+
+  public static routeAfterSuccesfulLogin = RoutingRoutes.routes[RoutingRoutes.ROUTE_INDEX_OF_PROJECT_VIEW].path;
+  public static routeAfterSuccesfulLogout =  RoutingRoutes.routes[RoutingRoutes.ROUTE_INDEX_OF_LOGIN_VIEW].path;
 }

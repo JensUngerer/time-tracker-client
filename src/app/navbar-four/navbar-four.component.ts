@@ -1,6 +1,8 @@
+import { Component, OnInit } from '@angular/core';
+import { Route, Router } from '@angular/router';
+
+import { AuthentificationService, ILoginStatus } from '../authentification.service';
 import { RoutingRoutes } from './../routing-routes';
-import { Component, OnInit, Output } from '@angular/core';
-import { Route } from '@angular/router';
 
 export interface INavbarItem {
   label: string;
@@ -13,11 +15,15 @@ export interface INavbarItem {
   styleUrls: ['./navbar-four.component.scss']
 })
 export class NavbarFourComponent implements OnInit {
+  private readonly isLoggedOutColor = 'accent';
+  private readonly isLoggedInColor = 'primary';
 
-  @Output()
+  color = this.isLoggedOutColor;
+
   public navItems: INavbarItem[] = [];
 
-  constructor() {
+  constructor(private authentificationService: AuthentificationService,
+    private router: Router) {
     RoutingRoutes.routes.forEach((route: Route, index: number) => {
       if (index === RoutingRoutes.routes.length - 1) {
         return;
@@ -29,8 +35,33 @@ export class NavbarFourComponent implements OnInit {
     });
   }
 
+  private setColorViaLogginStatus() {
+    const isLoggedInStatusPromise = this.authentificationService.getLoginStatus();
+    isLoggedInStatusPromise.then((isLoggedIn: boolean)=>{
+      if (isLoggedIn) {
+        this.color = this.isLoggedInColor;
+      } else  {
+        this.color = this.isLoggedOutColor;
+      }
+    });
+    isLoggedInStatusPromise.catch((err: any) => {
+      console.error(JSON.stringify(err, null, 4));
+    }); 
+  }
 
   ngOnInit() {
+    this.setColorViaLogginStatus();
+  }
+
+  logout() {
+    const logoutRequestPromise = this.authentificationService.logout();
+    logoutRequestPromise.then(() => { 
+      this.setColorViaLogginStatus();
+      this.router.navigate([RoutingRoutes.routeAfterSuccesfulLogout]);
+    });
+    logoutRequestPromise.catch((err: any) => {
+      console.error(JSON.stringify(err, null, 4));
+    }); 
   }
 
 }

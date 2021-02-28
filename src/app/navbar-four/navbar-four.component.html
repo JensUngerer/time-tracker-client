@@ -1,9 +1,16 @@
 <div fxLayout="column" fxFlexFill>
   <div fxFlex="0 1 auto">
-    <mat-toolbar color="primary">
-      <button mat-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
+    <mat-toolbar fxFlex="1 1 0" fxLayout="row" [color]="color">
+      <div fxFlex="1 1 0" fxLayout="row" fxLayoutAlign="flex-start flex-start">
+        <button mat-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>  
+      </div>
+      <div fxFlex="1 1 0" fxLayout="row" fxLayoutAlign="flex-end flex-end">
+        <button mat-button (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
+      </div>
     </mat-toolbar>
   </div>
   <div fxFlex="1 1 0">
