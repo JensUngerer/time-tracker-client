@@ -72,16 +72,18 @@ export class LoginComponent implements AfterViewInit {
     password = CryptoJS.SHA512(password).toString();
 
     const loginStatusPromise = this.authentificationService.login(userName, password);
-    loginStatusPromise.then((loginStatus: ILoginStatus) => {
-      if (loginStatus && loginStatus.isLoggedIn) {
+    loginStatusPromise.then((isLoggedIn: boolean) => {
+      if (isLoggedIn) {
         const routerPromise = this.router.navigate([RoutingRoutes.routeAfterSuccesfulLogin]);
-        routerPromise.then((isSuccesFul: boolean) => {
-          if (isSuccesFul) {
+        routerPromise.then((isSuccessful: boolean) => {
+          if (isSuccessful) {
             window.location.reload();
+          } else  {
+            console.error('page refresh failed');
           }
         });
       } else {
-        console.error(JSON.stringify(loginStatus, null, 4));
+        console.error(JSON.stringify(isLoggedIn, null, 4));
       }
     });
 

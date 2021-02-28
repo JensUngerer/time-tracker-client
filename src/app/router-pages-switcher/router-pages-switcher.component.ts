@@ -46,11 +46,16 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-      if (this.performRouterEventSubscription) {
-        this.performRouterEventSubscription.unsubscribe();
-      }
-      this.performRouterEventSubscription = this.router.events
-        .subscribe(this.performRouteEvent.bind(this));
+    if (this.performRouterEventSubscription) {
+      this.performRouterEventSubscription.unsubscribe();
+    }
+    this.performRouterEventSubscription = this.router.events
+      .subscribe(this.performRouteEvent.bind(this));
+    // if (typeof this.displayedIndexToRealIndexMap === 'undefined')  {
+    //   this.initIndices({
+    //     url: ''
+    //   } as RouterEvent);
+    // }
   }
 
   private performRouteEvent(e: RouterEvent) {
@@ -181,6 +186,13 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
   }
 
   onAnimationDone() {
+    if (typeof this.displayedIndexToRealIndexMap === 'undefined' ||
+      JSON.stringify(this.displayedIndexToRealIndexMap) === '{}') {
+      this.initIndices({
+        // url: window.location.href
+        url: window.location.href
+      } as RouterEvent);
+    }
     const currentDisplayedEntryIndex = this.stepper.selectedIndex;
     this.currentRealIndex = this.displayedIndexToRealIndexMap[currentDisplayedEntryIndex];
 
@@ -190,6 +202,10 @@ export class RouterPagesSwitcherComponent implements OnDestroy, AfterViewInit {
 
     if (this.currentRoute &&
       ('/' + this.currentRoute.path) === this.currentUrl) {
+      return;
+    }
+    if (!this.currentRoute) {
+      console.error(this.currentRealIndex);
       return;
     }
     this.router.navigate([this.currentRoute.path]);

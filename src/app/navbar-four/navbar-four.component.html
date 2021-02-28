@@ -2,12 +2,12 @@
   <div fxFlex="0 1 auto">
     <mat-toolbar fxFlex="1 1 0" fxLayout="row" [color]="color">
       <div fxFlex="1 1 0" fxLayout="row" fxLayoutAlign="flex-start flex-start">
-        <button mat-button (click)="sidenav.toggle()">
+        <button *ngIf="isMenuVisible" mat-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>  
       </div>
       <div fxFlex="1 1 0" fxLayout="row" fxLayoutAlign="flex-end flex-end">
-        <button mat-button (click)="logout()">
+        <button *ngIf="isMenuVisible" mat-button (click)="logout()">
           <mat-icon>exit_to_app</mat-icon>
         </button>
       </div>
@@ -42,7 +42,7 @@
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>
-  <div fxFlex="1 1 220px">
+  <div fxFlex="1 1 220px" *ngIf="isMenuVisible">
     <mtt-router-pages-switcher></mtt-router-pages-switcher>
   </div>
 </div>
