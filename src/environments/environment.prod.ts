@@ -3,5 +3,5 @@ import routes from './../../../common/typescript/routes.js';
 export const environment = {
   production: true,
   port: routes.port,
-  httpBaseUrl: 'http://localhost:'
+  httpBaseUrl: 'https://yourDomainName.topLevelDomainName'
 };

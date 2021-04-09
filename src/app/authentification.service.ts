@@ -28,7 +28,7 @@ export class AuthentificationService implements CanActivate {
   }
 
   private generateUrl(urlPostfix: string) {
-    return environment.httpBaseUrl + environment.port + urlPostfix;
+    return environment.httpBaseUrl + urlPostfix;
   }
 
   private requestLoginStatus() {

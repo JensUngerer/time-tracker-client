@@ -75,27 +75,27 @@ export class CommitService {
   }
 
   getTimeEntryById(timeEntryId: string){
-    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + '/' + timeEntryId;
+    const url = environment.httpBaseUrl + routes.timeEntries + '/' + timeEntryId;
     return this.httpGet(url);
   }
 
   getProjectByTaskId(taskId: string) {
-    const url = environment.httpBaseUrl + environment.port + routes.project + routes.projectByTaskIdSuffix + '/' + taskId;
+    const url = environment.httpBaseUrl + routes.project + routes.projectByTaskIdSuffix + '/' + taskId;
     return this.httpGet(url);
   }
 
   getRunningTimeEntry() {
-    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesRunningSuffix;
+    const url = environment.httpBaseUrl + routes.timeEntries + routes.timeEntriesRunningSuffix;
     return this.httpGet(url);
   }
 
   getDurationSumsForTasks() {
-    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
+    const url = environment.httpBaseUrl + routes.timeEntries + routes.timeEntriesDurationSumTasksSuffix;
     return this.httpGet(url);
   }
 
   getCommitDays() {
-    const url = environment.httpBaseUrl + environment.port + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
+    const url = environment.httpBaseUrl + routes.timeEntries + routes.timeEntriesDurationSumSuffix;
     return this.httpGet(url);
   }
 
@@ -125,7 +125,7 @@ export class CommitService {
   }
 
   private getBookingDeclarationUrl(): string {
-    const url = environment.httpBaseUrl + environment.port + routes.bookingDeclaration;
+    const url = environment.httpBaseUrl + routes.bookingDeclaration;
     return url;
   }
 
@@ -138,7 +138,7 @@ export class CommitService {
   }
 
   private getTimeEntriesUrl(): string {
-    const url = environment.httpBaseUrl + environment.port + routes.timeEntries;
+    const url = environment.httpBaseUrl + routes.timeEntries;
     return url;
   }
 
@@ -193,12 +193,12 @@ export class CommitService {
   }
 
   private getProjectsUrl(): string {
-    const url = environment.httpBaseUrl + environment.port + routes.project;
+    const url = environment.httpBaseUrl + routes.project;
     return url;
   }
 
   private getTaskUrl(): string {
-    const url = environment.httpBaseUrl + environment.port + routes.task;
+    const url = environment.httpBaseUrl + routes.task;
     return url;
   }
 
@@ -278,7 +278,7 @@ export class CommitService {
   }
 
   public postCommit(collectionName: string, line: ITimeRecordsDocumentData): Promise<any> {
-    const url = environment.httpBaseUrl + environment.port + routes.timeRecord;
+    const url = environment.httpBaseUrl + routes.timeRecord;
     return this.httpPost(routes.timeRecordBodyProperty, line, url, collectionName);
   }
 
@@ -302,7 +302,7 @@ export class CommitService {
   }
 
   public getTasks(): Promise<string> {
-    const url = environment.httpBaseUrl + environment.port + routes.task;
+    const url = environment.httpBaseUrl + routes.task;
     return this.httpGet(url);
   }
 
