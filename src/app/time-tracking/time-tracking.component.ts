@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,6 +8,7 @@ import { ITask } from '../../../../common/typescript/iTask';
 import { IBookingDeclarationsDocument } from '../../../../common/typescript/mongoDB/iBookingDeclarationsDocument';
 import { ProjectService } from '../project.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
+import { StartStopComponent } from '../start-stop/start-stop.component';
 import { TimeMeasurement } from '../start-stop/time-measurement.enum';
 import { IGridLine } from '../typescript/iGridLine';
 import { ITimeEntryOption } from '../typescript/iTimeEntryOption';
@@ -22,6 +23,9 @@ import { IProjectOption, ProjectOption } from './../typescript/projectOption';
   styleUrls: ['./time-tracking.component.scss', './../css/centerVerticalHorizontal.scss', './../css/table.scss', './../css/space-around.scss']
 })
 export class TimeTrackingComponent implements OnInit, OnDestroy {
+  @ViewChild(StartStopComponent)
+  private startStopComponent: StartStopComponent;
+  
   private activatedRouteSubscription: Subscription = null;
 
   private inMemoryDataServiceSubscription: Subscription = null;
@@ -219,6 +223,9 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
     }
     if (this.inMemoryDataServiceSubscription) {
       this.inMemoryDataServiceSubscription.unsubscribe();
+    }
+    if (this.startStopComponent) {
+      this.startStopComponent.onStartStopButtonClicked(true);
     }
   }
 

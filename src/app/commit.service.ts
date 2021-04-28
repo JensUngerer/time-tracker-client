@@ -221,6 +221,18 @@ export class CommitService {
     return this.performHttpPatch(url, body);
   }
 
+  public stopTimeTrackingByBeacon(timeEntryId: string) {
+    // http POST request --> trigger PATCH (routes.timeEntriesStopPathSuffix) in case of really running time-entry
+    const url = this.getTimeEntriesUrl() + routes.timeEntriesTryStopSuffix;
+
+    const body: any = {};
+    body[routes.httpPatchIdPropertyName] = routes.timeEntryIdProperty;
+    body[routes.httpPatchIdPropertyValue] = timeEntryId;
+
+    const stringifiedBody = this.sessionStorageSerializationService.serialize(body);
+    window.navigator.sendBeacon(url, stringifiedBody);
+  }
+
   // TODO: use this after committing a timeRecord
   public patchTimeEntriesDelete(timeEntryId): Promise<any> {
     const url = this.getTimeEntriesUrl() + routes.timeEntriesDeletePathSuffix;

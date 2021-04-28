@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Constants } from '../../../../common/typescript/constants';
 import { ITask } from '../../../../common/typescript/iTask';
 import { ITimeEntry } from '../../../../common/typescript/iTimeEntry';
@@ -15,6 +15,16 @@ import { TimeTrackingState } from './timeTrackingState.enum';
   styleUrls: ['./start-stop.component.scss', './../css/space-around.scss']
 })
 export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
+  // https://stackoverflow.com/questions/38999842/angular-2-execute-code-when-closing-window
+  @HostListener('window:beforeunload', ['$event'])
+  beforeunloadHandler(event: Event) {
+    if (this.startStopButtonLabel === TimeTrackingState.stop) {
+      // the time-entry is currently running -> stop it
+      // https://golb.hplar.ch/2018/09/beacon-api.html
+      this.commitService.stopTimeTrackingByBeacon(this.timeEntryId)
+    }
+  }
+
   private durationVisualizationIntervalId: any = null;
   private timeEntryId: string;
 
@@ -119,13 +129,13 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private emitStateRunning() {
-      // state changed visualized stated from start to stop
-      // -> i.e. the start button has just been pressed --> i.e. time-measurement is "running"
-      // as early as possible!
-      this.state.emit(TimeMeasurement.running);
+    // state changed visualized stated from start to stop
+    // -> i.e. the start button has just been pressed --> i.e. time-measurement is "running"
+    // as early as possible!
+    this.state.emit(TimeMeasurement.running);
   }
 
-  public onStartStopButtonClicked() {
+  public onStartStopButtonClicked(isStopTriggeredExternally?: boolean) {
     // always disable as a http-request 'needs some time'
     this.isStartStopButtonDisabled = true;
 
@@ -140,6 +150,10 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
     this.startStopButtonLabel = (this.startStopButtonLabel === TimeTrackingState.start) ? TimeTrackingState.stop : TimeTrackingState.start;
 
     if (this.startStopButtonLabel === TimeTrackingState.stop) {
+      if (isStopTriggeredExternally) {
+        // in case of start -> stop do nothing as isStopTriggeredExternally === true, so the time-entry has _not_ to be stopped
+        return;
+      }
       this.emitStateRunning();
 
       const startedTimeEntryPromise: Promise<string> = this.timeTrackingService.startTimeTracking(taskId,
