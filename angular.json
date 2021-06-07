@@ -26,14 +26,16 @@
             "allowedCommonJsDependencies": [
               "uuid",
               "chart.js",
-              "chartjs-plugin-datalabels"
+              "chartjs-plugin-datalabels",
+              "crypto",
+              "crypto-js"
             ],
             "outputPath": "dist/mtt-client",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "src/favicon.ico",
               "src/watch-32.ico",

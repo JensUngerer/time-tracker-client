@@ -1,11 +1,10 @@
-import { HttpClient, HttpEvent, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { rawListeners } from 'process';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/internal/operators/map';
-import { tap } from 'rxjs/internal/operators/tap';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+
 import { CommitService } from './commit.service';
 
 export interface ILoginStatus {
