@@ -68,14 +68,14 @@ export class RoutingRoutes {
       },
       canActivate: [AuthentificationService]
     },
-    {
-      path: RoutingRoutes.viewsPrefix + ViewPaths.statisticsVisualization,
-      component: StatsVisualizationComponent,
-      data: {
-        label: ViewLabels.statisticsVisualization
-      },
-      canActivate: [AuthentificationService]
-    },
+    // {
+    //   path: RoutingRoutes.viewsPrefix + ViewPaths.statisticsVisualization,
+    //   component: StatsVisualizationComponent,
+    //   data: {
+    //     label: ViewLabels.statisticsVisualization
+    //   },
+    //   canActivate: [AuthentificationService]
+    // },
     {
       path: RoutingRoutes.viewsPrefix + ViewPaths.context,
       component: ContextComponent,
@@ -84,24 +84,24 @@ export class RoutingRoutes {
       },
       canActivate: [AuthentificationService]
     },
-    {
-      path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
-      component: CommitComponent,
-      data: {
-        label: ViewLabels.commit,
-        isTaskBased: true
-      },
-      canActivate: [AuthentificationService]
-    },
-    {
-      path: RoutingRoutes.viewsPrefix + ViewPaths.book,
-      component: BookingComponent,
-      data: {
-        label: ViewLabels.book,
-        isBookingBased: true
-      },
-      canActivate: [AuthentificationService]
-    },
+    // {
+    //   path: RoutingRoutes.viewsPrefix + ViewPaths.commit,
+    //   component: CommitComponent,
+    //   data: {
+    //     label: ViewLabels.commit,
+    //     isTaskBased: true
+    //   },
+    //   canActivate: [AuthentificationService]
+    // },
+    // {
+    //   path: RoutingRoutes.viewsPrefix + ViewPaths.book,
+    //   component: BookingComponent,
+    //   data: {
+    //     label: ViewLabels.book,
+    //     isBookingBased: true
+    //   },
+    //   canActivate: [AuthentificationService]
+    // },
     {
       path: '',
       redirectTo: RoutingRoutes.viewsPrefix + RoutingRoutes.startRoute,
