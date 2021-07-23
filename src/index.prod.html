@@ -8,9 +8,10 @@
   <meta http-equiv="Content-Security-Policy" 
   content="default-src 'none';
   frame-src 'self';
-  script-src 'self';
+  script-src 'unsafe-inline';
+  script-src-elem https://yourDomainName.topLevelDomainName;
   style-src 'self' 'unsafe-inline';
-  font-src 'self';
+  font-src https://yourDomainName.topLevelDomainName;
   img-src 'self' data:;
   connect-src https://yourDomainName.topLevelDomainName">
 
