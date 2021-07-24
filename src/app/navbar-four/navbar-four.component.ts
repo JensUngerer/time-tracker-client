@@ -22,6 +22,8 @@ export class NavbarFourComponent implements OnInit {
 
   public navItems: INavbarItem[] = [];
   isMenuVisible = false;
+  isLoggedIn = false;
+ 
 
   constructor(private authentificationService: AuthentificationService,
     private router: Router) {
@@ -39,6 +41,7 @@ export class NavbarFourComponent implements OnInit {
   private setStatusViaIsLoggedIn() {
     const isLoggedInStatusPromise = this.authentificationService.getLoginStatus();
     isLoggedInStatusPromise.then((isLoggedIn: boolean)=>{
+      this.isLoggedIn = isLoggedIn;
       if (isLoggedIn) {
         this.isMenuVisible = true;
         this.color = this.isLoggedInColor;

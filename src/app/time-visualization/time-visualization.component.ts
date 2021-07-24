@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { HelpersService } from '../helpers.service';
 import { TimeTrackingState } from '../start-stop/timeTrackingState.enum';
 
 @Component({
@@ -11,11 +12,11 @@ export class TimeVisualizationComponent implements OnInit {
   timeTrackingState: TimeTrackingState = TimeTrackingState.stop;
 
   @Input()
-  currentDuration: string = '00:00:00';
+  currentDuration: string = this.helpersService.getDurationStr(0, 0, 0);
 
   TimeTrackingState = TimeTrackingState;
 
-  constructor() { }
+  constructor(private helpersService: HelpersService) { }
 
   ngOnInit(): void {
   }

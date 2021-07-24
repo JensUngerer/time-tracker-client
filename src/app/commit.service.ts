@@ -26,6 +26,11 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  getSessionDuration() {
+    const url = this.getSessionTimeEntryUrl();
+    return this.httpGet(url);
+  }
+
   getTimeEntriesInInterval(timeInterval: ITimeInterval) {
     const utcStartTime = timeInterval.utcStartTime;
     const utcEndTime = timeInterval.utcEndTime;
@@ -135,6 +140,11 @@ export class CommitService {
         resolve(subscriptionResolveValue);
       });
     });
+  }
+
+  private getSessionTimeEntryUrl(): string {
+    const url = environment.httpBaseUrl + routes.sessionTimeEntry;
+    return url;
   }
 
   private getTimeEntriesUrl(): string {

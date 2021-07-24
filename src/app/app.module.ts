@@ -46,6 +46,7 @@ import { IsCsvFileWrittenComponent } from './is-csv-file-written/is-csv-file-wri
 import { StartStopComponent } from './start-stop/start-stop.component';
 import { LoginComponent } from './login/login.component';
 import { TimeVisualizationComponent } from './time-visualization/time-visualization.component';
+import { SessionTimeVisualizationComponent } from './session-time-visualization/session-time-visualization.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -84,7 +85,8 @@ import { TimeVisualizationComponent } from './time-visualization/time-visualizat
     IsCsvFileWrittenComponent,
     StartStopComponent,
     LoginComponent,
-    TimeVisualizationComponent
+    TimeVisualizationComponent,
+    SessionTimeVisualizationComponent
   ],
   exports: [
     IsCsvFileWrittenComponent
