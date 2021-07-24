@@ -1,0 +1,10 @@
+<div fxLayout="row" fxLayoutAlign="center center">
+    <div fxFlex="1 1 0" class="time-visualization" [ngClass]="{
+        'running-time-measurement':
+          timeTrackingState === TimeTrackingState.stop,
+        'stopped-time-measurement':
+          timeTrackingState === TimeTrackingState.start
+      }">
+        {{ currentDuration }}
+    </div>
+</div>

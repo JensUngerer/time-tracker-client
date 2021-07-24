@@ -31,7 +31,7 @@ export class StartStopComponent implements OnInit, AfterViewInit, OnChanges {
   isStartStopButtonDisabled = true;
 
   // internal state
-  startStopButtonLabel = TimeTrackingState.start;
+  startStopButtonLabel: TimeTrackingState = TimeTrackingState.start;
 
   currentTimeEntryDuration: string;
 

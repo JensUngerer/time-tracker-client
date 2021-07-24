@@ -16,19 +16,9 @@
     fxLayoutAlign="center center"
     *ngIf="currentTimeEntryDuration"
   >
-    <div fxLayout="row" fxLayoutAlign="center center">
-      <div
-        fxFlex="1 1 0"
-        class = "time-visualization"
-        [ngClass]="{
-          'running-time-measurement':
-            startStopButtonLabel === TimeTrackingState.stop,
-          'stopped-time-measurement':
-            startStopButtonLabel === TimeTrackingState.start
-        }"
-      >
-        {{ currentTimeEntryDuration }}
-      </div>
-    </div>
+    <mtt-time-visualization
+      [currentDuration]="currentTimeEntryDuration"
+      [timeTrackingState]="startStopButtonLabel"
+    ></mtt-time-visualization>    
   </div>
 </div>
