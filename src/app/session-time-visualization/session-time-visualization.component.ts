@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '../../../../common/typescript/constants';
 import { CommitService } from '../commit.service';
 import { HelpersService } from '../helpers.service';
@@ -10,7 +10,7 @@ import { TimeTrackingState } from '../start-stop/timeTrackingState.enum';
   templateUrl: './session-time-visualization.component.html',
   styleUrls: ['./session-time-visualization.component.scss']
 })
-export class SessionTimeVisualizationComponent implements OnInit {
+export class SessionTimeVisualizationComponent implements OnDestroy {
 
   private internalIsLoggedIn = false;
 
@@ -37,6 +37,17 @@ export class SessionTimeVisualizationComponent implements OnInit {
   constructor(private helperService: HelpersService,
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
+  
+  ngOnDestroy(): void {
+    this.stopVisualization();
+  }
+
+  private stopVisualization() {
+    // just logged out -> stop visualization
+    if (this.durationVisualizationIntervalId) {
+      clearInterval(this.durationVisualizationIntervalId);
+    }
+  }
 
   private logInStatusChanged(isLoggedInValue: boolean) {
     if (isLoggedInValue) {
@@ -45,12 +56,7 @@ export class SessionTimeVisualizationComponent implements OnInit {
         this.visualizeTimeEntry();
       }, Constants.MILLISECONDS_IN_MINUTE);
     } else {
-      // just logged out -> stop visualization
-      if (this.durationVisualizationIntervalId) {
-        clearInterval(this.durationVisualizationIntervalId);
-      }
-      // fire last time
-      this.visualizeTimeEntry();
+      this.stopVisualization();
     }
   }
 
@@ -68,8 +74,5 @@ export class SessionTimeVisualizationComponent implements OnInit {
       console.error('getSessionDuration rejected with');
       console.error(err);
     });
-  }
-
-  ngOnInit(): void {
   }
 }

@@ -4,6 +4,7 @@
   "author": "Jens Ungerer",
   "license": "GPL",
   "scripts": {
+    "build-prod": "node --max_old_space_size=5048 ./node_modules/@angular/cli/bin/ng build --prod",
     "ng": "ng",
     "start": "ng serve --prod=true --sourceMap=true",
     "build": "ng build --prod=true",
