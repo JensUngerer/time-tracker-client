@@ -34,10 +34,10 @@ export class SessionTimeVisualizationComponent implements OnDestroy {
     }
   }
 
-  constructor(private helperService: HelpersService,
-    private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
-  
+  constructor(protected helperService: HelpersService,
+    protected commitService: CommitService,
+    protected sessionStorageSerializationService: SessionStorageSerializationService) { }
+
   ngOnDestroy(): void {
     this.stopVisualization();
   }
@@ -60,8 +60,12 @@ export class SessionTimeVisualizationComponent implements OnDestroy {
     }
   }
 
+  protected getDurationStrPromise() {
+    return this.commitService.getSessionDuration();
+  }
+
   private visualizeTimeEntry() {
-    const durationPromise = this.commitService.getSessionDuration();
+    const durationPromise = this.getDurationStrPromise();
     durationPromise.then((duration: string) => {
       const parsedDuration = this.sessionStorageSerializationService.deSerialize<string>(duration);
       if (!parsedDuration)  {

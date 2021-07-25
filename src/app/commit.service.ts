@@ -14,7 +14,6 @@ import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
   providedIn: 'root'
 })
 export class CommitService {
-
   static httpOptions: any = {
     headers: {
       'Content-Type': 'text/plain'
@@ -25,6 +24,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient,
               private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  getWorkingTimeDurationStr() {
+    const url = this.getSessionTimeEntryUrl() + routes.workingTimeSuffix;
+    return this.httpGet(url);
+  }
 
   getSessionDuration() {
     const url = this.getSessionTimeEntryUrl();
