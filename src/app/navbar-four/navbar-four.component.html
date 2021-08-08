@@ -21,23 +21,15 @@
             Close
           </button>
 
-          <button
-            *ngFor="let navItem of navItems"
-            (click)="sidenav.toggle()"
-            routerLink="{{ navItem.path }}"
-            mat-button
-          >
+          <button *ngFor="let navItem of navItems" (click)="sidenav.toggle()" routerLink="{{ navItem.path }}"
+            mat-button>
             {{ navItem.label }}
           </button>
         </div>
       </mat-sidenav>
 
-      <mat-sidenav-content
-        fxFlexFill
-        fxLayoutAlign="center center"
-        fxFlex="0 1 auto"
-        class="mat-sidenav-content-scrollbars"
-      >
+      <mat-sidenav-content fxFlexFill fxLayoutAlign="center center" fxFlex="0 1 auto"
+        class="mat-sidenav-content-scrollbars">
         <router-outlet></router-outlet>
       </mat-sidenav-content>
     </mat-sidenav-container>
@@ -46,12 +38,10 @@
     <mtt-router-pages-switcher></mtt-router-pages-switcher>
   </div>
   <div fxFlex="1 1 220px" *ngIf="isMenuVisible">
-    <mtt-session-time-visualization
-      [isLoggedIn]="isLoggedIn"
-    ></mtt-session-time-visualization>
-    <mtt-working-time-visualization
-      [isLoggedIn]="isLoggedIn"
-    >
+    <mtt-session-time-visualization [isLoggedIn]="isLoggedIn"></mtt-session-time-visualization>
+    <mtt-working-time-visualization [isLoggedIn]="isLoggedIn">
     </mtt-working-time-visualization>
+    <mtt-weekly-working-time-visualization [isLoggedIn]="isLoggedIn">
+    </mtt-weekly-working-time-visualization>
   </div>
 </div>

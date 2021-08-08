@@ -23,7 +23,12 @@ export class CommitService {
   };
 
   constructor(private httpClient: HttpClient,
-              private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  getWeeklyWorkingTimeDurationStr() {
+    const url = this.getSessionTimeEntryUrl() + routes.weeklyWorkingTimeSuffix;
+    return this.httpGet(url);
+  }
 
   getWorkingTimeDurationStr() {
     const url = this.getSessionTimeEntryUrl() + routes.workingTimeSuffix;
@@ -39,16 +44,16 @@ export class CommitService {
     const utcStartTime = timeInterval.utcStartTime;
     const utcEndTime = timeInterval.utcEndTime;
     const url = this.getTimeEntriesUrl() +
-    routes.timeEntriesIntervalSuffix + '?' +
-    routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-    routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
+      routes.timeEntriesIntervalSuffix + '?' +
+      routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+      routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
     return this.httpGet(url);
   }
 
   getNonCommittedDays(isBookingBased: boolean) {
     const url = this.getTimeEntriesUrl() +
-    routes.nonCommittedDaysSuffix + '?' +
-    routes.isBookingBasedPropertyName + '=' + isBookingBased;
+      routes.nonCommittedDaysSuffix + '?' +
+      routes.isBookingBasedPropertyName + '=' + isBookingBased;
     return this.httpGet(url);
   }
 
@@ -59,7 +64,7 @@ export class CommitService {
 
   postCsvFileTrigger(isCsvFileWritten: boolean, utcStartTime: Date, utcEndTime: Date) {
     const url = this.getTimeEntriesUrl() +
-    routes.postCsvFileTriggerSuffix;
+      routes.postCsvFileTriggerSuffix;
     const bodyData = {};
     bodyData[routes.isCsvFileWrittenProperty] = isCsvFileWritten;
     bodyData[routes.startTimeProperty] = utcStartTime;
@@ -69,21 +74,21 @@ export class CommitService {
 
   getStatistics(utcStartTime: Date, utcEndTime: Date, groupCategory: string, isBookingBased: boolean, isTakenCareIsDisabled: boolean) {
     const url = this.getTimeEntriesUrl() +
-    routes.timeEntriesStatisticsSufffix + '/' +
-    routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-    routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
-    routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
-    routes.isBookingBasedPropertyName + '=' + isBookingBased + '?' +
-    routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled;
+      routes.timeEntriesStatisticsSufffix + '/' +
+      routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+      routes.endDateProperty + '=' + utcEndTime.getTime() + '?' +
+      routes.groupCategoryPropertyName + '=' + groupCategory + '?' +
+      routes.isBookingBasedPropertyName + '=' + isBookingBased + '?' +
+      routes.isTakenCareIsDisabledPropertyName + '=' + isTakenCareIsDisabled;
     return this.httpGet(url);
   }
 
-  getTaskById(projectId: string)  {
+  getTaskById(projectId: string) {
     const url = this.getTaskUrl() + '/' + projectId;
     return this.httpGet(url);
   }
 
-  getTimeEntryById(timeEntryId: string){
+  getTimeEntryById(timeEntryId: string) {
     const url = environment.httpBaseUrl + routes.timeEntries + '/' + timeEntryId;
     return this.httpGet(url);
   }
