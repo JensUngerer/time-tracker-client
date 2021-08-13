@@ -27,18 +27,18 @@ export class WorkingHoursComponent implements OnInit {
   Constants = Constants;
   faTrash = faTrash;
 
-  // debuggingLines: IWorkingHoursLine[] = [
-  //   {
-  //     sessionTimeEntryId: '',
-  //     day: new Date(),
-  //     startTime: new Date(),
-  //     duration: {},
-  //     endTime: new Date(),
-  //     deleteButton: ''
-  //   }
-  // ];
+  debuggingLines: IWorkingHoursLine[] = [
+    {
+      timeEntryId: '',
+      day: new Date(),
+      startTime: new Date(),
+      durationInMilliseconds: {},
+      endTime: new Date(),
+      deleteButton: ''
+    }
+  ];
   displayedColumns = ['day', 'startTime', 'durationInMilliseconds', 'endTime', 'deleteButton'];
-  workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource();
+  workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource(this.debuggingLines);
   constructor() { }
 
   ngOnInit(): void {
