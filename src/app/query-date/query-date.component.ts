@@ -24,7 +24,7 @@ export class QueryDateComponent implements OnInit {
   @Output()
   queryDateBoundaries: EventEmitter<IDateBoundaries> = new EventEmitter();
 
-  constructor(/*@Inject(LOCALE_ID) private currentLocale,*/) { }
+  constructor(@Inject(LOCALE_ID) private currentLocale) { }
 
   ngOnInit(): void {
     this.initialize();
@@ -34,7 +34,7 @@ export class QueryDateComponent implements OnInit {
     const now = new Date();
     const dayUtc = DurationCalculator.getDayFrom(now);
     // const formattedDayUtc = formatDate(dayUtc, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
-    const formattedDayUtc = formatDate(dayUtc, QueryTimeBoundariesComponent.requiredDateTimeFormat, 'en-gb');
+    const formattedDayUtc = formatDate(dayUtc, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
     const startDateControl = new FormControl(formattedDayUtc);
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.queryDateStartFormControlName] = startDateControl;
