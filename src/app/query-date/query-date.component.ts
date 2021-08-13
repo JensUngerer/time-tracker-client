@@ -15,6 +15,8 @@ export interface IDateBoundaries {
   styleUrls: ['./query-date.component.scss']
 })
 export class QueryDateComponent implements OnInit {
+  static requiredDateFormat = "yyyy-MM-ddT";
+
   queryDateStartFormControlName = 'startDayFormControl';
   queryDateFormGroup: FormGroup;
 
@@ -34,7 +36,7 @@ export class QueryDateComponent implements OnInit {
     const now = new Date();
     const dayUtc = DurationCalculator.getDayFrom(now);
     // const formattedDayUtc = formatDate(dayUtc, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
-    const formattedDayUtc = formatDate(dayUtc, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
+    const formattedDayUtc = formatDate(dayUtc, QueryDateComponent.requiredDateFormat, this.currentLocale);
     const startDateControl = new FormControl(formattedDayUtc);
     const configObj: { [key: string]: AbstractControl } = {};
     configObj[this.queryDateStartFormControlName] = startDateControl;

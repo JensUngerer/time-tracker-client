@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Duration, DurationObject } from 'luxon';
+import { DateTime, Duration, DurationObject } from 'luxon';
 import { Constants } from './../../../../common/typescript/constants';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
@@ -21,6 +21,9 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   styleUrls: ['./working-hours.component.scss']
 })
 export class WorkingHoursComponent implements OnInit {
+  static requiredTimeFormat = 'HH:mm';
+
+  WorkingHoursComponent = WorkingHoursComponent;
   // https://stackoverflow.com/questions/47908179/how-to-load-observable-array-property-as-angular-material-table-data-source
   // https://material.angular.io/components/table/overview
   Duration = Duration;
@@ -44,10 +47,24 @@ export class WorkingHoursComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onStartTimeChange($event: any, line: IWorkingHoursLine) {
-    console.log($event);
+  private timeToDateObject(time: string): Date {
+    var dateTime = DateTime.now();
+    var split = time.split(':');
+    if (split.length < 2) {
+      return new Date();
+    }
+    var hours = split[0];
+    var minutes = split[1];
+    dateTime.hour = parseInt(hours);
+    dateTime.minute = parseInt(minutes);
+
+    return dateTime.toJSDate();
   }
-  onEndTimeChange($event: any, line: IWorkingHoursLine) {
-    console.log($event);
+
+  onStartTimeChange($event: string, line: IWorkingHoursLine) {
+    console.log($event + '-->' + this.timeToDateObject($event));
+  }
+  onEndTimeChange($event: string, line: IWorkingHoursLine) {
+    console.log($event + '-->' + this.timeToDateObject($event));
   }
 }
