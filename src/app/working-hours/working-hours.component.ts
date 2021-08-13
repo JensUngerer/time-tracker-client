@@ -22,7 +22,7 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
 })
 export class WorkingHoursComponent implements OnInit {
   // https://stackoverflow.com/questions/47908179/how-to-load-observable-array-property-as-angular-material-table-data-source
-  // https://v7.material.angular.io/components/table/overview
+  // https://material.angular.io/components/table/overview
   Duration = Duration;
   Constants = Constants;
   faTrash = faTrash;

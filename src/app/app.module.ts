@@ -51,6 +51,7 @@ import { WorkingTimeVisualizationComponent } from './working-time-visualization/
 import { WeeklyWorkingTimeVisualizationComponent } from './weekly-working-time-visualization/weekly-working-time-visualization.component';
 import { WorkingHoursComponent } from './working-hours/working-hours.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { QueryDateComponent } from './query-date/query-date.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -93,7 +94,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     SessionTimeVisualizationComponent,
     WorkingTimeVisualizationComponent,
     WeeklyWorkingTimeVisualizationComponent,
-    WorkingHoursComponent
+    WorkingHoursComponent,
+    QueryDateComponent
   ],
   exports: [
     IsCsvFileWrittenComponent

@@ -1,0 +1,17 @@
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxLayout="column">
+    <div fxFlex="1 1 100%">
+      <form fxLayout="column" [formGroup]="queryDateFormGroup" (submit)="onQueryDate(queryDateFormGroup.value)">
+        <mat-form-field>
+          <mat-label>Day</mat-label>
+          <input [formControlName]="queryDateStartFormControlName" matInput type="date" />
+        </mat-form-field>
+        <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
+          <button mat-icon-button type="submit" [disabled]="queryDateFormGroup.invalid">
+            <mat-icon>calendar_today</mat-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -14,7 +14,7 @@ import { DateHelper } from './../../../../common/typescript/helpers/dateHelper';
   styleUrls: ['./query-time-boundaries.component.scss']
 })
 export class QueryTimeBoundariesComponent implements OnInit {
-  private readonly requiredDateTimeFormat = "yyyy-MM-ddTHH:mm";
+  static requiredDateTimeFormat = "yyyy-MM-ddTHH:mm";
 
   queryTimeStartFormControlName = 'theQueryStartTime';
   queryTimeEndFormControlName = 'theQueryEndTime';
@@ -51,7 +51,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
     let currentTime = Date.now();
     // add one minute as time is measured < and not <=
     currentTime+= Constants.MILLISECONDS_IN_MINUTE;
-    const formattedCurrentTime = formatDate(currentTime, this.requiredDateTimeFormat, this.currentLocale);
+    const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
     return formattedCurrentTime;
   }
 
@@ -70,8 +70,8 @@ export class QueryTimeBoundariesComponent implements OnInit {
       startTime = formattedCurrentTime;
       endTime = formattedCurrentTime;
     } else {
-      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, this.requiredDateTimeFormat, this.currentLocale);
-      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, this.requiredDateTimeFormat, this.currentLocale);
+      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
+      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
     }
 
     const startTimeControl = new FormControl(startTime);

@@ -1,6 +1,9 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
-    <table mat-table [dataSource]="workingHoursDataSource">
+    <div flexFlex="1 1 100%">
+      <mtt-query-date></mtt-query-date>
+    </div>
+    <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
       <ng-container [matColumnDef]="displayedColumns[0]">
         <th mat-header-cell *matHeaderCellDef>Day</th>
         <td mat-cell *matCellDef="let element">
@@ -26,8 +29,6 @@
       </ng-container>
       <ng-container [matColumnDef]="displayedColumns[4]">
         <th mat-header-cell *matHeaderCellDef></th>
-        <!-- (click)="onDeleteRowClicked(line)" -->
-        <!-- class="buttonSize pointerCursor" -->
         <td mat-cell *matCellDef="let element"> <button mat-stroke-button>
             <div style="text-align:center">
               <fa-icon [icon]="faTrash"></fa-icon>
