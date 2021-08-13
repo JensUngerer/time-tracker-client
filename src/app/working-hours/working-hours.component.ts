@@ -44,10 +44,10 @@ export class WorkingHoursComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onStartTimeChange(line: IWorkingHoursLine) {
-    console.log(line);
+  onStartTimeChange($event: any, line: IWorkingHoursLine) {
+    console.log($event);
   }
-  onEndTimeChange(line: IWorkingHoursLine) {
-    console.log(line);
+  onEndTimeChange($event: any, line: IWorkingHoursLine) {
+    console.log($event);
   }
 }
