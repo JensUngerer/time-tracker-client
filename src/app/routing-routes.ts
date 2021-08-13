@@ -14,6 +14,7 @@ import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
+import { WorkingHoursComponent } from './working-hours/working-hours.component.js';
 
 export class RoutingRoutes {
   public static viewsPrefix = routesConfig.viewsPrefix;
@@ -57,6 +58,14 @@ export class RoutingRoutes {
       component: TimeTrackingComponent,
       data: {
         label: ViewLabels.timeTracking
+      },
+      canActivate: [AuthentificationService]
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.workingHours,
+      component: WorkingHoursComponent,
+      data: {
+        label: ViewLabels.workingHours
       },
       canActivate: [AuthentificationService]
     },

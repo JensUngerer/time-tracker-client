@@ -8,5 +8,6 @@ export enum ViewPaths {
   statistics = 'statistics',
   statisticsVisualization = 'visualization',
   context = 'context',
-  login = 'login'
+  login = 'login',
+  workingHours = 'working-hours'
 }
