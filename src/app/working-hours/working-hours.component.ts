@@ -4,6 +4,7 @@ import { DateTime, Duration, DurationObject } from 'luxon';
 import { Constants } from './../../../../common/typescript/constants';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
 
 // TEMPORARY !!!
 export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -26,14 +27,15 @@ export class WorkingHoursComponent implements OnInit {
   WorkingHoursComponent = WorkingHoursComponent;
   // https://stackoverflow.com/questions/47908179/how-to-load-observable-array-property-as-angular-material-table-data-source
   // https://material.angular.io/components/table/overview
-  Duration = Duration;
-  Constants = Constants;
+  // Duration = Duration;
+  // DateTime = DateTime;
+  // Constants = Constants;
   faTrash = faTrash;
 
   debuggingLines: IWorkingHoursLine[] = [
     {
       timeEntryId: '',
-      day: new Date(),
+      day: DurationCalculator.getDayFrom(new Date()),
       startTime: new Date(),
       durationInMilliseconds: {},
       endTime: new Date(),
@@ -47,24 +49,33 @@ export class WorkingHoursComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  private timeToDateObject(time: string): Date {
-    var dateTime = DateTime.now();
-    var split = time.split(':');
+  getDayStr(element: IWorkingHoursLine) {
+    return DateTime.fromJSDate(element.day).toFormat(Constants.contextIsoFormat);
+  }
+
+  getDurationStr(element: IWorkingHoursLine) {
+    return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
+  }
+
+  private timeToDateObject(day: Date, time: string): Date {
+    let dateTime = DateTime.fromJSDate(day);
+    const split = time.split(':');
     if (split.length < 2) {
       return new Date();
     }
-    var hours = split[0];
-    var minutes = split[1];
-    dateTime.hour = parseInt(hours);
-    dateTime.minute = parseInt(minutes);
+    const hoursStr = split[0];
+    const minutesStr = split[1];
+    const hours = parseInt(hoursStr);
+    const minutes = parseInt(minutesStr);
+    dateTime = dateTime.plus({hours, minutes});
 
     return dateTime.toJSDate();
   }
 
   onStartTimeChange($event: string, line: IWorkingHoursLine) {
-    console.log($event + '-->' + this.timeToDateObject($event));
+    console.log($event + '-->' + this.timeToDateObject(line.day, $event));
   }
   onEndTimeChange($event: string, line: IWorkingHoursLine) {
-    console.log($event + '-->' + this.timeToDateObject($event));
+    console.log($event + '-->' + this.timeToDateObject(line.day, $event));
   }
 }

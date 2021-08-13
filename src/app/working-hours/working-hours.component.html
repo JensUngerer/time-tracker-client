@@ -1,14 +1,14 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
     <div flexFlex="1 1 100%">
-      <mtt-query-date></mtt-query-date>
+      <!-- <mtt-query-date></mtt-query-date> -->
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
         <ng-container [matColumnDef]="displayedColumns[0]">
           <th mat-header-cell *matHeaderCellDef>Day</th>
           <td mat-cell *matCellDef="let element">
-            {{element.day}}
+            {{getDayStr(element)}}
           </td>
         </ng-container>
         <ng-container [matColumnDef]="displayedColumns[1]">
@@ -20,7 +20,7 @@
         <ng-container [matColumnDef]="displayedColumns[2]">
           <th mat-header-cell *matHeaderCellDef>Duration</th>
           <td mat-cell *matCellDef="let element">
-            {{Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat)}}</td>
+            {{getDurationStr(element)}}</td>
         </ng-container>
         <ng-container [matColumnDef]="displayedColumns[3]">
           <th mat-header-cell *matHeaderCellDef>End-Time</th>
