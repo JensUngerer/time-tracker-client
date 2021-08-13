@@ -15,7 +15,7 @@ export interface IDateBoundaries {
   styleUrls: ['./query-date.component.scss']
 })
 export class QueryDateComponent implements OnInit {
-  static requiredDateFormat = "yyyy-MM-ddT";
+  static requiredDateFormat = "yyyy-MM-dd";
 
   queryDateStartFormControlName = 'startDayFormControl';
   queryDateFormGroup: FormGroup;
