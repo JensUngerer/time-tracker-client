@@ -65,8 +65,8 @@ export class WorkingHoursComponent implements OnInit {
 
   private timeToDateObject(day: Date, time: string): Date {
     let dateTime = DateTime.fromJSDate(day);
-
     dateTime = dateTime.setLocale(this.currentLocale);
+    dateTime = dateTime.toLocal();
 
     const split = time.split(':');
     if (split.length < 2) {
