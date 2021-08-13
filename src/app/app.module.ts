@@ -49,6 +49,8 @@ import { TimeVisualizationComponent } from './time-visualization/time-visualizat
 import { SessionTimeVisualizationComponent } from './session-time-visualization/session-time-visualization.component';
 import { WorkingTimeVisualizationComponent } from './working-time-visualization/working-time-visualization.component';
 import { WeeklyWorkingTimeVisualizationComponent } from './weekly-working-time-visualization/weekly-working-time-visualization.component';
+import { WorkingHoursComponent } from './working-hours/working-hours.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // import { registerLocaleData } from '@angular/common';
@@ -90,7 +92,8 @@ import { WeeklyWorkingTimeVisualizationComponent } from './weekly-working-time-v
     TimeVisualizationComponent,
     SessionTimeVisualizationComponent,
     WorkingTimeVisualizationComponent,
-    WeeklyWorkingTimeVisualizationComponent
+    WeeklyWorkingTimeVisualizationComponent,
+    WorkingHoursComponent
   ],
   exports: [
     IsCsvFileWrittenComponent
@@ -117,7 +120,8 @@ import { WeeklyWorkingTimeVisualizationComponent } from './weekly-working-time-v
     MatCheckboxModule,
     MatStepperModule,
     MatInputModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    FontAwesomeModule
   ],
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0

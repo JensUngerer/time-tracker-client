@@ -28,7 +28,8 @@
               "chart.js",
               "chartjs-plugin-datalabels",
               "crypto",
-              "crypto-js"
+              "crypto-js",
+              "luxon"
             ],
             "outputPath": "dist/mtt-client",
             "index": "src/index.html",
@@ -51,7 +52,8 @@
             ],
             "scripts": [
               "./node_modules/chart.js/dist/Chart.js",
-              "./node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
+              "./node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js",
+              "./node_modules/luxon/build/cjs-browser/luxon.js"
             ]
           },
           "configurations": {
