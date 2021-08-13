@@ -14,7 +14,7 @@ import { TaskComponent } from './task/task.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
-import { WorkingHoursComponent } from './working-hours/working-hours.component.js';
+import { WorkingHoursComponent } from './working-hours/working-hours.component';
 
 export class RoutingRoutes {
   public static viewsPrefix = routesConfig.viewsPrefix;
