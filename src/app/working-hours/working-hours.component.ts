@@ -78,7 +78,7 @@ export class WorkingHoursComponent implements OnInit {
     const minutes = parseInt(minutesStr);
     dateTime = dateTime.plus({hours, minutes});
 
-    dateTime = dateTime.toUTC();
+    // dateTime = dateTime.toUTC();
 
     return dateTime.toJSDate();
   }
