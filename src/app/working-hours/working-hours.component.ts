@@ -64,10 +64,11 @@ export class WorkingHoursComponent implements OnInit {
   }
 
   private timeToDateObject(day: Date, time: string): Date {
-    let dateTime = DateTime.fromJSDate(day);
-    dateTime = dateTime.setLocale(this.currentLocale);
-    dateTime = dateTime.toLocal();
-
+    // let dateTime = DateTime.fromJSDate(day);
+    // dateTime = dateTime.setLocale(this.currentLocale).toLocal();
+    // dateTime = dateTime.toLocal();
+    const newDate = new Date();
+    newDate.setMinutes(day.getMinutes() - day.getTimezoneOffset())
     const split = time.split(':');
     if (split.length < 2) {
       return new Date();
@@ -76,11 +77,14 @@ export class WorkingHoursComponent implements OnInit {
     const minutesStr = split[1];
     const hours = parseInt(hoursStr);
     const minutes = parseInt(minutesStr);
-    dateTime = dateTime.plus({hours, minutes});
+    newDate.setHours(newDate.getHours() + hours);
+    newDate.setMinutes(newDate.getMinutes() + minutes);
+    // dateTime = dateTime.plus({hours, minutes});
 
-    // dateTime = dateTime.toUTC();
+    // // dateTime = dateTime.toUTC();
 
-    return dateTime.toJSDate();
+    // return dateTime.toJSDate();
+    return newDate;
   }
 
   onStartTimeChange($event: string, line: IWorkingHoursLine) {
