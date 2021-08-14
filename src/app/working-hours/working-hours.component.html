@@ -17,7 +17,7 @@
         <ng-container [matColumnDef]="displayedColumns[0]">
           <th mat-header-cell *matHeaderCellDef>Start-Time</th>
           <td mat-cell *matCellDef="let element">
-            <input [ngModel]="element.startTime | date : requiredTimeFormat : currentLocale" (ngModelChange)="onStartTimeChange($event, element)" matInput type="datetime-local" />
+            <input [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale" (ngModelChange)="onStartTimeChange($event, element)" matInput type="datetime-local" />
           </td>
         </ng-container>
         <ng-container [matColumnDef]="displayedColumns[1]">
@@ -28,7 +28,7 @@
         <ng-container [matColumnDef]="displayedColumns[2]">
           <th mat-header-cell *matHeaderCellDef>End-Time</th>
           <td mat-cell *matCellDef="let element">
-            <input [ngModel]="element.endTime | date : requiredTimeFormat : currentLocale" (ngModelChange)="onEndTimeChange($event, element)" matInput type="datetime-local" />
+            <input [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale" (ngModelChange)="onEndTimeChange($event, element)" matInput type="datetime-local" />
           </td>
         </ng-container>
         <ng-container [matColumnDef]="displayedColumns[3]">

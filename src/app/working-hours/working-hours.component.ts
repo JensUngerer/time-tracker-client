@@ -7,6 +7,7 @@ import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeE
 import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
 import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
 import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
+import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 
 // TEMPORARY !!!
 export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -24,10 +25,11 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   styleUrls: ['./working-hours.component.scss']
 })
 export class WorkingHoursComponent implements OnInit {
-  static requiredTimeFormat = 'HH:mm';
+  // static requiredTimeFormat = 'HH:mm';
+  // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
 
-  requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
+  requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
 
   // WorkingHoursComponent = WorkingHoursComponent;
   // QueryDateComponent = QueryDateComponent;
