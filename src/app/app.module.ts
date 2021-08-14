@@ -129,7 +129,7 @@ import { QueryDateComponent } from './query-date/query-date.component';
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0
     // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
-    {provide: LOCALE_ID, useValue: 'en-US'}
+    {provide: LOCALE_ID, useValue: 'de'}
   ],
   bootstrap: [AppComponent]
 })
