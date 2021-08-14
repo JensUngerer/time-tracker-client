@@ -1,13 +1,14 @@
-import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { DateTime, Duration, DurationObject } from 'luxon';
 import { Constants } from './../../../../common/typescript/constants';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
 import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
 import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
 import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
+import { AbstractControl, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 // TEMPORARY !!!
 export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -16,15 +17,22 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   // startTime: Date;
   // duration: DurationObject;
   // endTime: Date,
+  applyButton: string;
   deleteButton: string;
 }
+
+// function startTimeSmallerEndTimeValidatorFn(startTimeSmallerEndTimeValidatorFn: any) {
+//   throw new Error('Function not implemented.');
+// }
 
 @Component({
   selector: 'mtt-working-hours',
   templateUrl: './working-hours.component.html',
   styleUrls: ['./working-hours.component.scss']
 })
-export class WorkingHoursComponent implements OnInit {
+export class WorkingHoursComponent implements OnInit, AfterViewInit {
+  @ViewChildren('workingTimeLineForm') lineForm: QueryList<NgForm>;
+
   // static requiredTimeFormat = 'HH:mm';
   // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
 
@@ -39,6 +47,7 @@ export class WorkingHoursComponent implements OnInit {
   // DateTime = DateTime;
   // Constants = Constants;
   faTrash = faTrash;
+  faCheck = faCheck;
   currentDay: Date;
 
   debuggingLines: IWorkingHoursLine[] = [
@@ -48,20 +57,32 @@ export class WorkingHoursComponent implements OnInit {
       startTime: new Date(),
       durationInMilliseconds: {},
       endTime: new Date(),
+      applyButton: '',
       deleteButton: ''
     }
   ];
-  displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'deleteButton'];
+  displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource(this.debuggingLines);
   constructor(@Inject(LOCALE_ID) public currentLocale) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.initializeValidators();
   }
 
-  // getDayStr(element: IWorkingHoursLine) {
+  initializeValidators() {
+    let rowIndex = 0;
+    for (const oneLineForm of this.lineForm.toArray()) {
+      const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
+      const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
 
-  //   // return DateTime.fromJSDate(element.day).toFormat(Constants.contextIsoFormat);
-  // }
+      startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
+      endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
+      rowIndex++;
+    }
+  }
+
+  ngOnInit(): void {
+  }
 
   getDurationStr(element: IWorkingHoursLine) {
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
@@ -96,16 +117,14 @@ export class WorkingHoursComponent implements OnInit {
     // return newDate;
   }
 
-  onStartTimeChange($event: string, line: IWorkingHoursLine) {
-    // console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+  onStartTimeChange($event: string, line: IWorkingHoursLine, rowIndex: number) {
     console.log($event);
     const startTime = new Date($event);
     console.log(startTime);
     const utcStartTime = DateHelper.convertToUtc(startTime);
     console.log(utcStartTime);
   }
-  onEndTimeChange($event: string, line: IWorkingHoursLine) {
-    // console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+  onEndTimeChange($event: string, line: IWorkingHoursLine, rowIndex: number) {
     console.log($event);
     const endTime = new Date($event);
     console.log(endTime);
@@ -113,3 +132,5 @@ export class WorkingHoursComponent implements OnInit {
     console.log(utcEndTime);
   }
 }
+
+

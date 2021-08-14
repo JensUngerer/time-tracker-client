@@ -75,24 +75,24 @@ export class QueryTimeBoundariesComponent implements OnInit {
     }
 
     const startTimeControl = new FormControl(startTime);
-    configObj[this.queryTimeStartFormControlName] = startTimeControl;
-    startTimeControl.setValidators(this.createStartTimeValidatorFn());
-
     const endTimeControl = new FormControl(endTime);
-    configObj[this.queryTimeEndFormControlName] = endTimeControl;
-    endTimeControl.setValidators(this.createEndTimeValidatorFn())
 
+    startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
+
+    endTimeControl.setValidators(QueryTimeBoundariesComponent.createEndTimeValidatorFn(startTimeControl))
+
+    configObj[this.queryTimeEndFormControlName] = endTimeControl;
+
+    configObj[this.queryTimeStartFormControlName] = startTimeControl;
 
     this.queryTimeFormGroup = new FormGroup(configObj);
-
   }
 
-  private createEndTimeValidatorFn() {
+  public static createEndTimeValidatorFn(startTimeControl: AbstractControl) {
     return (endTimeControl: AbstractControl): ValidationErrors => {
       endTimeControl.setErrors(null);
 
       const endTimeValue = new Date(endTimeControl.value);
-      const startTimeControl = this.queryTimeFormGroup.controls[this.queryTimeStartFormControlName];
       const startTimeValue = new Date(startTimeControl.value);
       if (endTimeValue < startTimeValue) {
         startTimeControl.setErrors({ startTimeIsLaterThanEnd: true });
@@ -103,12 +103,11 @@ export class QueryTimeBoundariesComponent implements OnInit {
     };
   }
 
-  private createStartTimeValidatorFn() {
+  public static createStartTimeValidatorFn(endTimeControl: AbstractControl) {
     return (startTimeControl: AbstractControl): ValidationErrors => {
       startTimeControl.setErrors(null);
 
       const startTimeValue = new Date(startTimeControl.value);
-      const endTimeControl = this.queryTimeFormGroup.controls[this.queryTimeEndFormControlName];
       const endTimeValue = new Date(endTimeControl.value);
       if (endTimeValue < startTimeValue) {
         endTimeControl.setErrors({ endTimeIsEarlierThanStart: true });

@@ -8,38 +8,51 @@
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
-        <!-- <ng-container [matColumnDef]="displayedColumns[0]">
-          <th mat-header-cell *matHeaderCellDef>Day</th>
-          <td mat-cell *matCellDef="let element">
-            {{element.day | date : requiredDateFormat : currentLocale }}
-          </td>
-        </ng-container> -->
-        <ng-container [matColumnDef]="displayedColumns[0]">
-          <th mat-header-cell *matHeaderCellDef>Start-Time</th>
-          <td mat-cell *matCellDef="let element">
-            <input [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale" (ngModelChange)="onStartTimeChange($event, element)" matInput type="datetime-local" />
-          </td>
-        </ng-container>
-        <ng-container [matColumnDef]="displayedColumns[1]">
-          <th mat-header-cell *matHeaderCellDef>Duration</th>
-          <td mat-cell *matCellDef="let element">
-            {{getDurationStr(element)}}</td>
-        </ng-container>
-        <ng-container [matColumnDef]="displayedColumns[2]">
-          <th mat-header-cell *matHeaderCellDef>End-Time</th>
-          <td mat-cell *matCellDef="let element">
-            <input [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale" (ngModelChange)="onEndTimeChange($event, element)" matInput type="datetime-local" />
-          </td>
-        </ng-container>
-        <ng-container [matColumnDef]="displayedColumns[3]">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let element"> <button mat-stroke-button>
-              <div style="text-align:center">
-                <fa-icon [icon]="faTrash"></fa-icon>
-              </div>
-            </button>
-          </td>
-        </ng-container>
+        <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
+        <form #workingTimeLineForm="ngForm">
+          <ng-container [matColumnDef]="displayedColumns[0]">
+            <th mat-header-cell *matHeaderCellDef>Start-Time</th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <mat-form-field>
+                <input #startTime="ngModel" name="cellStartTime{{rowIndex}}" [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale"
+                  (ngModelChange)="onStartTimeChange($event, element, rowIndex)" matInput type="datetime-local" />
+              </mat-form-field>
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="displayedColumns[1]">
+            <th mat-header-cell *matHeaderCellDef>Duration</th>
+            <td mat-cell *matCellDef="let element">
+              {{getDurationStr(element)}}</td>
+          </ng-container>
+          <ng-container [matColumnDef]="displayedColumns[2]">
+            <th mat-header-cell *matHeaderCellDef>End-Time</th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <mat-form-field>
+                <input #endTime="ngModel" name="cellEndTime{{rowIndex}}" [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale"
+                (ngModelChange)="onEndTimeChange($event, element, rowIndex)" matInput type="datetime-local" />
+              </mat-form-field>
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="displayedColumns[3]">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element"> <button [disabled]="workingTimeLineForm.invalid" mat-stroke-button>
+                <div style="text-align:center">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </div>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container [matColumnDef]="displayedColumns[4]">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element"> <button mat-stroke-button>
+                <div style="text-align:center">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </div>
+              </button>
+            </td>
+          </ng-container>
+        </form>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
