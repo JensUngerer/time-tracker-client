@@ -72,12 +72,16 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
   initializeValidators() {
     let rowIndex = 0;
     for (const oneLineForm of this.workingTimeLines.toArray()) {
-      const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
-      const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
+      // const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
+      // const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
 
-      startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
-      endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
-      rowIndex++;
+      // startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
+      // endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
+      // rowIndex++;
+
+      // DEBUGGING:
+      var controlKeys = Object.keys(oneLineForm.controls);
+      console.log(JSON.stringify(controlKeys, null, 4));
     }
   }
 
