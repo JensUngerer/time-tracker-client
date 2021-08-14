@@ -5,7 +5,8 @@ import { Constants } from './../../../../common/typescript/constants';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
 import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
-import { QueryDateComponent } from '../query-date/query-date.component';
+import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
+import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 
 // TEMPORARY !!!
 export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -36,6 +37,7 @@ export class WorkingHoursComponent implements OnInit {
   // DateTime = DateTime;
   // Constants = Constants;
   faTrash = faTrash;
+  currentDay: Date;
 
   debuggingLines: IWorkingHoursLine[] = [
     {
@@ -47,7 +49,7 @@ export class WorkingHoursComponent implements OnInit {
       deleteButton: ''
     }
   ];
-  displayedColumns = ['day', 'startTime', 'durationInMilliseconds', 'endTime', 'deleteButton'];
+  displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'deleteButton'];
   workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource(this.debuggingLines);
   constructor(@Inject(LOCALE_ID) public currentLocale) { }
 
@@ -61,6 +63,10 @@ export class WorkingHoursComponent implements OnInit {
 
   getDurationStr(element: IWorkingHoursLine) {
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
+  }
+
+  onQueryDateBoundaries($event: IDateBoundaries) {
+    this.currentDay = $event.day;
   }
 
   private timeToDateObject(day: Date, time: string): Date {
@@ -89,9 +95,19 @@ export class WorkingHoursComponent implements OnInit {
   }
 
   onStartTimeChange($event: string, line: IWorkingHoursLine) {
-    console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+    // console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+    console.log($event);
+    const startTime = new Date($event);
+    console.log(startTime);
+    const utcStartTime = DateHelper.convertToUtc(startTime);
+    console.log(utcStartTime);
   }
   onEndTimeChange($event: string, line: IWorkingHoursLine) {
-    console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+    // console.log($event + '-->' + this.timeToDateObject(line.day, $event));
+    console.log($event);
+    const endTime = new Date($event);
+    console.log(endTime);
+    const utcEndTime = DateHelper.convertToUtc(endTime);
+    console.log(utcEndTime);
   }
 }
