@@ -9,7 +9,7 @@
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
         <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
-        <form #workingTimeLineForm="ngForm">
+        <form #workingTimeLine #workingTimeLineForm="ngForm">
           <ng-container [matColumnDef]="displayedColumns[0]">
             <th mat-header-cell *matHeaderCellDef>Start-Time</th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">

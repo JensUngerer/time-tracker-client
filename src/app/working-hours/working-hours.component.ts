@@ -31,7 +31,7 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   styleUrls: ['./working-hours.component.scss']
 })
 export class WorkingHoursComponent implements OnInit, AfterViewInit {
-  @ViewChildren('workingTimeLineForm') lineForm: QueryList<NgForm>;
+  @ViewChildren('workingTimeLine') workingTimeLines: QueryList<NgForm>;
 
   // static requiredTimeFormat = 'HH:mm';
   // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
@@ -71,7 +71,7 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
 
   initializeValidators() {
     let rowIndex = 0;
-    for (const oneLineForm of this.lineForm.toArray()) {
+    for (const oneLineForm of this.workingTimeLines.toArray()) {
       const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
       const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
 
