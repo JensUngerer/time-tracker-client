@@ -1,10 +1,12 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
   <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
-    <div flexFlex="1 1 100%">
+    <div fxFlexFill flexFlex="1 1 100%">
       <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date>
     </div>
-    <div flexFlex="1 1 100%">
-      {{currentDay | date : requiredDateFormat : currentLocale}}
+    <div fxFlexFill flexFlex="1 1 100%">
+      <div flexFlex="1 1 100%" fxLayout="row" fxFlexFill fxLayoutAlign="flex-start flex-start">
+        {{currentDay | date : requiredDateFormat : currentLocale}}
+      </div>
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <form *ngIf="isWorkingTimeTableVisible" [formGroup]="workingTimeTableFormGroup" #workingTimeTable>
