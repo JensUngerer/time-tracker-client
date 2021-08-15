@@ -7,7 +7,7 @@
       {{currentDay | date : requiredDateFormat : currentLocale}}
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <form *nfIf="isWorkingTimeTableVisible" [formGroup]="workingTimeTableFormGroup" #workingTimeTable>
+      <form *ngIf="isWorkingTimeTableVisible" [formGroup]="workingTimeTableFormGroup" #workingTimeTable>
         <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
           <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
           <ng-container [matColumnDef]="displayedColumns[0]">
