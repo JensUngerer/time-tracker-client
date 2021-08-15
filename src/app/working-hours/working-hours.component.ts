@@ -156,7 +156,6 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
         console.error('no parsed working-time-entries received');
         return;
       }
-      const lastItem = parsedWorkingTimeDocs.pop();
       this.parsedWorkingTimeDocs = parsedWorkingTimeDocs;
       this.workingHoursDataSource = new MatTableDataSource(this.parsedWorkingTimeDocs);
 
