@@ -12,15 +12,15 @@ import { AbstractControl, FormControl, FormGroup, NgForm, ValidationErrors, Vali
 import { formatDate } from '@angular/common';
 
 // TEMPORARY !!!
-export interface IWorkingHoursLine extends ISessionTimeEntry {
-  // sessionTimeEntryId: string;
-  // day: Date;
-  // startTime: Date;
-  // duration: DurationObject;
-  // endTime: Date,
-  applyButton: string;
-  deleteButton: string;
-}
+// export interface IWorkingHoursLine extends ISessionTimeEntry {
+//   // sessionTimeEntryId: string;
+//   // day: Date;
+//   // startTime: Date;
+//   // duration: DurationObject;
+//   // endTime: Date,
+//   applyButton: string;
+//   deleteButton: string;
+// }
 
 // function startTimeSmallerEndTimeValidatorFn(startTimeSmallerEndTimeValidatorFn: any) {
 //   throw new Error('Function not implemented.');
@@ -57,19 +57,19 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
 
   isWorkingTimeTableVisible = false;
 
-  debuggingLines: IWorkingHoursLine[] = [
+  debuggingLines: ISessionTimeEntry[] = [
     {
       timeEntryId: '',
       day: DurationCalculator.getDayFrom(new Date()),
       startTime: new Date(),
       durationInMilliseconds: {},
       endTime: new Date(),
-      applyButton: '',
-      deleteButton: ''
+      // applyButton: '',
+      // deleteButton: ''
     }
   ];
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
-  workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource(this.debuggingLines);
+  workingHoursDataSource: MatTableDataSource<ISessionTimeEntry> = new MatTableDataSource(this.debuggingLines);
   constructor(@Inject(LOCALE_ID) public currentLocale) { }
 
   // ngAfterViewInit(): void {
@@ -132,7 +132,7 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     this.isWorkingTimeTableVisible = true;
   }
 
-  getDurationStr(element: IWorkingHoursLine) {
+  getDurationStr(element: ISessionTimeEntry) {
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
   }
 
@@ -165,19 +165,19 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     // return newDate;
   }
 
-  onApplyButtonClicked(rowIndex: number, line: IWorkingHoursLine) {
+  onApplyButtonClicked(rowIndex: number, line: ISessionTimeEntry) {
     console.log(rowIndex);
     console.log(line);
   }
 
-  onStartTimeChange($event: string, line: IWorkingHoursLine, rowIndex: number) {
+  onStartTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
     console.log($event);
     const startTime = new Date($event);
     console.log(startTime);
     const utcStartTime = DateHelper.convertToUtc(startTime);
     console.log(utcStartTime);
   }
-  onEndTimeChange($event: string, line: IWorkingHoursLine, rowIndex: number) {
+  onEndTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
     console.log($event);
     const endTime = new Date($event);
     console.log(endTime);
