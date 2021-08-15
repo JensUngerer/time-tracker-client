@@ -3,9 +3,6 @@
     <div flexFlex="1 1 100%">
       <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date>
     </div>
-    <div flexFlex="1 1 100%" fxLayout="row" fxFlexFill fxLayoutAlign="flex-start flex-start">
-      {{currentDay | date : requiredDateFormat : currentLocale}}
-    </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <form *ngIf="isWorkingTimeTableVisible" [formGroup]="workingTimeTableFormGroup" #workingTimeTable>
         <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
