@@ -1,32 +1,17 @@
-import { AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { DateTime, Duration, DurationObject } from 'luxon';
-import { Constants } from './../../../../common/typescript/constants';
-import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
-import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
-import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
-import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
-import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
-import { AbstractControl, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { formatDate } from '@angular/common';
+import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { MatTableDataSource } from '@angular/material/table';
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Duration } from 'luxon';
+
+import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { CommitService } from '../commit.service';
+import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
+import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
-
-// TEMPORARY !!!
-// export interface IWorkingHoursLine extends ISessionTimeEntry {
-//   // sessionTimeEntryId: string;
-//   // day: Date;
-//   // startTime: Date;
-//   // duration: DurationObject;
-//   // endTime: Date,
-//   applyButton: string;
-//   deleteButton: string;
-// }
-
-// function startTimeSmallerEndTimeValidatorFn(startTimeSmallerEndTimeValidatorFn: any) {
-//   throw new Error('Function not implemented.');
-// }
+import { Constants } from './../../../../common/typescript/constants';
+import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
 
 @Component({
   selector: 'mtt-working-hours',
@@ -37,39 +22,21 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
   readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
 
-  // @ViewChildren('workingTimeLine') workingTimeLines: QueryList<NgForm>;
-
-  // static requiredTimeFormat = 'HH:mm';
-  // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
   workingTimeTableFormGroup: FormGroup;
 
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
 
-  // WorkingHoursComponent = WorkingHoursComponent;
-  // QueryDateComponent = QueryDateComponent;
   // https://stackoverflow.com/questions/47908179/how-to-load-observable-array-property-as-angular-material-table-data-source
   // https://material.angular.io/components/table/overview
-  // Duration = Duration;
-  // DateTime = DateTime;
-  // Constants = Constants;
   faTrash = faTrash;
   faCheck = faCheck;
   currentDay: Date;
 
   isWorkingTimeTableVisible = false;
 
-  // debuggingLines: ISessionTimeEntry[] = [
-  //   {
-  //     timeEntryId: '',
-  //     day: DurationCalculator.getDayFrom(new Date()),
-  //     startTime: new Date(),
-  //     durationInMilliseconds: {},
-  //     endTime: new Date(),
-  //     // applyButton: '',
-  //     // deleteButton: ''
-  //   }
-  // ];
+  rowToApplyButtonDisabled: boolean[] = [];
+
   parsedWorkingTimeDocs: ISessionTimeEntry[] = [];
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   workingHoursDataSource: MatTableDataSource<ISessionTimeEntry>;// = new MatTableDataSource(this.debuggingLines);
@@ -77,46 +44,22 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
-  // ngAfterViewInit(): void {
-  //   this.initializeValidators();
-  // }
-
-  // initializeValidators() {
-  //   let rowIndex = 0;
-  //   for (const oneLineForm of this.workingTimeLines.toArray()) {
-  //     // const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
-  //     // const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
-
-  //     // startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
-  //     // endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
-  //     // rowIndex++;
-
-  //     // DEBUGGING:
-  //     var controlKeys = Object.keys(oneLineForm.controls);
-  //     console.log(JSON.stringify(controlKeys, null, 4));
-  //   }
-  // }
-
   isRowDisabled(rowIndex: number) {
-    // TODO: implement
-
     if (!this.workingTimeTableFormGroup ||
       !this.workingTimeTableFormGroup.controls) {
       console.error('no form group');
       return;
     }
-    // var controlKeys = Object.keys(this.workingTimeTableFormGroup.controls);
-    // console.log(JSON.stringify(controlKeys, null, 4));
     const startControl = this.workingTimeTableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
-    var isStartControlInValid = startControl.invalid;
+    const isStartControlInValid = startControl.invalid;
 
     const endControl = this.workingTimeTableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
-    var isEndControlInValid = endControl.invalid;
+    const isEndControlInValid = endControl.invalid;
 
-    return isStartControlInValid || isEndControlInValid;
+    return isStartControlInValid || isEndControlInValid || this.rowToApplyButtonDisabled[rowIndex];
   }
 
-  private initializeFormGroup(){
+  private initializeFormGroup() {
     const configObj: { [key: string]: AbstractControl } = {};
 
     this.parsedWorkingTimeDocs.forEach((oneLine, rowIndex) => {
@@ -130,6 +73,8 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
 
       startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
       endTimeControl.setValidators(QueryTimeBoundariesComponent.createEndTimeValidatorFn(startTimeControl));
+
+      this.rowToApplyButtonDisabled.push(true);
     });
 
     this.workingTimeTableFormGroup = new FormGroup(configObj);
@@ -143,7 +88,7 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
   }
 
-  private initializeTableViaHttpGetResponse(selectedDay: Date){
+  private initializeTableViaHttpGetResponse(selectedDay: Date) {
     const docsPromise = this.commitService.getWorkingTimeEntries(selectedDay);
     docsPromise.then((rawWorkingTimeEntries: string) => {
       if (!rawWorkingTimeEntries) {
@@ -177,49 +122,56 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     this.initializeTableViaHttpGetResponse(this.currentDay);
   }
 
-  private timeToDateObject(day: Date, time: string): Date {
-    let dateTime = DateTime.fromJSDate(day);
-    console.log(this.currentLocale);
-    dateTime = dateTime.setLocale(this.currentLocale).toLocal();
-    // dateTime = dateTime.toLocal();
-    // const newDate = new Date();
-    // newDate.setMinutes(day.getMinutes() - day.getTimezoneOffset())
-    const split = time.split(':');
-    if (split.length < 2) {
-      return new Date();
-    }
-    const hoursStr = split[0];
-    const minutesStr = split[1];
-    const hours = parseInt(hoursStr);
-    const minutes = parseInt(minutesStr);
-    // newDate.setHours(newDate.getHours() + hours);
-    // newDate.setMinutes(newDate.getMinutes() + minutes);
-    dateTime = dateTime.plus({ hours, minutes });
-
-    // // dateTime = dateTime.toUTC();
-
-    return dateTime.toJSDate();
-    // return newDate;
-  }
-
   onApplyButtonClicked(rowIndex: number, line: ISessionTimeEntry) {
-    console.log(rowIndex);
-    console.log(line);
+    this.rowToApplyButtonDisabled[rowIndex] = true;
+
+    // TODO: implement
   }
 
   onStartTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
-    console.log($event);
+    const startTimeControl = this.workingTimeTableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
+    if (!startTimeControl || startTimeControl.invalid) {
+      console.error('cannot change start time');
+      return;
+    }
+
     const startTime = new Date($event);
-    console.log(startTime);
-    const utcStartTime = DateHelper.convertToUtc(startTime);
-    console.log(utcStartTime);
+    // const utcStartTime = DateHelper.convertToUtc(startTime);
+
+    line.startTime = startTime;
+    this.setDurationObjectIn(line, rowIndex);
   }
+
+  private setDurationObjectIn(line: ISessionTimeEntry, rowIndex: number) {
+    if (!line ||
+      !line.endTime ||
+      !line.startTime) {
+      console.error('cannot set duration');
+      return;
+    }
+    const rawDuration = line.endTime.getTime() - line.startTime.getTime();
+    let duration = Duration.fromMillis(rawDuration);
+    duration = duration.shiftTo(...Constants.shiftToParameter);
+
+    line.durationInMilliseconds = duration.toObject();
+
+    // enable apply button (in order to send UPDATE to mongodb (via server))
+    this.rowToApplyButtonDisabled[rowIndex] = false;
+  }
+
   onEndTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
-    console.log($event);
+    const endTimeControl = this.workingTimeTableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
+    if (!endTimeControl ||
+      endTimeControl.invalid) {
+      console.error('cannot change end time');
+      return;
+    }
+
     const endTime = new Date($event);
-    console.log(endTime);
-    const utcEndTime = DateHelper.convertToUtc(endTime);
-    console.log(utcEndTime);
+    // const utcEndTime = DateHelper.convertToUtc(endTime);
+
+    line.endTime = endTime;
+    this.setDurationObjectIn(line, rowIndex);
   }
 }
 
