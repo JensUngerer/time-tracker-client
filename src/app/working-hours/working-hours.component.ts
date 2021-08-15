@@ -124,7 +124,7 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
       configObj[this.END_TIME_CONTROL_PREFIX + rowIndex] = endTimeControl;
 
       startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
-      endTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeControl));
+      endTimeControl.setValidators(QueryTimeBoundariesComponent.createEndTimeValidatorFn(startTimeControl));
     });
 
     this.workingTimeTableFormGroup = new FormGroup(configObj);
