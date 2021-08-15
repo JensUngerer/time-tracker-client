@@ -25,6 +25,11 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  getWorkingTimeEntries(selectedDay: Date) {
+    const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + selectedDay.getTime();
+    return this.httpGet(url);
+  }
+
   getWeeklyWorkingTimeDurationStr() {
     const url = this.getSessionTimeEntryUrl() + routes.weeklyWorkingTimeSuffix;
     return this.httpGet(url);

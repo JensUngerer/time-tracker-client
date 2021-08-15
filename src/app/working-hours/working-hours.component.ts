@@ -10,6 +10,8 @@ import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { AbstractControl, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { formatDate } from '@angular/common';
+import { CommitService } from '../commit.service';
+import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
 // TEMPORARY !!!
 // export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -57,20 +59,23 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
 
   isWorkingTimeTableVisible = false;
 
-  debuggingLines: ISessionTimeEntry[] = [
-    {
-      timeEntryId: '',
-      day: DurationCalculator.getDayFrom(new Date()),
-      startTime: new Date(),
-      durationInMilliseconds: {},
-      endTime: new Date(),
-      // applyButton: '',
-      // deleteButton: ''
-    }
-  ];
+  // debuggingLines: ISessionTimeEntry[] = [
+  //   {
+  //     timeEntryId: '',
+  //     day: DurationCalculator.getDayFrom(new Date()),
+  //     startTime: new Date(),
+  //     durationInMilliseconds: {},
+  //     endTime: new Date(),
+  //     // applyButton: '',
+  //     // deleteButton: ''
+  //   }
+  // ];
+  parsedWorkingTimeDocs: ISessionTimeEntry[] = [];
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
-  workingHoursDataSource: MatTableDataSource<ISessionTimeEntry> = new MatTableDataSource(this.debuggingLines);
-  constructor(@Inject(LOCALE_ID) public currentLocale) { }
+  workingHoursDataSource: MatTableDataSource<ISessionTimeEntry>;// = new MatTableDataSource(this.debuggingLines);
+  constructor(@Inject(LOCALE_ID) public currentLocale,
+    private commitService: CommitService,
+    private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
   // ngAfterViewInit(): void {
   //   this.initializeValidators();
@@ -111,10 +116,10 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     return isStartControlInValid || isEndControlInValid;
   }
 
-  ngOnInit(): void {
+  private initializeFormGroup(){
     const configObj: { [key: string]: AbstractControl } = {};
 
-    this.debuggingLines.forEach((oneLine, rowIndex) => {
+    this.parsedWorkingTimeDocs.forEach((oneLine, rowIndex) => {
       let startTime: string = formatDate(oneLine.startTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
       const startTimeControl = new FormControl(startTime);
       configObj[this.START_TIME_CONTROL_PREFIX + rowIndex] = startTimeControl;
@@ -128,16 +133,48 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     });
 
     this.workingTimeTableFormGroup = new FormGroup(configObj);
+  }
 
-    this.isWorkingTimeTableVisible = true;
+  ngOnInit(): void {
+
   }
 
   getDurationStr(element: ISessionTimeEntry) {
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
   }
 
+  private initializeTableViaHttpGetResponse(selectedDay: Date){
+    const docsPromise = this.commitService.getWorkingTimeEntries(selectedDay);
+    docsPromise.then((rawWorkingTimeEntries: string) => {
+      if (!rawWorkingTimeEntries) {
+        console.error('no raw working-time-entries received');
+        return;
+      }
+      const parsedWorkingTimeDocs: ISessionTimeEntry[] = this.sessionStorageSerializationService.deSerialize(rawWorkingTimeEntries);
+      if (!parsedWorkingTimeDocs ||
+        !parsedWorkingTimeDocs.length) {
+        console.error('no parsed working-time-entries received');
+        return;
+      }
+      this.parsedWorkingTimeDocs = parsedWorkingTimeDocs;
+      this.workingHoursDataSource = new MatTableDataSource(this.parsedWorkingTimeDocs);
+
+      this.initializeFormGroup();
+
+      // draw table (via adding its DOM node) !!!
+      this.isWorkingTimeTableVisible = true;
+    });
+    docsPromise.catch((httpGetErr: any) => {
+      console.error(httpGetErr);
+
+      this.isWorkingTimeTableVisible = false;
+    });
+  }
+
   onQueryDateBoundaries($event: IDateBoundaries) {
     this.currentDay = $event.day;
+
+    this.initializeTableViaHttpGetResponse(this.currentDay);
   }
 
   private timeToDateObject(day: Date, time: string): Date {
