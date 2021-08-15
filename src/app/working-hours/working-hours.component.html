@@ -14,8 +14,9 @@
                 <!--
                   [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale"
                   (ngModelChange)="onStartTimeChange($event, element, rowIndex)"
+                (change)="onStartTimeChange($event, element, rowIndex)"
                 -->
-                <input (change)="onStartTimeChange($event, element, rowIndex)" #startTimeCell [formControlName]="START_TIME_CONTROL_PREFIX + rowIndex" matInput
+                <input #startTimeCell [formControlName]="START_TIME_CONTROL_PREFIX + rowIndex" matInput
                   type="datetime-local" />
               </mat-form-field>
             </td>
@@ -32,8 +33,9 @@
                 <!--
                   [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale"
                   (ngModelChange)="onEndTimeChange($event, element, rowIndex)"
+                (change)="onEndTimeChange($event, element, rowIndex)"
                 -->
-                <input (change)="onEndTimeChange($event, element, rowIndex)" #endTimeCell [formControlName]="END_TIME_CONTROL_PREFIX + rowIndex" matInput
+                <input #endTimeCell [formControlName]="END_TIME_CONTROL_PREFIX + rowIndex" matInput
                   type="datetime-local" />
               </mat-form-field>
             </td>

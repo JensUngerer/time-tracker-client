@@ -1,9 +1,11 @@
 import { formatDate } from '@angular/common';
-import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { Component, Inject, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Duration } from 'luxon';
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { CommitService } from '../commit.service';
@@ -18,9 +20,11 @@ import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeE
   templateUrl: './working-hours.component.html',
   styleUrls: ['./working-hours.component.scss']
 })
-export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
+export class WorkingHoursComponent implements OnInit, OnDestroy {
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
   readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
+
+  private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
   workingTimeTableFormGroup: FormGroup;
 
@@ -43,6 +47,11 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  ngOnDestroy(): void {
+    this.onDestroy$.next(true);
+    this.onDestroy$.complete();
+  }
 
   isRowDisabled(rowIndex: number) {
     if (!this.workingTimeTableFormGroup ||
@@ -109,6 +118,7 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
       this.workingHoursDataSource = new MatTableDataSource(this.parsedWorkingTimeDocs);
 
       this.initializeFormGroup();
+      this.initializeFormGroupChangeSubscriptions();
 
       // draw table (via adding its DOM node) !!!
       this.isWorkingTimeTableVisible = true;
@@ -118,6 +128,66 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
 
       this.isWorkingTimeTableVisible = false;
     });
+  }
+
+  // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components
+  // private onTableValueChanges(newDateValue: string) {
+
+  // }
+  private wrapOnStartTimeChanged(rowIndex: number) {
+    return (newStartTimeDate: string) => {
+      this.onStartTimeChange(newStartTimeDate, rowIndex);
+    };
+  }
+
+  private wrapOnEndTimeChanged(rowIndex: number) {
+    return (newEndTimeDate: string) => {
+      this.onEndTimeChange(newEndTimeDate, rowIndex);
+    };
+  }
+
+  initializeFormGroupChangeSubscriptions() {
+    const numberOfLines = this.parsedWorkingTimeDocs.length;
+    for (let rowIndex = 0; rowIndex < numberOfLines; rowIndex++) {
+      const controlUniqueIdentifier = this.START_TIME_CONTROL_PREFIX + rowIndex;
+      const startControl = this.workingTimeTableFormGroup.controls[controlUniqueIdentifier];
+      if (!startControl) {
+        console.error('no: ' + controlUniqueIdentifier);
+        continue;
+      }
+      const startControlChange$ = startControl.valueChanges;
+      if (!startControlChange$) {
+        console.error('no: ' + controlUniqueIdentifier + ' valueChanges');
+        continue;
+      }
+      startControlChange$
+      .pipe(tap(this.wrapOnStartTimeChanged(rowIndex).bind(this)))
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe();
+    }
+    for (let rowIndex = 0; rowIndex < numberOfLines; rowIndex++) {
+      const controlUniqueIdentifier = this.END_TIME_CONTROL_PREFIX + rowIndex;
+      const endControl = this.workingTimeTableFormGroup.controls[controlUniqueIdentifier];
+      if (!endControl) {
+        console.error('no: ' + controlUniqueIdentifier);
+        continue;
+      }
+      const endControlChange$ = endControl.valueChanges;
+      if (!endControlChange$) {
+        console.error('no: ' + controlUniqueIdentifier + ' valueChanges');
+        continue;
+      }
+      endControlChange$
+      .pipe(tap(this.wrapOnEndTimeChanged(rowIndex).bind(this)))
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe();
+    }
+    // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components
+    // const valueChanges$ = this.workingTimeTableFormGroup.valueChanges;
+    // valueChanges$
+    // .pipe(tap(this.onTableValueChanges.bind(this)))
+    // .pipe(takeUntil(this.onDestroy$))
+    // .subscribe();
   }
 
   onQueryDateBoundaries($event: IDateBoundaries) {
@@ -132,17 +202,27 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     // TODO: implement
   }
 
-  onStartTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
+  onStartTimeChange($event: string, rowIndex: number) {
+    const line: ISessionTimeEntry = this.parsedWorkingTimeDocs[rowIndex];
     const startTimeControl = this.workingTimeTableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
     if (!startTimeControl || startTimeControl.invalid) {
       console.error('cannot change start time');
+      return;
+    }
+    if (!startTimeControl.dirty) {
+      console.error('start time is not dirty');
       return;
     }
 
     const startTime = new Date($event);
     // const utcStartTime = DateHelper.convertToUtc(startTime);
 
+    if (line.endTime < startTime) {
+      console.error('endTime < startTime');
+      return;
+    }
     line.startTime = startTime;
+
     this.setDurationObjectIn(line, rowIndex);
   }
 
@@ -153,33 +233,39 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
       console.error('cannot set duration');
       return;
     }
-    if (line.endTime < line.startTime) {
-      console.error('endTime < startTime');
-      return;
-    }
+
     const rawDuration = line.endTime.getTime() - line.startTime.getTime();
     let duration = Duration.fromMillis(rawDuration);
     duration = duration.shiftTo(...Constants.shiftToParameter);
 
     line.durationInMilliseconds = duration.toObject();
 
-    // refresh table
-    this.workingHoursDataSource.data = this.parsedWorkingTimeDocs;
+    // refresh table ? TODO?
+    // this.workingHoursDataSource.data = this.parsedWorkingTimeDocs;
 
     // enable apply button (in order to send UPDATE to mongodb (via server))
     this.rowToApplyButtonDisabled[rowIndex] = false;
   }
 
-  onEndTimeChange($event: string, line: ISessionTimeEntry, rowIndex: number) {
+  onEndTimeChange($event: string, rowIndex: number) {
+    const line: ISessionTimeEntry = this.parsedWorkingTimeDocs[rowIndex];
     const endTimeControl = this.workingTimeTableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
     if (!endTimeControl ||
       endTimeControl.invalid) {
       console.error('cannot change end time');
       return;
     }
+    if (!endTimeControl.dirty) {
+      console.error('end time is not dirty');
+      return;
+    }
 
     const endTime = new Date($event);
     // const utcEndTime = DateHelper.convertToUtc(endTime);
+    if (endTime < line.startTime) {
+      console.error('endTime < startTime');
+      return;
+    }
 
     line.endTime = endTime;
     this.setDurationObjectIn(line, rowIndex);
