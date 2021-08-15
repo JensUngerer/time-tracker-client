@@ -8,7 +8,8 @@ import { DurationCalculator } from '../../../../common/typescript/helpers/durati
 import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
 import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
-import { AbstractControl, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { formatDate } from '@angular/common';
 
 // TEMPORARY !!!
 export interface IWorkingHoursLine extends ISessionTimeEntry {
@@ -35,6 +36,7 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
 
   // static requiredTimeFormat = 'HH:mm';
   // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
+  workingTimeTableFormGroup: FormGroup;
 
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
@@ -49,6 +51,8 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
   faTrash = faTrash;
   faCheck = faCheck;
   currentDay: Date;
+
+  isWorkingTimeTableVisible = false;
 
   debuggingLines: IWorkingHoursLine[] = [
     {
@@ -86,6 +90,24 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const configObj: { [key: string]: AbstractControl } = {};
+
+    this.debuggingLines.forEach((oneLine, rowIndex) => {
+      let startTime: string = formatDate(oneLine.startTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
+      const startTimeControl = new FormControl(startTime);
+      configObj['cellStartTime' + rowIndex] = startTimeControl;
+
+      let endTime: string = formatDate(oneLine.endTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
+      const endTimeControl = new FormControl(endTime);
+      configObj['cellEndTime' + rowIndex] = endTimeControl;
+
+      startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
+      endTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeControl));
+    });
+
+    this.workingTimeTableFormGroup = new FormGroup(configObj);
+
+    this.isWorkingTimeTableVisible = true;
   }
 
   getDurationStr(element: IWorkingHoursLine) {
@@ -119,6 +141,11 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
 
     return dateTime.toJSDate();
     // return newDate;
+  }
+
+  onApplyButtonClicked(rowIndex: number, line: IWorkingHoursLine) {
+    console.log(rowIndex);
+    console.log(line);
   }
 
   onStartTimeChange($event: string, line: IWorkingHoursLine, rowIndex: number) {

@@ -7,15 +7,19 @@
       {{currentDay | date : requiredDateFormat : currentLocale}}
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
-        <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
-        <form #workingTimeLine #workingTimeLineForm="ngForm">
+      <form *nfIf="isWorkingTimeTableVisible" [formGroup]="workingTimeTableFormGroup" #workingTimeTable>
+        <table flexFlex="1 1 100%" mat-table [dataSource]="workingHoursDataSource">
+          <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
           <ng-container [matColumnDef]="displayedColumns[0]">
             <th mat-header-cell *matHeaderCellDef>Start-Time</th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <mat-form-field>
-                <input #startTime="ngModel" name="cellStartTime{{rowIndex}}" [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale"
-                  (ngModelChange)="onStartTimeChange($event, element, rowIndex)" matInput type="datetime-local" />
+                <!--
+                  [ngModel]="element.startTime | date : requiredDateTimeFormat : currentLocale"
+                  (ngModelChange)="onStartTimeChange($event, element, rowIndex)"
+                -->
+                <input #startTimeCell [formControlName]="'cellStartTime' + rowIndex"
+                   matInput type="datetime-local" />
               </mat-form-field>
             </td>
           </ng-container>
@@ -28,14 +32,18 @@
             <th mat-header-cell *matHeaderCellDef>End-Time</th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <mat-form-field>
-                <input #endTime="ngModel" name="cellEndTime{{rowIndex}}" [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale"
-                (ngModelChange)="onEndTimeChange($event, element, rowIndex)" matInput type="datetime-local" />
+                <!--
+                  [ngModel]="element.endTime | date : requiredDateTimeFormat : currentLocale"
+                  (ngModelChange)="onEndTimeChange($event, element, rowIndex)"
+                -->
+                <input #endTimeCell [formControlName]="'cellEndTime' + rowIndex"
+                   matInput type="datetime-local" />
               </mat-form-field>
             </td>
           </ng-container>
           <ng-container [matColumnDef]="displayedColumns[3]">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element"> <button [disabled]="workingTimeLineForm.invalid" mat-stroke-button>
+            <td mat-cell *matCellDef="let element; let rowIndex = index"> <button (click)="onApplyButtonClicked(rowIndex, element)" [disabled]="workingTimeTable.controls['cellStartTime' + rowIndex].invalid || workingTimeTable.controls['cellEndTime' + rowIndex].invalid" mat-stroke-button>
                 <div style="text-align:center">
                   <fa-icon [icon]="faCheck"></fa-icon>
                 </div>
@@ -52,11 +60,11 @@
               </button>
             </td>
           </ng-container>
-        </form>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </form>
     </div>
   </div>
 </div>
