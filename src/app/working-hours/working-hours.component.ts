@@ -85,6 +85,10 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
   }
 
   getDurationStr(element: ISessionTimeEntry) {
+    if (!element ||
+      !element.durationInMilliseconds) {
+      return '';
+    }
     return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
   }
 
@@ -149,11 +153,18 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
       console.error('cannot set duration');
       return;
     }
+    if (line.endTime < line.startTime) {
+      console.error('endTime < startTime');
+      return;
+    }
     const rawDuration = line.endTime.getTime() - line.startTime.getTime();
     let duration = Duration.fromMillis(rawDuration);
     duration = duration.shiftTo(...Constants.shiftToParameter);
 
     line.durationInMilliseconds = duration.toObject();
+
+    // refresh table
+    this.workingHoursDataSource.data = this.parsedWorkingTimeDocs;
 
     // enable apply button (in order to send UPDATE to mongodb (via server))
     this.rowToApplyButtonDisabled[rowIndex] = false;
