@@ -31,7 +31,7 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   templateUrl: './working-hours.component.html',
   styleUrls: ['./working-hours.component.scss']
 })
-export class WorkingHoursComponent implements OnInit, AfterViewInit {
+export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
   @ViewChildren('workingTimeLine') workingTimeLines: QueryList<NgForm>;
 
   // static requiredTimeFormat = 'HH:mm';
@@ -69,24 +69,38 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
   workingHoursDataSource: MatTableDataSource<IWorkingHoursLine> = new MatTableDataSource(this.debuggingLines);
   constructor(@Inject(LOCALE_ID) public currentLocale) { }
 
-  ngAfterViewInit(): void {
-    this.initializeValidators();
-  }
+  // ngAfterViewInit(): void {
+  //   this.initializeValidators();
+  // }
 
-  initializeValidators() {
-    let rowIndex = 0;
-    for (const oneLineForm of this.workingTimeLines.toArray()) {
-      // const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
-      // const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
+  // initializeValidators() {
+  //   let rowIndex = 0;
+  //   for (const oneLineForm of this.workingTimeLines.toArray()) {
+  //     // const startTimeCell = oneLineForm.controls['cellStartTime' + rowIndex];
+  //     // const endTimeCell = oneLineForm.controls['cellEndTime' + rowIndex];
 
-      // startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
-      // endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
-      // rowIndex++;
+  //     // startTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeCell));
+  //     // endTimeCell.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeCell));
+  //     // rowIndex++;
 
-      // DEBUGGING:
-      var controlKeys = Object.keys(oneLineForm.controls);
-      console.log(JSON.stringify(controlKeys, null, 4));
+  //     // DEBUGGING:
+  //     var controlKeys = Object.keys(oneLineForm.controls);
+  //     console.log(JSON.stringify(controlKeys, null, 4));
+  //   }
+  // }
+
+  isRowDisabled(rowIndex: number) {
+    // TODO: implement
+
+    if (!this.workingTimeTableFormGroup ||
+      !this.workingTimeTableFormGroup.controls) {
+      console.error('no form group');
+      return;
     }
+    var controlKeys = Object.keys(this.workingTimeTableFormGroup.controls);
+    console.log(JSON.stringify(controlKeys, null, 4));
+
+    return false;
   }
 
   ngOnInit(): void {
@@ -135,7 +149,7 @@ export class WorkingHoursComponent implements OnInit, AfterViewInit {
     const minutes = parseInt(minutesStr);
     // newDate.setHours(newDate.getHours() + hours);
     // newDate.setMinutes(newDate.getMinutes() + minutes);
-    dateTime = dateTime.plus({hours, minutes});
+    dateTime = dateTime.plus({ hours, minutes });
 
     // // dateTime = dateTime.toUTC();
 

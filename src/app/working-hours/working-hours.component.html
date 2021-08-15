@@ -43,7 +43,8 @@
           </ng-container>
           <ng-container [matColumnDef]="displayedColumns[3]">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index"> <button (click)="onApplyButtonClicked(rowIndex, element)" [disabled]="workingTimeTable.controls['cellStartTime' + rowIndex].invalid || workingTimeTable.controls['cellEndTime' + rowIndex].invalid" mat-stroke-button>
+            <!-- [disabled]="workingTimeTable.controls['cellStartTime' + rowIndex].invalid || workingTimeTable.controls['cellEndTime' + rowIndex].invalid" -->
+            <td mat-cell *matCellDef="let element; let rowIndex = index"> <button (click)="onApplyButtonClicked(rowIndex, element)" [disabled]="isRowDisabled(rowIndex)" mat-stroke-button>
                 <div style="text-align:center">
                   <fa-icon [icon]="faCheck"></fa-icon>
                 </div>
