@@ -32,7 +32,10 @@ export interface IWorkingHoursLine extends ISessionTimeEntry {
   styleUrls: ['./working-hours.component.scss']
 })
 export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
-  @ViewChildren('workingTimeLine') workingTimeLines: QueryList<NgForm>;
+  readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
+  readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
+
+  // @ViewChildren('workingTimeLine') workingTimeLines: QueryList<NgForm>;
 
   // static requiredTimeFormat = 'HH:mm';
   // requiredTimeFormat = WorkingHoursComponent.requiredTimeFormat;
@@ -97,10 +100,15 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
       console.error('no form group');
       return;
     }
-    var controlKeys = Object.keys(this.workingTimeTableFormGroup.controls);
-    console.log(JSON.stringify(controlKeys, null, 4));
+    // var controlKeys = Object.keys(this.workingTimeTableFormGroup.controls);
+    // console.log(JSON.stringify(controlKeys, null, 4));
+    const startControl = this.workingTimeTableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
+    var isStartControlInValid = startControl.invalid;
 
-    return false;
+    const endControl = this.workingTimeTableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
+    var isEndControlInValid = endControl.invalid;
+
+    return isStartControlInValid || isEndControlInValid;
   }
 
   ngOnInit(): void {
@@ -109,11 +117,11 @@ export class WorkingHoursComponent implements OnInit /*, AfterViewInit*/ {
     this.debuggingLines.forEach((oneLine, rowIndex) => {
       let startTime: string = formatDate(oneLine.startTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
       const startTimeControl = new FormControl(startTime);
-      configObj['cellStartTime' + rowIndex] = startTimeControl;
+      configObj[this.START_TIME_CONTROL_PREFIX + rowIndex] = startTimeControl;
 
       let endTime: string = formatDate(oneLine.endTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);;
       const endTimeControl = new FormControl(endTime);
-      configObj['cellEndTime' + rowIndex] = endTimeControl;
+      configObj[this.END_TIME_CONTROL_PREFIX + rowIndex] = endTimeControl;
 
       startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
       endTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(startTimeControl));

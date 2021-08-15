@@ -10,3 +10,7 @@ table {
   display: flex;
   flex: 1 1 100%
 }
+
+::ng-deep mat-form-field.ng-invalid {
+  background-color: red;
+}
