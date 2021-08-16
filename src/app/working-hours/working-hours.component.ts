@@ -161,9 +161,9 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
         continue;
       }
       startControlChange$
-      .pipe(tap(this.wrapOnStartTimeChanged(rowIndex).bind(this)))
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe();
+        .pipe(tap(this.wrapOnStartTimeChanged(rowIndex).bind(this)))
+        .pipe(takeUntil(this.onDestroy$))
+        .subscribe();
     }
     for (let rowIndex = 0; rowIndex < numberOfLines; rowIndex++) {
       const controlUniqueIdentifier = this.END_TIME_CONTROL_PREFIX + rowIndex;
@@ -178,9 +178,9 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
         continue;
       }
       endControlChange$
-      .pipe(tap(this.wrapOnEndTimeChanged(rowIndex).bind(this)))
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe();
+        .pipe(tap(this.wrapOnEndTimeChanged(rowIndex).bind(this)))
+        .pipe(takeUntil(this.onDestroy$))
+        .subscribe();
     }
     // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components
     // const valueChanges$ = this.workingTimeTableFormGroup.valueChanges;
@@ -196,10 +196,21 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     this.initializeTableViaHttpGetResponse(this.currentDay);
   }
 
-  onApplyButtonClicked(rowIndex: number, line: ISessionTimeEntry) {
+  onApplyButtonClicked(rowIndex: number) {
     this.rowToApplyButtonDisabled[rowIndex] = true;
 
-    // TODO: implement
+    // DEBUGGING:
+    const line = this.parsedWorkingTimeDocs[rowIndex];
+    console.log(JSON.stringify(line, null, 4));
+
+    const patchPromise = this.commitService.patchWorkingTimeEntry(line);
+    patchPromise.then((patchResult: any) => {
+      // DEBUGGING:
+      console.log(JSON.stringify(patchResult, null, 4));
+    });
+    patchPromise.catch((patchErr: any) => {
+      console.error(JSON.stringify(patchErr, null, 4));
+    });
   }
 
   onStartTimeChange($event: string, rowIndex: number) {

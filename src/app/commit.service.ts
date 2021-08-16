@@ -9,6 +9,7 @@ import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclarat
 import { environment } from './../environments/environment';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
+import { ISessionTimeEntry } from '../../../common/typescript/iSessionTimeEntry';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,11 @@ export class CommitService {
 
   constructor(private httpClient: HttpClient,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
+
+  patchWorkingTimeEntry(workingTimeDocument: ISessionTimeEntry) {
+    const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + workingTimeDocument.timeEntryId;
+    return this.performHttpPatch(url, workingTimeDocument);
+  }
 
   getWorkingTimeEntries(selectedDay: Date) {
     const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + selectedDay.getTime();
