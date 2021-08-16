@@ -3,6 +3,8 @@ import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } fro
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { DurationCalculator } from './../../../../common/typescript/helpers/durationCalculator';
+import { faArrowCircleUp } from '@fortawesome/free-solid-svg-icons';
+
 
 export interface IDateBoundaries {
   day: Date;
@@ -19,7 +21,7 @@ export class QueryDateComponent implements OnInit {
 
   queryDateStartFormControlName = 'startDayFormControl';
   queryDateFormGroup: FormGroup;
-
+  faArrowCircleUp = faArrowCircleUp;
   // @Input()
   // day: Date
 

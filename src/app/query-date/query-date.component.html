@@ -10,8 +10,9 @@
       </div>
       <div fxFlex="1 1 100%">
         <button type="submit" [disabled]="queryDateFormGroup.invalid">
-          <!-- <mat-icon>calendar_today</mat-icon> -->
-          Display Working-Hours
+          <div style="text-align:center">
+            <fa-icon [icon]="faArrowCircleUp"></fa-icon>
+          </div>
         </button>
       </div>
     </form>
