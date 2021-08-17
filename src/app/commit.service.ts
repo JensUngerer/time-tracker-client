@@ -30,6 +30,11 @@ export class CommitService {
     return this.performHttpPatch(url, workingTimeDocument);
   }
 
+  getWorkingPausesTimeEntries(selectedDay: Date) {
+    const url = this.getSessionTimeEntryUrl() + routes.workingTimePausesSuffix + '/' + selectedDay.getTime();
+    return this.httpGet(url);
+  }
+
   getWorkingTimeEntries(selectedDay: Date) {
     const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + selectedDay.getTime();
     return this.httpGet(url);

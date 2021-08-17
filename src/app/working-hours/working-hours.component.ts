@@ -194,6 +194,21 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     this.currentDay = $event.day;
 
     this.initializeTableViaHttpGetResponse(this.currentDay);
+    this.initPauses(this.currentDay);
+  }
+
+  initPauses(currentDay: Date) {
+    const pausesPromise = this.commitService.getWorkingPausesTimeEntries(currentDay);
+    if (!pausesPromise) {
+      console.error('no pauses Promise');
+      return;
+    }
+    pausesPromise.then((rawPauses: string) => {
+      console.log(rawPauses);
+    });
+    pausesPromise.catch((err: any) => {
+      console.error(err);
+    });
   }
 
   onApplyButtonClicked(rowIndex: number) {
