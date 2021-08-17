@@ -8,12 +8,12 @@ import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 
 import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
+import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
 import { CommitService } from '../commit.service';
 import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 import { Constants } from './../../../../common/typescript/constants';
-import { ISessionTimeEntry } from './../../../../common/typescript/iSessionTimeEntry';
 
 @Component({
   selector: 'mtt-working-hours',
@@ -41,9 +41,9 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
 
   rowToApplyButtonDisabled: boolean[] = [];
 
-  parsedWorkingTimeDocs: ISessionTimeEntry[] = [];
+  parsedWorkingTimeDocs: ITimeEntryBase[] = [];
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
-  workingHoursDataSource: MatTableDataSource<ISessionTimeEntry>;// = new MatTableDataSource(this.debuggingLines);
+  workingHoursDataSource: MatTableDataSource<ITimeEntryBase>;// = new MatTableDataSource(this.debuggingLines);
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
@@ -93,7 +93,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
 
   }
 
-  getDurationStr(element: ISessionTimeEntry) {
+  getDurationStr(element: ITimeEntryBase) {
     if (!element ||
       !element.durationInMilliseconds) {
       return '';
@@ -108,7 +108,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
         console.error('no raw working-time-entries received');
         return;
       }
-      const parsedWorkingTimeDocs: ISessionTimeEntry[] = this.sessionStorageSerializationService.deSerialize(rawWorkingTimeEntries);
+      const parsedWorkingTimeDocs: ITimeEntryBase[] = this.sessionStorageSerializationService.deSerialize(rawWorkingTimeEntries);
       if (!parsedWorkingTimeDocs ||
         !parsedWorkingTimeDocs.length) {
         console.error('no parsed working-time-entries received');
@@ -214,7 +214,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
   }
 
   onStartTimeChange($event: string, rowIndex: number) {
-    const line: ISessionTimeEntry = this.parsedWorkingTimeDocs[rowIndex];
+    const line: ITimeEntryBase = this.parsedWorkingTimeDocs[rowIndex];
     const startTimeControl = this.workingTimeTableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
     if (!startTimeControl || startTimeControl.invalid) {
       console.error('cannot change start time');
@@ -237,7 +237,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     this.setDurationObjectIn(line, rowIndex);
   }
 
-  private setDurationObjectIn(line: ISessionTimeEntry, rowIndex: number) {
+  private setDurationObjectIn(line: ITimeEntryBase, rowIndex: number) {
     if (!line ||
       !line.endTime ||
       !line.startTime) {
@@ -259,7 +259,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
   }
 
   onEndTimeChange($event: string, rowIndex: number) {
-    const line: ISessionTimeEntry = this.parsedWorkingTimeDocs[rowIndex];
+    const line: ITimeEntryBase = this.parsedWorkingTimeDocs[rowIndex];
     const endTimeControl = this.workingTimeTableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
     if (!endTimeControl ||
       endTimeControl.invalid) {

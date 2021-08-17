@@ -4,12 +4,11 @@ import { ITimeRecordsDocumentData } from './../../../common/typescript/mongoDB/i
 import routes from './../../../common/typescript/routes.js';
 import { IProject } from '../../../common/typescript/iProject';
 import { ITask } from '../../../common/typescript/iTask';
-import { ITimeEntry } from '../../../common/typescript/iTimeEntry';
+import { ITimeEntry, ITimeEntryBase } from '../../../common/typescript/iTimeEntry';
 import { IBookingDeclaration } from '../../../common/typescript/iBookingDeclaration';
 import { environment } from './../environments/environment';
 import { SessionStorageSerializationService } from './session-storage-serialization.service';
 import { ITimeInterval } from '../../../common/typescript/iTimeInterval';
-import { ISessionTimeEntry } from '../../../common/typescript/iSessionTimeEntry';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +25,7 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
-  patchWorkingTimeEntry(workingTimeDocument: ISessionTimeEntry) {
+  patchWorkingTimeEntry(workingTimeDocument: ITimeEntryBase) {
     const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + workingTimeDocument.timeEntryId;
     return this.performHttpPatch(url, workingTimeDocument);
   }
