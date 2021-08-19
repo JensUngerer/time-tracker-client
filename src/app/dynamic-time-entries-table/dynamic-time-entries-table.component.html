@@ -1,0 +1,52 @@
+<form *ngIf="isVisible" [formGroup]="tableFormGroup">
+  <table flexFlex="1 1 100%" mat-table [dataSource]="dataSource">
+    <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
+    <ng-container [matColumnDef]="displayedColumns[0]">
+      <th mat-header-cell *matHeaderCellDef>Start-Time</th>
+      <td mat-cell *matCellDef="let element; let rowIndex = index">
+        <mat-form-field>
+          <input #startTimeCell [formControlName]="START_TIME_CONTROL_PREFIX + rowIndex" matInput
+            type="datetime-local" />
+        </mat-form-field>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="displayedColumns[1]">
+      <th mat-header-cell *matHeaderCellDef>Duration</th>
+      <td mat-cell *matCellDef="let element">
+        {{getDurationStr(element)}}</td>
+    </ng-container>
+    <ng-container [matColumnDef]="displayedColumns[2]">
+      <th mat-header-cell *matHeaderCellDef>End-Time</th>
+      <td mat-cell *matCellDef="let element; let rowIndex = index">
+        <mat-form-field>
+          <input #endTimeCell [formControlName]="END_TIME_CONTROL_PREFIX + rowIndex" matInput
+            type="datetime-local" />
+        </mat-form-field>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="displayedColumns[3]">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element; let rowIndex = index"> <button
+          (click)="onApplyButtonClicked(rowIndex)" [disabled]="isRowDisabled(rowIndex)"
+          mat-stroke-button>
+          <div style="text-align:center">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </div>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container [matColumnDef]="displayedColumns[4]">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element"> <button mat-stroke-button>
+          <div style="text-align:center">
+            <fa-icon [icon]="faTrash"></fa-icon>
+          </div>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</form>
