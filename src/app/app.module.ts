@@ -57,6 +57,7 @@ import { QueryDateComponent } from './query-date/query-date.component';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
+import { StaticTimeEntriesTableComponent } from './static-time-entries-table/static-time-entries-table.component';
 // https://stackoverflow.com/questions/66010145/missing-locale-data-for-the-locale-de-de
 registerLocaleData(localeDe, 'de', localeDeExtra);
 
@@ -95,7 +96,8 @@ registerLocaleData(localeDe, 'de', localeDeExtra);
     WorkingTimeVisualizationComponent,
     WeeklyWorkingTimeVisualizationComponent,
     WorkingHoursComponent,
-    QueryDateComponent
+    QueryDateComponent,
+    StaticTimeEntriesTableComponent
   ],
   exports: [
     IsCsvFileWrittenComponent

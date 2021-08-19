@@ -7,9 +7,9 @@ import { Duration } from 'luxon';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 
-import { DateHelper } from '../../../../common/typescript/helpers/dateHelper';
 import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
 import { CommitService } from '../commit.service';
+import { DurationVisualizationService } from '../duration-visualization.service';
 import { IDateBoundaries, QueryDateComponent } from '../query-date/query-date.component';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
@@ -44,9 +44,11 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
   parsedWorkingTimeDocs: ITimeEntryBase[] = [];
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   workingHoursDataSource: MatTableDataSource<ITimeEntryBase>;// = new MatTableDataSource(this.debuggingLines);
+  pauses: ITimeEntryBase[];
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    private sessionStorageSerializationService: SessionStorageSerializationService,
+    private durationVisualizationService: DurationVisualizationService) { }
 
   ngOnDestroy(): void {
     this.onDestroy$.next(true);
@@ -93,13 +95,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
 
   }
 
-  getDurationStr(element: ITimeEntryBase) {
-    if (!element ||
-      !element.durationInMilliseconds) {
-      return '';
-    }
-    return Duration.fromObject(element.durationInMilliseconds).toFormat(Constants.contextDurationFormat);
-  }
+  getDurationStr = this.durationVisualizationService.getDurationStr;
 
   private initializeTableViaHttpGetResponse(selectedDay: Date) {
     const docsPromise = this.commitService.getWorkingTimeEntries(selectedDay);
@@ -131,9 +127,7 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
   }
 
   // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components
-  // private onTableValueChanges(newDateValue: string) {
 
-  // }
   private wrapOnStartTimeChanged(rowIndex: number) {
     return (newStartTimeDate: string) => {
       this.onStartTimeChange(newStartTimeDate, rowIndex);
@@ -183,11 +177,6 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
         .subscribe();
     }
     // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components
-    // const valueChanges$ = this.workingTimeTableFormGroup.valueChanges;
-    // valueChanges$
-    // .pipe(tap(this.onTableValueChanges.bind(this)))
-    // .pipe(takeUntil(this.onDestroy$))
-    // .subscribe();
   }
 
   onQueryDateBoundaries($event: IDateBoundaries) {
@@ -204,7 +193,13 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
       return;
     }
     pausesPromise.then((rawPauses: string) => {
-      console.log(rawPauses);
+      var pauses: ITimeEntryBase[] = this.sessionStorageSerializationService.deSerialize(rawPauses);
+      if (!pauses ||
+        !pauses.length) {
+        console.error('no pauses received');
+        return;
+      }
+      this.pauses = pauses;
     });
     pausesPromise.catch((err: any) => {
       console.error(err);
@@ -241,7 +236,6 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     }
 
     const startTime = new Date($event);
-    // const utcStartTime = DateHelper.convertToUtc(startTime);
 
     if (line.endTime < startTime) {
       console.error('endTime < startTime');
@@ -287,7 +281,6 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     }
 
     const endTime = new Date($event);
-    // const utcEndTime = DateHelper.convertToUtc(endTime);
     if (endTime < line.startTime) {
       console.error('endTime < startTime');
       return;
@@ -297,5 +290,3 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
     this.setDurationObjectIn(line, rowIndex);
   }
 }
-
-
