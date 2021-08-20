@@ -11,6 +11,7 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
 })
 export class StaticTimeEntriesTableComponent implements OnInit {
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
+  isVisible = false;
 
   private internalTimeEntries: ITimeEntryBase[] = [];
 
@@ -23,8 +24,11 @@ export class StaticTimeEntriesTableComponent implements OnInit {
       !newValue.length) {
       return;
     }
+    this.isVisible = false;
+    this.internalTimeEntries = newValue;
     this.dataSource = new MatTableDataSource(newValue);
     this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(newValue);
+    this.isVisible = true;
   }
 
   dataSource: MatTableDataSource<ITimeEntryBase>;

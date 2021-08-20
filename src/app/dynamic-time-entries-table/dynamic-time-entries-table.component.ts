@@ -50,6 +50,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
       !newValue.length) {
       return;
     }
+    this.internalTimeEntries = newValue;
     this.isVisible = false;
     this.dataSource = new MatTableDataSource(newValue);
 
@@ -154,9 +155,15 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
       console.error('no form group');
       return;
     }
+    if (!this.tableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex]) {
+      return;
+    }
     const startControl = this.tableFormGroup.controls[this.START_TIME_CONTROL_PREFIX + rowIndex];
     const isStartControlInValid = startControl.invalid;
 
+    if (!this.tableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex]) {
+      return;
+    }
     const endControl = this.tableFormGroup.controls[this.END_TIME_CONTROL_PREFIX + rowIndex];
     const isEndControlInValid = endControl.invalid;
 
