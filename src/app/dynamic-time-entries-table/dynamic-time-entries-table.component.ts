@@ -50,8 +50,8 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
       !newValue.length) {
       return;
     }
-    this.internalTimeEntries = newValue;
     this.isVisible = false;
+    this.internalTimeEntries = newValue;
     this.dataSource = new MatTableDataSource(newValue);
 
     this.initializeFormGroup();
