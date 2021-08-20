@@ -51,7 +51,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
 
     this.initializeFormGroup();
     this.initializeFormGroupChangeSubscriptions();
-
+    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
     this.isVisible = true;
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
@@ -80,6 +80,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
     this.tableFormGroup = new FormGroup(configObj);
   }
 
+  getDurationSumStr: () => string = () => { return ''; };
   getDurationStr = this.durationVisualizationService.getDurationStr;
 
   // https://stackoverflow.com/questions/53396839/angular-form-change-event-with-material-components

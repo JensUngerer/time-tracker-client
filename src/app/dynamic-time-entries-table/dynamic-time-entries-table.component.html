@@ -9,11 +9,13 @@
             type="datetime-local" />
         </mat-form-field>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <ng-container [matColumnDef]="displayedColumns[1]">
       <th mat-header-cell *matHeaderCellDef>Duration</th>
       <td mat-cell *matCellDef="let element">
         {{getDurationStr(element)}}</td>
+        <td mat-footer-cell *matFooterCellDef>{{getDurationSumStr()}}</td>
     </ng-container>
     <ng-container [matColumnDef]="displayedColumns[2]">
       <th mat-header-cell *matHeaderCellDef>End-Time</th>
@@ -23,6 +25,7 @@
             type="datetime-local" />
         </mat-form-field>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <ng-container [matColumnDef]="displayedColumns[3]">
       <th mat-header-cell *matHeaderCellDef></th>
@@ -34,6 +37,7 @@
           </div>
         </button>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container [matColumnDef]="displayedColumns[4]">
@@ -44,6 +48,7 @@
           </div>
         </button>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

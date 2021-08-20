@@ -19,10 +19,11 @@ export class StaticTimeEntriesTableComponent implements OnInit {
     return this.internalTimeEntries;
   }
   set timeEntries(newValue: ITimeEntryBase[]) {
-    this.pausesDataSource = new MatTableDataSource(newValue);
+    this.dataSource = new MatTableDataSource(newValue);
+    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(newValue);
   }
 
-  pausesDataSource: MatTableDataSource<ITimeEntryBase>;
+  dataSource: MatTableDataSource<ITimeEntryBase>;
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime'];
 
   constructor(private durationVisualizationService: DurationVisualizationService,
@@ -33,5 +34,5 @@ export class StaticTimeEntriesTableComponent implements OnInit {
 
   getDurationStr = this.durationVisualizationService.getDurationStr;
 
-  getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.timeEntries);
+  getDurationSumStr: () => string = () => { return ''; };
 }
