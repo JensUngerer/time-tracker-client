@@ -1,7 +1,7 @@
 <table *ngIf="isVisible" mat-table [dataSource]="dataSource">
   <ng-container matColumnDef="startTime">
     <th mat-header-cell *matHeaderCellDef>Start</th>
-    <td mat-cell *matCellDef="let element"> {{element.startTime | date : requiredDateTimeFormat : this.currentLocale}}
+    <td mat-cell *matCellDef="let element"> {{element.startTime | date : shortDateTimeFormat : this.currentLocale}}
     </td>
     <td mat-footer-cell *matFooterCellDef></td>
   </ng-container>
@@ -14,7 +14,7 @@
 
   <ng-container matColumnDef="endTime">
     <th mat-header-cell *matHeaderCellDef>End</th>
-    <td mat-cell *matCellDef="let element"> {{element.endTime | date : requiredDateTimeFormat : this.currentLocale}}
+    <td mat-cell *matCellDef="let element"> {{element.endTime | date : shortDateTimeFormat : this.currentLocale}}
     </td>
     <td mat-footer-cell *matFooterCellDef></td>
   </ng-container>

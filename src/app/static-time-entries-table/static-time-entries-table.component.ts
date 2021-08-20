@@ -10,6 +10,9 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   styleUrls: ['./static-time-entries-table.component.scss']
 })
 export class StaticTimeEntriesTableComponent implements OnInit {
+  static shortDateTimeFormat = 'short';
+  shortDateTimeFormat = StaticTimeEntriesTableComponent.shortDateTimeFormat;
+
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
   isVisible = false;
 
