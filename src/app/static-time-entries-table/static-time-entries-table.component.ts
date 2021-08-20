@@ -19,6 +19,10 @@ export class StaticTimeEntriesTableComponent implements OnInit {
     return this.internalTimeEntries;
   }
   set timeEntries(newValue: ITimeEntryBase[]) {
+    if (!newValue ||
+      !newValue.length) {
+      return;
+    }
     this.dataSource = new MatTableDataSource(newValue);
     this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(newValue);
   }
