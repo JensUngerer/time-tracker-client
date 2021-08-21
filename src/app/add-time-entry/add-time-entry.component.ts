@@ -33,7 +33,6 @@ export class AddTimeEntryComponent implements AfterViewInit {
     this.initFormGroup();
   }
 
-
   get errorState() {
     return this.addTimeFormGroup.errors !== null && !!this.addTimeFormGroup.touched;
   }
@@ -56,7 +55,6 @@ export class AddTimeEntryComponent implements AfterViewInit {
     this.addTimeFormGroup = new FormGroup(configObj);
     this.isVisible = true;
   }
-
 
   onAddTimeEntry(formData: any) {
     console.log(JSON.stringify(formData, null, 4));
