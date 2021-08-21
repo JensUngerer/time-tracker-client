@@ -24,13 +24,13 @@ export class AddTimeEntryComponent implements AfterViewInit {
   timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
   constructor(private timeEntryHelperService: TimeEntryHelperService) {
-    this.initFormGroup();
   }
 
   ngAfterViewInit(): void {
   }
 
   ngOnInit(): void {
+    this.initFormGroup();
   }
 
   initFormGroup() {
@@ -82,6 +82,11 @@ export class AddTimeEntryComponent implements AfterViewInit {
   }
 
   getDurationStr() {
+    if (!this.addTimeFormGroup ||
+      !this.addTimeFormGroup.controls) {
+      console.error('no form group');
+      return;
+    }
     const startControl = this.addTimeFormGroup.controls[this.startTimeFormControlName];
     const endControl = this.addTimeFormGroup.controls[this.endTimeFormControlName];
     if (!startControl ||
