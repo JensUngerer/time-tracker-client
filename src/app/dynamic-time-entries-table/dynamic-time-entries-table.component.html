@@ -3,7 +3,7 @@
   <table flexFlex="1 1 100%" mat-table matSort [dataSource]="dataSource">
     <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
     <ng-container [matColumnDef]="displayedColumns[0]">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>START_TIME_COLUMN_NAME</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{START_TIME_COLUMN_NAME}}</th>
       <td mat-cell *matCellDef="let element; let rowIndex = index">
         <mat-form-field>
           <input #startTimeCell [formControlName]="START_TIME_CONTROL_PREFIX + rowIndex" matInput
