@@ -21,13 +21,12 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
 })
 export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, AfterViewInit {
   // @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatTable, { static: true }) table: MatTable<ITimeEntryBase>;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
   // isVisible = false;
-  dataSource: MatTableDataSource<ITimeEntryBase>;
+  dataSource: MatTableDataSource<ITimeEntryBase>; // = new MatTableDataSource<ITimeEntryBase>([]);
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
   readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
@@ -38,11 +37,12 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   faTrash = faTrash;
   faCheck = faCheck;
   tableFormGroup: FormGroup = new FormGroup({});
-  workingHoursDataSource: MatTableDataSource<ITimeEntryBase> = new MatTableDataSource([]);
+  // workingHoursDataSource: MatTableDataSource<ITimeEntryBase> = new MatTableDataSource([]);
 
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
   rowToApplyButtonDisabled: boolean[] = [];
+  @ViewChild(MatTable, { static: false }) table: MatTable<ITimeEntryBase>;
 
   private internalTimeEntries: ITimeEntryBase[] = [];
 
@@ -90,6 +90,10 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   }
 
   private initTable() {
+    if (!this.dataSource) {
+      this.initTheDataSource();
+      // return;
+    }
     // this.isVisible = false;
     this.dataSource.data = this.internalTimeEntries; //
     if (this.table &&
@@ -194,7 +198,15 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.onDestroy$.complete();
   }
 
+  private initTheDataSource() {
+    this.dataSource = new MatTableDataSource<ITimeEntryBase>([]);
+  }
+
   ngOnInit(): void {
+    if (!this.dataSource) {
+      this.initTheDataSource();
+      // return;
+    }
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
       // DEBUGGING:
