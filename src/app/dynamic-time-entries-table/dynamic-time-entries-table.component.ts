@@ -30,6 +30,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
   readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
+  readonly START_TIME_COLUMN_NAME = 'Start-Time';
 
   // https://stackoverflow.com/questions/47908179/how-to-load-observable-array-property-as-angular-material-table-data-source
   // https://material.angular.io/components/table/overview
@@ -78,20 +79,31 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
   }
 
+  private returnStartTimeValue(item: ITimeEntryBase) {
+    if (item && typeof item.startTime === 'string') {
+      console.error('startTime === string');
+      return new Date(item.startTime);
+    }
+    return item.startTime;
+  }
+
   private initTable() {
     // this.isVisible = false;
     this.dataSource = new MatTableDataSource(this.internalTimeEntries);
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
-    this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
-      switch (property) {
-        case 'startTime': {
-          if (item && typeof item.startTime === 'string') {
-            console.error('startTime === string');
-            return new Date(item.startTime);
-          }
-          return item.startTime;
+    this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
+      switch (sortingHeaderID) {
+        // https://stackoverflow.com/questions/46893164/mat-table-sorting-demo-not-working
+        // https://stackoverflow.com/questions/48891174/angular-material-2-datatable-sorting-with-nested-objects/49057493#49057493
+        case this.START_TIME_COLUMN_NAME: {
+          console.error('Start-Time');
+          return this.returnStartTimeValue(item);
         }
-        default: return item[property];
+        case this.displayedColumns[0]: {
+          console.error('startTime');
+          return this.returnStartTimeValue(item);
+        }
+        default: return item[sortingHeaderID];
       }
     };
     // this.isVisible = true;
