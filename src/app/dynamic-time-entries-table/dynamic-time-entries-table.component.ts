@@ -36,7 +36,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   faTrash = faTrash;
   faCheck = faCheck;
   tableFormGroup: FormGroup;
-  workingHoursDataSource: MatTableDataSource<ITimeEntryBase>;// = new MatTableDataSource(this.debuggingLines);
+  workingHoursDataSource: MatTableDataSource<ITimeEntryBase> = new MatTableDataSource([]);
 
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
@@ -55,8 +55,8 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     }
     // this.isVisible = false;
     this.internalTimeEntries = newValue;
-    this.initTable();
-    this.sortTable();
+    // this.initTable();
+    // this.sortTable();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -65,8 +65,15 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
 
   ngAfterViewInit(): void {
     this.initTable();
+    this.initForm();
     this.dataSource.sort = this.sort;
     this.sortTable();
+  }
+
+  private initForm() {
+    this.initializeFormGroup();
+    this.initializeFormGroupChangeSubscriptions();
+    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
   }
 
   private initTable() {
@@ -85,9 +92,6 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
         default: return item[property];
       }
     };
-    this.initializeFormGroup();
-    this.initializeFormGroupChangeSubscriptions();
-    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
     // this.isVisible = true;
   }
 
