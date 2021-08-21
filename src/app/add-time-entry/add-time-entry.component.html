@@ -41,7 +41,7 @@
           </div>
           <div fxFlex="1 1 100%">
             <!-- (click)="setToCurrentTime(queryTimeEndFormControlName)" -->
-            <button mat-icon-button type="button">
+            <button mat-icon-button type="button" [disabled]="addTimeFormGroup.invalid">
               <mat-icon>add</mat-icon>
             </button>
           </div>
