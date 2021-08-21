@@ -56,9 +56,9 @@ export class AddTimeEntryComponent implements AfterViewInit {
     const endTimeStr = formData[this.endTimeFormControlName];
     if (!startTimeStr ||
       !endTimeStr) {
-        console.error(startTimeStr);
-        console.error(endTimeStr);
-        return;
+      console.error(startTimeStr);
+      console.error(endTimeStr);
+      return;
     }
     const startTime = new Date(startTimeStr);
     const endTime = new Date(endTimeStr);
@@ -78,12 +78,21 @@ export class AddTimeEntryComponent implements AfterViewInit {
     this.timeEntryAdd.emit(timeEntry);
   }
 
-  getDurationStr(endTimeStr: string, startTimeStr: string) {
+  getDurationStr() {
+    const startControl = this.addTimeFormGroup.controls[this.startTimeFormControlName];
+    const endControl = this.addTimeFormGroup.controls[this.endTimeFormControlName];
+    if (!startControl ||
+      !endControl) {
+      console.error('no controls yet');
+      return;
+    }
+    const startTimeStr = startControl.value;
+    const endTimeStr = endControl.value;
     if (!startTimeStr ||
       !endTimeStr) {
-        console.error(startTimeStr);
-        console.error(endTimeStr);
-        return;
+      console.error(startTimeStr);
+      console.error(endTimeStr);
+      return;
     }
     const duration = DurationCalculator.getDurationFrom(new Date(endTimeStr), new Date(startTimeStr));
     return duration.toFormat(Constants.contextDurationFormat);
