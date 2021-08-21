@@ -7,7 +7,7 @@
       <mtt-dynamic-time-entries-table (timeEntryChanged)="onTimeEntryChanged($event)" [timeEntries]="parsedWorkingTimeDocs"></mtt-dynamic-time-entries-table>
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <mtt-add-time-entry></mtt-add-time-entry>
+      <mtt-add-time-entry (timeEntry)="onTimeEntry($event)"></mtt-add-time-entry>
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
       <mtt-static-time-entries-table [timeEntries]="pauses"></mtt-static-time-entries-table>

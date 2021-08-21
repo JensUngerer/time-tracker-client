@@ -25,6 +25,11 @@ export class CommitService {
   constructor(private httpClient: HttpClient,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  postWorkingTimeEntry(workingTimeDocument: ITimeEntryBase) {
+    const url = this.getSessionTimeEntryUrl();
+    return this.httpPost(routes.workingTimPostPropertyName, workingTimeDocument, url);
+  }
+
   patchWorkingTimeEntry(workingTimeDocument: ITimeEntryBase) {
     const url = this.getSessionTimeEntryUrl() + routes.workingTimeEntriesSuffix + '/' + workingTimeDocument.timeEntryId;
     return this.performHttpPatch(url, workingTimeDocument);

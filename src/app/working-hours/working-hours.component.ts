@@ -83,4 +83,16 @@ export class WorkingHoursComponent implements OnInit, OnDestroy {
       console.error(JSON.stringify(patchErr, null, 4));
     });
   }
+
+  onTimeEntry(line: ITimeEntryBase) {
+    const postPromise = this.commitService.postWorkingTimeEntry(line);
+    postPromise.then((postResult: string) => {
+      // DEBUGGING:
+      console.log(postResult);
+    });
+    postPromise.catch((postErr: any) => {
+      // DEBUGGING:
+      console.log(postErr);
+    });
+  }
 }

@@ -21,7 +21,7 @@ export class AddTimeEntryComponent implements AfterViewInit {
   isVisible = false;
 
   @Output()
-  timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
+  timeEntry: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
   constructor(private timeEntryHelperService: TimeEntryHelperService) {
   }
@@ -81,7 +81,7 @@ export class AddTimeEntryComponent implements AfterViewInit {
     // DEBUGGING:
     console.log(JSON.stringify(timeEntry, null, 4));
 
-    this.timeEntryAdd.emit(timeEntry);
+    this.timeEntry.emit(timeEntry);
   }
 
   getDurationStr() {
