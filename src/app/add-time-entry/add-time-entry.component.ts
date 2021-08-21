@@ -33,6 +33,11 @@ export class AddTimeEntryComponent implements AfterViewInit {
     this.initFormGroup();
   }
 
+
+  get errorState() {
+    return this.addTimeFormGroup.errors !== null && !!this.addTimeFormGroup.touched;
+  }
+
   initFormGroup() {
     const configObj: { [key: string]: AbstractControl } = {};
 
