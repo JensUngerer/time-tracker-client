@@ -35,7 +35,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   // https://material.angular.io/components/table/overview
   faTrash = faTrash;
   faCheck = faCheck;
-  tableFormGroup: FormGroup;
+  tableFormGroup: FormGroup = new FormGroup({});
   workingHoursDataSource: MatTableDataSource<ITimeEntryBase> = new MatTableDataSource([]);
 
   requiredDateFormat = QueryDateComponent.requiredDateFormat;
@@ -49,14 +49,14 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     return this.internalTimeEntries;
   }
   set timeEntries(newValue: ITimeEntryBase[]) {
-    if (!newValue ||
-      !newValue.length) {
-      return;
-    }
+    // if (!newValue ||
+    //   !newValue.length) {
+    //   return;
+    // }
     // this.isVisible = false;
     this.internalTimeEntries = newValue;
-    // this.initTable();
-    // this.sortTable();
+    this.initTable();
+    this.initForm();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -64,8 +64,6 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     private durationVisualizationService: DurationVisualizationService) { }
 
   ngAfterViewInit(): void {
-    this.initTable();
-    this.initForm();
     this.dataSource.sort = this.sort;
     this.sortTable();
   }
