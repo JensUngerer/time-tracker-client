@@ -60,6 +60,7 @@ import localeDeExtra from '@angular/common/locales/extra/de';
 import { StaticTimeEntriesTableComponent } from './static-time-entries-table/static-time-entries-table.component';
 import { DynamicTimeEntriesTableComponent } from './dynamic-time-entries-table/dynamic-time-entries-table.component';
 import { AddTimeEntryComponent } from './add-time-entry/add-time-entry.component';
+import { MatSortModule } from '@angular/material/sort';
 // https://stackoverflow.com/questions/66010145/missing-locale-data-for-the-locale-de-de
 registerLocaleData(localeDe, 'de', localeDeExtra);
 
@@ -130,7 +131,8 @@ registerLocaleData(localeDe, 'de', localeDeExtra);
     MatInputModule,
     MatPaginatorModule,
     FontAwesomeModule,
-    FormsModule
+    FormsModule,
+    MatSortModule
   ],
   providers: [
     // https://stackoverflow.com/questions/37684360/how-to-set-locale-for-numbers-in-angular-2-0

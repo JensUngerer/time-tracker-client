@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Duration } from 'luxon';
@@ -53,6 +54,17 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
     this.isVisible = false;
     this.internalTimeEntries = newValue;
     this.dataSource = new MatTableDataSource(newValue);
+    // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
+    // this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
+    //   switch(property) {
+    //     case 'startTime': return new Date(item[property])
+    //     default: return item[property];
+    //   }
+    // };
+    // this.dataSource.sortData =
+
+    // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
+    this.dataSource.sort.sort(<MatSortable>({id: 'startTime', start: 'desc'}));
 
     this.initializeFormGroup();
     this.initializeFormGroupChangeSubscriptions();
