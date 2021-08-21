@@ -22,10 +22,11 @@ export class AddTimeEntryComponent implements AfterViewInit {
   @Output()
   timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
-  constructor(private timeEntryHelperService: TimeEntryHelperService) { }
+  constructor(private timeEntryHelperService: TimeEntryHelperService) {
+    this.initFormGroup();
+  }
 
   ngAfterViewInit(): void {
-    this.initFormGroup();
   }
 
   ngOnInit(): void {
