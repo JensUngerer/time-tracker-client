@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -19,13 +19,13 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   templateUrl: './dynamic-time-entries-table.component.html',
   styleUrls: ['./dynamic-time-entries-table.component.scss']
 })
-export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
+export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
-  isVisible = false;
+  // isVisible = false;
   dataSource: MatTableDataSource<ITimeEntryBase>;
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
@@ -53,17 +53,24 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
       !newValue.length) {
       return;
     }
-    this.isVisible = false;
+    // this.isVisible = false;
     this.internalTimeEntries = newValue;
     this.initTable();
+    this.sortTable();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private durationVisualizationService: DurationVisualizationService) { }
 
+  ngAfterViewInit(): void {
+    this.initTable();
+    this.dataSource.sort = this.sort;
+    this.sortTable();
+  }
+
   private initTable() {
-    this.isVisible = false;
+    // this.isVisible = false;
     this.dataSource = new MatTableDataSource(this.internalTimeEntries);
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
@@ -81,7 +88,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
     this.initializeFormGroup();
     this.initializeFormGroupChangeSubscriptions();
     this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
-    this.isVisible = true;
+    // this.isVisible = true;
   }
 
   private initializeFormGroup() {
@@ -106,10 +113,15 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
   }
 
   sortTable() {
-    this.dataSource.sort = this.sort;
-
+    if (!this.dataSource ||
+      !this.dataSource.sort ||
+      !this.dataSource.sort.sort) {
+      return;
+    }
     // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
     // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
+    // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
+    // DEBUGGING:
     this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'desc' }));
   }
 

@@ -1,5 +1,5 @@
-<button mat-button type="button" (click)="sortTable()">Sort</button>
-<form *ngIf="isVisible" [formGroup]="tableFormGroup">
+<!-- *ngIf="isVisible" -->
+<form [formGroup]="tableFormGroup">
   <table matSort flexFlex="1 1 100%" mat-table [dataSource]="dataSource">
     <!-- https://www.c-sharpcorner.com/article/form-validation-inside-angular-material-table-mattable/ -->
     <ng-container [matColumnDef]="displayedColumns[0]">
