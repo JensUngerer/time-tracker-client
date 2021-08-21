@@ -2,7 +2,7 @@ import { formatDate } from '@angular/common';
 import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { MatSort, MatSortable } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Duration } from 'luxon';
 import { Subject } from 'rxjs';
@@ -21,6 +21,7 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
 })
 export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, AfterViewInit {
   // @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatTable, { static: true }) table: MatTable<ITimeEntryBase>;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -90,30 +91,11 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
 
   private initTable() {
     // this.isVisible = false;
-    this.dataSource = new MatTableDataSource(this.internalTimeEntries);
-    // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
-    this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
-      // DEBUGGING:
-      console.log(JSON.stringify(item, null, 4));
-      console.log(sortingHeaderID);
-
-      switch (sortingHeaderID) {
-        // https://stackoverflow.com/questions/46893164/mat-table-sorting-demo-not-working
-        // https://stackoverflow.com/questions/48891174/angular-material-2-datatable-sorting-with-nested-objects/49057493#49057493
-        case this.START_TIME_COLUMN_NAME: {
-          console.error('Start-Time');
-          return this.returnStartTimeValue(item);
-        }
-        case this.displayedColumns[0]: {
-          console.error('startTime');
-          return this.returnStartTimeValue(item);
-        }
-        default: {
-          console.error('default:' + item[sortingHeaderID]);
-          return item[sortingHeaderID];
-        }
-      }
-    };
+    this.dataSource.data = this.internalTimeEntries; //
+    if (this.table &&
+      typeof this.table.renderRows === 'function') {
+        this.table.renderRows();
+    }
     // this.isVisible = true;
   }
 
@@ -213,6 +195,29 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   }
 
   ngOnInit(): void {
+    // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
+    this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
+      // DEBUGGING:
+      console.log(JSON.stringify(item, null, 4));
+      console.log(sortingHeaderID);
+
+      switch (sortingHeaderID) {
+        // https://stackoverflow.com/questions/46893164/mat-table-sorting-demo-not-working
+        // https://stackoverflow.com/questions/48891174/angular-material-2-datatable-sorting-with-nested-objects/49057493#49057493
+        case this.START_TIME_COLUMN_NAME: {
+          console.error('Start-Time');
+          return this.returnStartTimeValue(item);
+        }
+        case this.displayedColumns[0]: {
+          console.error('startTime');
+          return this.returnStartTimeValue(item);
+        }
+        default: {
+          console.error('default:' + item[sortingHeaderID]);
+          return item[sortingHeaderID];
+        }
+      }
+    };
   }
 
   isRowDisabled(rowIndex: number) {
