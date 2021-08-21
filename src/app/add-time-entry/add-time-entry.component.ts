@@ -75,8 +75,14 @@ export class AddTimeEntryComponent implements OnInit {
     this.timeEntryAdd.emit(timeEntry);
   }
 
-  getDurationStr(endTime: Date, startTime: Date) {
-    const duration = DurationCalculator.getDurationFrom(endTime, startTime);
+  getDurationStr(endTimeStr: string, startTimeStr: string) {
+    if (!startTimeStr ||
+      !endTimeStr) {
+        console.error(startTimeStr);
+        console.error(endTimeStr);
+        return;
+    }
+    const duration = DurationCalculator.getDurationFrom(new Date(endTimeStr), new Date(startTimeStr));
     return duration.toFormat(Constants.contextDurationFormat);
   }
 }
