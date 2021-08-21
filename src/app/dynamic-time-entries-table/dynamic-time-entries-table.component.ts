@@ -20,7 +20,7 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   styleUrls: ['./dynamic-time-entries-table.component.scss']
 })
 export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -65,16 +65,9 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
   private initTable() {
     this.isVisible = false;
     this.dataSource = new MatTableDataSource(this.internalTimeEntries);
-
-    this.initializeFormGroup();
-    this.initializeFormGroupChangeSubscriptions();
-    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
-    this.isVisible = true;
-
-    this.dataSource.sort = this.sort;
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
-      switch(property) {
+      switch (property) {
         case 'startTime': {
           if (typeof item.startTime === 'string') {
             console.error('startTime === string');
@@ -85,12 +78,10 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
         default: return item[property];
       }
     };
-    // };
-    // this.dataSource.sortData =
-
-    // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
-    // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
-    // this.dataSource.sort.sort(<MatSortable>({id: 'startTime', start: 'desc'}));
+    this.initializeFormGroup();
+    this.initializeFormGroupChangeSubscriptions();
+    this.getDurationSumStr = this.durationVisualizationService.createDurationSumStringFn(this.internalTimeEntries);
+    this.isVisible = true;
   }
 
   private initializeFormGroup() {
@@ -112,6 +103,14 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
     });
 
     this.tableFormGroup = new FormGroup(configObj);
+  }
+
+  sortTable() {
+    this.dataSource.sort = this.sort;
+
+    // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
+    // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
+    this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'desc' }));
   }
 
   getDurationSumStr: () => string = () => { return ''; };
