@@ -57,6 +57,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.internalTimeEntries = newValue;
     this.initTable();
     this.initForm();
+    this.triggerSorting();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -64,6 +65,9 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     private durationVisualizationService: DurationVisualizationService) { }
 
   ngAfterViewInit(): void {
+  }
+
+  private triggerSorting() {
     this.dataSource.sort = this.sort;
     this.sortTable();
   }
