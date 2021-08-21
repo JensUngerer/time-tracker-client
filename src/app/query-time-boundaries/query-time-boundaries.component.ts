@@ -5,6 +5,7 @@ import { Constants } from '../../../../common/typescript/constants';
 import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 
 import { SessionStorageService } from '../session-storage.service';
+import { TimeEntryHelperService } from '../time-entry-helper.service';
 
 import { DateHelper } from './../../../../common/typescript/helpers/dateHelper';
 
@@ -34,7 +35,8 @@ export class QueryTimeBoundariesComponent implements OnInit {
   queryTimeBoundaries: EventEmitter<ITimeInterval> = new EventEmitter();
 
   constructor(@Inject(LOCALE_ID) private currentLocale,
-    private sessionsStorageService: SessionStorageService) {
+    private sessionsStorageService: SessionStorageService,
+    private timeEntryHelperService: TimeEntryHelperService) {
   }
 
   private getStoredDataFromStorage() {
@@ -45,14 +47,6 @@ export class QueryTimeBoundariesComponent implements OnInit {
       statisticsTimeBoundaries = storedData.statisticsTimeBoundaries;
     }
     return statisticsTimeBoundaries;
-  }
-
-  private getCurrentTime(): string {
-    let currentTime = Date.now();
-    // add one minute as time is measured < and not <=
-    currentTime+= Constants.MILLISECONDS_IN_MINUTE;
-    const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
-    return formattedCurrentTime;
   }
 
   private initializeTimeBoundariesQuery() {
@@ -66,12 +60,12 @@ export class QueryTimeBoundariesComponent implements OnInit {
     let startTime: string = null;
     let endTime: string = null;
     if (!statisticsTimeBoundaries) {
-      const formattedCurrentTime = this.getCurrentTime();
+      const formattedCurrentTime = this.timeEntryHelperService.getCurrentTime();
       startTime = formattedCurrentTime;
       endTime = formattedCurrentTime;
     } else {
-      startTime = formatDate(statisticsTimeBoundaries.utcStartTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
-      endTime = formatDate(statisticsTimeBoundaries.utcEndTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
+      startTime = this.timeEntryHelperService.formatDate(statisticsTimeBoundaries.utcStartTime);
+      endTime = this.timeEntryHelperService.formatDate(statisticsTimeBoundaries.utcEndTime);
     }
 
     const startTimeControl = new FormControl(startTime);
@@ -139,7 +133,7 @@ export class QueryTimeBoundariesComponent implements OnInit {
   }
 
   setToCurrentTime(formName: string) {
-    const formattedCurrentTime = this.getCurrentTime();
+    const formattedCurrentTime = this.timeEntryHelperService.getCurrentTime();
     this.queryTimeFormGroup.controls[formName].setValue(formattedCurrentTime);
   }
 

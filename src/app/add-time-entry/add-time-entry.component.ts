@@ -1,0 +1,74 @@
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { Duration } from 'luxon';
+import { v4 } from 'uuid';
+
+import { Constants } from '../../../../common/typescript/constants';
+import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
+import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
+import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
+import { TimeEntryHelperService } from '../time-entry-helper.service';
+
+@Component({
+  selector: 'mtt-add-time-entry',
+  templateUrl: './add-time-entry.component.html',
+  styleUrls: ['./add-time-entry.component.scss']
+})
+export class AddTimeEntryComponent implements OnInit {
+  readonly startTimeFormControlName = 'startTimeFormControl';
+  readonly endTimeFormControlName = 'endTimeFormControl';
+  addTimeFormGroup: FormGroup;
+
+  @Output()
+  timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
+
+  constructor(private timeEntryHelperService: TimeEntryHelperService) { }
+
+  ngOnInit(): void {
+    this.initFormGroup();
+  }
+
+  initFormGroup() {
+    const configObj: { [key: string]: AbstractControl } = {};
+
+    const startTime = this.timeEntryHelperService.getCurrentTime();
+    const startTimeControl = new FormControl(startTime);
+
+    const endTime = this.timeEntryHelperService.getCurrentTime();
+    const endTimeControl = new FormControl(endTime);
+
+    startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
+    endTimeControl.setValidators(QueryTimeBoundariesComponent.createEndTimeValidatorFn(startTimeControl))
+
+    configObj[this.startTimeFormControlName] = startTimeControl;
+    configObj[this.endTimeFormControlName] = endTimeControl;
+
+    this.addTimeFormGroup = new FormGroup(configObj);
+  }
+
+
+  onAddTimeEntry(formData: any) {
+    console.log(JSON.stringify(formData, null, 4));
+    const startTime = formData[this.startTimeFormControlName];
+    const endTime = formData[this.endTimeFormControlName];
+    const duration = DurationCalculator.getDurationFrom(endTime, startTime);
+
+    const timeEntry = {
+      timeEntryId: v4(),
+      startTime,
+      endTime,
+      durationInMilliseconds: duration.toObject(),
+      day: DurationCalculator.getDayFrom(startTime)
+    };
+
+    // DEBUGGING:
+    console.log(JSON.stringify(timeEntry, null, 4));
+
+    this.timeEntryAdd.emit(timeEntry);
+  }
+
+  getDurationStr(endTime: Date, startTime: Date) {
+    const duration = DurationCalculator.getDurationFrom(endTime, startTime);
+    return duration.toFormat(Constants.contextDurationFormat);
+  }
+}
