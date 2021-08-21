@@ -4,19 +4,13 @@
       <form fxLayout="column" [formGroup]="addTimeFormGroup" (submit)="onAddTimeEntry(addTimeFormGroup.value)">
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
           <div fxFlex="1 1 100%">
-          </div>
-          <div fxFlex="1 1 100%">
             <mat-form-field>
               <mat-label>Start Time</mat-label>
               <input [formControlName]="startTimeFormControlName" matInput type="datetime-local" />
             </mat-form-field>
           </div>
-          <div fxFlex="1 1 100%">
-          </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
-          <div fxFlex="1 1 100%">
-          </div>
           <div fxFlex="1 1 100%">
             <mat-form-field>
               <mat-label>Start Time</mat-label>
@@ -24,39 +18,22 @@
               <mat-label>{{getDurationStr(addTimeFormGroup.controls[endTimeFormControlName].value, addTimeFormGroup.controls[startTimeFormControlName].value)}}</mat-label>
             </mat-form-field>
           </div>
-          <div fxFlex="1 1 100%">
-          </div>
         </div>
         <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
-          <div fxFlex="1 1 100%">
-            <!-- <button mat-icon-button type="button" (click)="overwriteOtherValue(queryTimeEndFormControlName, queryTimeStartFormControlName)">
-              <mat-icon>arrow_upward</mat-icon>
-            </button> -->
-          </div>
           <div fxFlex="1 1 100%">
             <mat-form-field>
               <mat-label>End Time</mat-label>
               <input [formControlName]="endTimeFormControlName" matInput type="datetime-local" />
             </mat-form-field>
           </div>
+        </div>
+        <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
           <div fxFlex="1 1 100%">
-            <!-- (click)="setToCurrentTime(queryTimeEndFormControlName)" -->
             <button mat-icon-button type="button" [disabled]="addTimeFormGroup.invalid">
               <mat-icon>add</mat-icon>
             </button>
           </div>
         </div>
-        <!-- <div fxFlex="1 1 100%" fxLayout="row" fxLayoutAlign="center center">
-          <button mat-icon-button *ngIf="showTableIcon" type="submit" [disabled]="queryTimeFormGroup.invalid">
-            <mat-icon>table_chart</mat-icon>
-          </button>
-          <button mat-icon-button *ngIf="showChartIcon" type="submit" [disabled]="queryTimeFormGroup.invalid">
-            <mat-icon>show_chart</mat-icon>
-          </button>
-          <button mat-icon-button *ngIf="showContextIcon" type="submit" [disabled]="queryTimeFormGroup.invalid">
-            <mat-icon>timeline</mat-icon>
-          </button>
-        </div> -->
       </form>
     </div>
   </div>

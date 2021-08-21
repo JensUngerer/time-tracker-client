@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
@@ -14,18 +14,21 @@ import { TimeEntryHelperService } from '../time-entry-helper.service';
   templateUrl: './add-time-entry.component.html',
   styleUrls: ['./add-time-entry.component.scss']
 })
-export class AddTimeEntryComponent implements OnInit {
+export class AddTimeEntryComponent implements AfterViewInit {
   readonly startTimeFormControlName = 'startTimeFormControl';
   readonly endTimeFormControlName = 'endTimeFormControl';
-  addTimeFormGroup: FormGroup;
+  addTimeFormGroup: FormGroup = new FormGroup({});
 
   @Output()
   timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
   constructor(private timeEntryHelperService: TimeEntryHelperService) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.initFormGroup();
+  }
+
+  ngOnInit(): void {
   }
 
   initFormGroup() {
