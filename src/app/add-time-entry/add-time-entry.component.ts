@@ -49,8 +49,16 @@ export class AddTimeEntryComponent implements OnInit {
 
   onAddTimeEntry(formData: any) {
     console.log(JSON.stringify(formData, null, 4));
-    const startTime = formData[this.startTimeFormControlName];
-    const endTime = formData[this.endTimeFormControlName];
+    const startTimeStr = formData[this.startTimeFormControlName];
+    const endTimeStr = formData[this.endTimeFormControlName];
+    if (!startTimeStr ||
+      !endTimeStr) {
+        console.error(startTimeStr);
+        console.error(endTimeStr);
+        return;
+    }
+    const startTime = new Date(startTimeStr);
+    const endTime = new Date(endTimeStr);
     const duration = DurationCalculator.getDurationFrom(endTime, startTime);
 
     const timeEntry = {
