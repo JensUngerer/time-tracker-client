@@ -20,7 +20,7 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   styleUrls: ['./dynamic-time-entries-table.component.scss']
 })
 export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  // @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -57,7 +57,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.internalTimeEntries = newValue;
     this.initTable();
     this.initForm();
-    this.triggerSorting();
+    // this.triggerSorting();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -67,10 +67,10 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   ngAfterViewInit(): void {
   }
 
-  private triggerSorting() {
-    this.dataSource.sort = this.sort;
-    this.sortTable();
-  }
+  // private triggerSorting() {
+  //   this.dataSource.sort = this.sort;
+  //   this.sortTable();
+  // }
 
   private initForm() {
     this.initializeFormGroup();
@@ -85,7 +85,7 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
       switch (property) {
         case 'startTime': {
-          if (typeof item.startTime === 'string') {
+          if (item && typeof item.startTime === 'string') {
             console.error('startTime === string');
             return new Date(item.startTime);
           }
@@ -118,18 +118,18 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     this.tableFormGroup = new FormGroup(configObj);
   }
 
-  sortTable() {
-    if (!this.dataSource ||
-      !this.dataSource.sort ||
-      !this.dataSource.sort.sort) {
-      return;
-    }
-    // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
-    // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
-    // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
-    // DEBUGGING:
-    this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'desc' }));
-  }
+  // sortTable() {
+  //   if (!this.dataSource ||
+  //     !this.dataSource.sort ||
+  //     !this.dataSource.sort.sort) {
+  //     return;
+  //   }
+  //   // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
+  //   // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
+  //   // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
+  //   // DEBUGGING:
+  //   this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'desc' }));
+  // }
 
   getDurationSumStr: () => string = () => { return ''; };
   getDurationStr = this.durationVisualizationService.getDurationStr;
