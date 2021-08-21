@@ -73,17 +73,24 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy {
 
     this.dataSource.sort = this.sort;
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
-    // this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
-    //   switch(property) {
-    //     case 'startTime': return new Date(item[property])
-    //     default: return item[property];
-    //   }
+    this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, property: string) => {
+      switch(property) {
+        case 'startTime': {
+          if (typeof item.startTime === 'string') {
+            console.error('startTime === string');
+            return new Date(item.startTime);
+          }
+          return item.startTime;
+        }
+        default: return item[property];
+      }
+    };
     // };
     // this.dataSource.sortData =
 
     // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
     // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
-    this.dataSource.sort.sort(<MatSortable>({id: 'startTime', start: 'desc'}));
+    // this.dataSource.sort.sort(<MatSortable>({id: 'startTime', start: 'desc'}));
   }
 
   private initializeFormGroup() {
