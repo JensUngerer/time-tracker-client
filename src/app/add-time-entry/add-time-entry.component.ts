@@ -18,6 +18,7 @@ export class AddTimeEntryComponent implements AfterViewInit {
   readonly startTimeFormControlName = 'startTimeFormControl';
   readonly endTimeFormControlName = 'endTimeFormControl';
   addTimeFormGroup: FormGroup = new FormGroup({});
+  isVisible = false;
 
   @Output()
   timeEntryAdd: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -48,6 +49,7 @@ export class AddTimeEntryComponent implements AfterViewInit {
     configObj[this.endTimeFormControlName] = endTimeControl;
 
     this.addTimeFormGroup = new FormGroup(configObj);
+    this.isVisible = true;
   }
 
 
