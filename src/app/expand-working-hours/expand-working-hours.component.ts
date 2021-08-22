@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
+import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { CommitService } from '../commit.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
 
@@ -9,6 +10,16 @@ import { SessionStorageSerializationService } from '../session-storage-serializa
   styleUrls: ['./expand-working-hours.component.scss']
 })
 export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnChanges {
+  get timeInterval(): ITimeInterval {
+    if (!this.selectedLine) {
+      return null;
+    }
+    return {
+      utcEndTime: this.selectedLine.startTime,
+      utcStartTime: this.selectedLine.endTime
+    }
+  }
+
   selectedLine: ITimeEntryBase;
 
   pauses: ITimeEntryBase[];

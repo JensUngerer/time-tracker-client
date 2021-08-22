@@ -4,7 +4,7 @@
       <mtt-static-time-entries-table (lineClick)="onLineClicked($event)" [timeEntries]="pauses"></mtt-static-time-entries-table>
     </div>
     <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <mtt-add-time-entry [startTime]="selectedLine ? selectedLine.startTime : null" [endTime]="selectedLine ? selectedLine.endTime : null" (timeEntry)="onTimeEntryAdded($event)"></mtt-add-time-entry>
+      <mtt-add-time-entry [timeInterval]="timeInterval" (timeEntry)="onTimeEntryAdded($event)"></mtt-add-time-entry>
     </div>
   </div>
 </div>

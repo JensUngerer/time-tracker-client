@@ -6,6 +6,7 @@ import { v4 } from 'uuid';
 import { Constants } from '../../../../common/typescript/constants';
 import { DurationCalculator } from '../../../../common/typescript/helpers/durationCalculator';
 import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
+import { ITimeInterval } from '../../../../common/typescript/iTimeInterval';
 import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-time-boundaries.component';
 import { TimeEntryHelperService } from '../time-entry-helper.service';
 
@@ -21,10 +22,7 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
   isVisible = false;
 
   @Input()
-  startTime: Date;
-
-  @Input()
-  endTime: Date;
+  timeInterval: ITimeInterval;
 
   @Output()
   timeEntry: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -34,14 +32,10 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes &&
-      changes.startTime &&
-      changes.startTime.currentValue) {
-      this.initFormGroup(this.startTime, this.endTime);
-    }
-    if (changes &&
-      changes.endTime &&
-      changes.endTime.currentValue) {
-      this.initFormGroup(this.startTime, this.endTime);
+      changes.timeInterval &&
+      changes.timeInterval.currentValue) {
+      const currentTimeInterval = changes.timeInterval.currentValue;
+      this.initFormGroup(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime);
     }
   }
 
@@ -51,10 +45,6 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
 
   ngOnInit(): void {
   }
-
-  // get errorState() {
-  //   return this.addTimeFormGroup.errors !== null && !!this.addTimeFormGroup.touched;
-  // }
 
   initFormGroup(preSelectionStartTime: Date, preSelectionEndTime: Date) {
     const configObj: { [key: string]: AbstractControl } = {};
