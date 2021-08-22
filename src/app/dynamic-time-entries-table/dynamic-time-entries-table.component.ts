@@ -137,11 +137,16 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
       // return;
     }
     // this.isVisible = false;
-    this.dataSource.data = this.internalTimeEntries; //
-    // if (this.table &&
-    //   typeof this.table.renderRows === 'function') {
-    //     this.table.renderRows();
-    // }
+    this.dataSource.data = this.internalTimeEntries;
+
+    // DEBUGGING
+    console.log('dataSource length:' + this.dataSource.data.length);
+
+    if (this.table &&
+      typeof this.table.renderRows === 'function') {
+        this.table.renderRows();
+        console.log('rows have just been rendered');
+    }
     // this.isVisible = true;
   }
 
