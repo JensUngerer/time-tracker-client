@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
 import { CommitService } from '../commit.service';
 import { SessionStorageSerializationService } from '../session-storage-serialization.service';
@@ -8,7 +8,7 @@ import { SessionStorageSerializationService } from '../session-storage-serializa
   templateUrl: './expand-working-hours.component.html',
   styleUrls: ['./expand-working-hours.component.scss']
 })
-export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit {
+export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnChanges {
   pauses: ITimeEntryBase[];
 
   @Input()
@@ -17,8 +17,15 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit {
   constructor(private commitService: CommitService,
     private sessionStorageSerializationService: SessionStorageSerializationService) { }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes &&
+      changes.currentDay &&
+      changes.currentDay.currentValue) {
+      this.initPauses(changes.currentDay.currentValue);
+    }
+  }
+
   ngAfterViewInit(): void {
-    this.initPauses(this.currentDay);
   }
 
   ngOnInit(): void {

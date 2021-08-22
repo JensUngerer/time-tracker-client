@@ -36,6 +36,9 @@ export class CommitService {
   }
 
   getWorkingPausesTimeEntries(selectedDay: Date) {
+    if (!selectedDay) {
+      return Promise.resolve('');
+    }
     const url = this.getSessionTimeEntryUrl() + routes.workingTimePausesSuffix + '/' + selectedDay.getTime();
     return this.httpGet(url);
   }

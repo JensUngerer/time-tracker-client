@@ -31,7 +31,6 @@ export class ManipulateWorkingHoursComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-
   private initializeTableViaHttpGetResponse(selectedDay: Date) {
     const docsPromise = this.commitService.getWorkingTimeEntries(selectedDay);
     docsPromise.then((rawWorkingTimeEntries: string) => {
