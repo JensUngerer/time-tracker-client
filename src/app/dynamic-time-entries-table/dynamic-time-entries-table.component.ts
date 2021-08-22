@@ -100,7 +100,7 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
       }
     };
 
-    this.sortTable();
+    // this.sortTable();
   }
 
   ngAfterViewInit(): void {
@@ -180,20 +180,20 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     this.tableFormGroup = new FormGroup(configObj);
   }
 
-  private sortTable() {
-    if (!this.dataSource ||
-      !this.dataSource.sort ||
-      !this.dataSource.sort.sort) {
-      return;
-    }
-    // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
-    // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
-    // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
-    // DEBUGGING:
-    this.dataSource.sort.sort(<MatSortable>({ id: this.displayedColumns[0], start: 'desc' }));
+  // private sortTable() {
+  //   if (!this.dataSource ||
+  //     !this.dataSource.sort ||
+  //     !this.dataSource.sort.sort) {
+  //     return;
+  //   }
+  //   // cf.: https://stackoverflow.com/questions/54982265/how-to-sort-mattabledatasource-programmatically
+  //   // cf.: https://stackblitz.com/edit/angular-zrkpa8?file=app%2Ftable-sorting-example.ts
+  //   // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
+  //   // DEBUGGING:
+  //   this.dataSource.sort.sort(<MatSortable>({ id: this.displayedColumns[0], start: 'desc' }));
 
-    this.refreshTable();
-  }
+  //   this.refreshTable();
+  // }
 
   getDurationSumStr: () => string = () => { return ''; };
   getDurationStr = this.durationVisualizationService.getDurationStr;
