@@ -1,0 +1,11 @@
+<div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
+  <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
+    <!-- <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
+      <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date>
+    </div> -->
+    <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
+      <mtt-dynamic-time-entries-table (timeEntryChanged)="onTimeEntryChanged($event)"
+        [timeEntries]="parsedWorkingTimeDocs"></mtt-dynamic-time-entries-table>
+    </div>
+  </div>
+</div>
