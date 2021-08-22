@@ -20,7 +20,6 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   styleUrls: ['./dynamic-time-entries-table.component.scss']
 })
 export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDestroy, AfterViewInit {
-  // @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -43,6 +42,7 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
   requiredDateTimeFormat = QueryTimeBoundariesComponent.requiredDateTimeFormat;
   rowToApplyButtonDisabled: boolean[] = [];
   @ViewChild(MatTable, { static: false }) table: MatTable<ITimeEntryBase>;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   private internalTimeEntries: ITimeEntryBase[] = [];
 
@@ -80,6 +80,7 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
   }
 
   private setSortingDataAccessor() {
+    this.dataSource.sort = this.sort;
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
       // DEBUGGING:
