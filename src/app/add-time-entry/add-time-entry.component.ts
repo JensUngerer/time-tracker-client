@@ -63,7 +63,7 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
     if (!preSelectionEndTime) {
       endTime = this.timeEntryHelperService.getCurrentTime();
     } else {
-      endTime = this.timeEntryHelperService.getTimeFormatted(preSelectionStartTime);
+      endTime = this.timeEntryHelperService.getTimeFormatted(preSelectionEndTime);
     }
     endTimeControl = new FormControl(endTime);
 

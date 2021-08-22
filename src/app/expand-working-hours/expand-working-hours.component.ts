@@ -15,8 +15,8 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnCha
       return null;
     }
     return {
-      utcEndTime: this.selectedLine.startTime,
-      utcStartTime: this.selectedLine.endTime
+      utcStartTime: this.selectedLine.startTime,
+      utcEndTime: this.selectedLine.endTime,
     }
   }
 
