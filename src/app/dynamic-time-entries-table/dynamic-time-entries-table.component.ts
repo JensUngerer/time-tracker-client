@@ -79,12 +79,7 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     }
   }
 
-  ngAfterViewInit(): void {
-    if (!this.dataSource) {
-      console.error('no dataSource in afterViewInit');
-      // this.initTheDataSource();
-      // return;
-    }
+  private setSortingDataAccessor() {
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
     this.dataSource.sortingDataAccessor = (item: ITimeEntryBase, sortingHeaderID: string) => {
       // DEBUGGING:
@@ -108,6 +103,15 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
         }
       }
     };
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.dataSource) {
+      console.error('no dataSource in afterViewInit');
+      // this.initTheDataSource();
+      // return;
+    }
+    this.setSortingDataAccessor();
   }
 
   // private triggerSorting() {
@@ -139,13 +143,15 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     // this.isVisible = false;
     this.dataSource.data = this.internalTimeEntries;
 
+    this.setSortingDataAccessor();
+
     // DEBUGGING
     console.log('dataSource length:' + this.dataSource.data.length);
 
     if (this.table &&
       typeof this.table.renderRows === 'function') {
-        this.table.renderRows();
-        console.log('rows have just been rendered');
+      this.table.renderRows();
+      console.log('rows have just been rendered');
     }
     // this.isVisible = true;
   }
