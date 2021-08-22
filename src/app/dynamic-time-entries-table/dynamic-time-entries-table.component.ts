@@ -129,10 +129,14 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     //   const startTimeAsDate = new Date(item.startTime);
     //   return startTimeAsDate.getTime();
     // }
+    if (!item ||
+      !item.startTime) {
+      return;
+    }
     return item.startTime.getTime();
   }
 
-  private refreshTable(){
+  private refreshTable() {
     if (this.table &&
       typeof this.table.renderRows === 'function') {
       this.table.renderRows();

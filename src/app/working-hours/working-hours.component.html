@@ -1,23 +1,15 @@
 <div fxLayout="row" fxFlexFill fxLayoutAlign="center center">
-  <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
-    <div fxFlexFill fxLayout="column" fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date>
-    </div>
+  <div fxFlexFill fxFlex="1 1 100%">
+    <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date>
   </div>
-  <div fxLayout="column" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
-    <div fxLayout="row" fxFlexFill fxLayoutAlign="center center" fxFlex="1 1 100%">
-      <mat-tab-group mat-align-tabs="center">
-        <mat-tab label="Manipulate">
-          <mtt-manipulate-working-hours
-            [currentDay]="currentDay"
-          ></mtt-manipulate-working-hours>
-        </mat-tab>
-        <mat-tab label="Expand">
-          <mtt-expand-working-hours
-            [currentDay]="currentDay"
-          ></mtt-expand-working-hours>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
+  <div fxFlexFill fxFlex="1 1 100%">
+    <mat-tab-group mat-align-tabs="center">
+      <mat-tab label="Manipulate">
+        <mtt-manipulate-working-hours [currentDay]="currentDay"></mtt-manipulate-working-hours>
+      </mat-tab>
+      <mat-tab label="Expand">
+        <mtt-expand-working-hours [currentDay]="currentDay"></mtt-expand-working-hours>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
