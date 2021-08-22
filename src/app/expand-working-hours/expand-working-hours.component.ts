@@ -9,6 +9,8 @@ import { SessionStorageSerializationService } from '../session-storage-serializa
   styleUrls: ['./expand-working-hours.component.scss']
 })
 export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnChanges {
+  selectedLine: ITimeEntryBase;
+
   pauses: ITimeEntryBase[];
 
   @Input()
@@ -51,7 +53,6 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnCha
     });
   }
 
-
   onTimeEntryAdded(line: ITimeEntryBase) {
     const postPromise = this.commitService.postWorkingTimeEntry(line);
     postPromise.then((postResult: string) => {
@@ -62,5 +63,9 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnCha
       // DEBUGGING:
       console.log(postErr);
     });
+  }
+
+  onLineClicked(line: ITimeEntryBase) {
+    this.selectedLine = line;
   }
 }

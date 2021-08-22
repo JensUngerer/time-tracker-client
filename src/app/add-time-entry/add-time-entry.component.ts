@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
@@ -14,11 +14,17 @@ import { TimeEntryHelperService } from '../time-entry-helper.service';
   templateUrl: './add-time-entry.component.html',
   styleUrls: ['./add-time-entry.component.scss']
 })
-export class AddTimeEntryComponent implements AfterViewInit {
+export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
   readonly startTimeFormControlName = 'startTimeFormControl';
   readonly endTimeFormControlName = 'endTimeFormControl';
   addTimeFormGroup: FormGroup = new FormGroup({});
   isVisible = false;
+
+  @Input()
+  startTime: Date;
+
+  @Input()
+  endTime: Date;
 
   @Output()
   timeEntry: EventEmitter<ITimeEntryBase> = new EventEmitter();
@@ -26,25 +32,50 @@ export class AddTimeEntryComponent implements AfterViewInit {
   constructor(private timeEntryHelperService: TimeEntryHelperService) {
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes &&
+      changes.startTime &&
+      changes.startTime.currentValue) {
+      this.initFormGroup(this.startTime, this.endTime);
+    }
+    if (changes &&
+      changes.endTime &&
+      changes.endTime.currentValue) {
+      this.initFormGroup(this.startTime, this.endTime);
+    }
+  }
+
   ngAfterViewInit(): void {
+    this.initFormGroup(null, null);
   }
 
   ngOnInit(): void {
-    this.initFormGroup();
   }
 
-  get errorState() {
-    return this.addTimeFormGroup.errors !== null && !!this.addTimeFormGroup.touched;
-  }
+  // get errorState() {
+  //   return this.addTimeFormGroup.errors !== null && !!this.addTimeFormGroup.touched;
+  // }
 
-  initFormGroup() {
+  initFormGroup(preSelectionStartTime: Date, preSelectionEndTime: Date) {
     const configObj: { [key: string]: AbstractControl } = {};
 
-    const startTime = this.timeEntryHelperService.getCurrentTime();
-    const startTimeControl = new FormControl(startTime);
+    let startTime: string;
+    let startTimeControl: AbstractControl;
+    if (!preSelectionStartTime) {
+      startTime = this.timeEntryHelperService.getCurrentTime();
+    } else {
+      startTime = this.timeEntryHelperService.getTimeFormatted(preSelectionStartTime);
+    }
+    startTimeControl = new FormControl(startTime);
 
-    const endTime = this.timeEntryHelperService.getCurrentTime();
-    const endTimeControl = new FormControl(endTime);
+    let endTime: string;
+    let endTimeControl: AbstractControl;
+    if (!preSelectionEndTime) {
+      endTime = this.timeEntryHelperService.getCurrentTime();
+    } else {
+      endTime = this.timeEntryHelperService.getTimeFormatted(preSelectionStartTime);
+    }
+    endTimeControl = new FormControl(endTime);
 
     startTimeControl.setValidators(QueryTimeBoundariesComponent.createStartTimeValidatorFn(endTimeControl));
     endTimeControl.setValidators(QueryTimeBoundariesComponent.createEndTimeValidatorFn(startTimeControl))

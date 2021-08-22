@@ -11,7 +11,7 @@ import { SessionStorageSerializationService } from '../session-storage-serializa
   styleUrls: ['./working-hours.component.scss']
 })
 export class WorkingHoursComponent implements OnInit, OnDestroy {
-  currentDay: Date;
+  currentDay: Date = new Date();
 
   constructor() { }
 

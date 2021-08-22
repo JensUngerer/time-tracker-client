@@ -1,4 +1,4 @@
-import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnInit, Output } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ITimeEntryBase } from '../../../../common/typescript/iTimeEntry';
 import { DurationVisualizationService } from '../duration-visualization.service';
@@ -7,7 +7,8 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
 @Component({
   selector: 'mtt-static-time-entries-table',
   templateUrl: './static-time-entries-table.component.html',
-  styleUrls: ['./static-time-entries-table.component.scss']
+  styleUrls: ['./static-time-entries-table.component.scss',
+    './../css/table.scss']
 })
 export class StaticTimeEntriesTableComponent implements OnInit {
   static shortDateTimeFormat = 'short';
@@ -34,8 +35,13 @@ export class StaticTimeEntriesTableComponent implements OnInit {
     this.isVisible = true;
   }
 
+  @Output()
+  lineClick: EventEmitter<ITimeEntryBase> = new EventEmitter<ITimeEntryBase>();
+
   dataSource: MatTableDataSource<ITimeEntryBase>;
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime'];
+
+  selectedRowIndex: number;
 
   constructor(private durationVisualizationService: DurationVisualizationService,
     @Inject(LOCALE_ID) public currentLocale) { }
@@ -46,4 +52,9 @@ export class StaticTimeEntriesTableComponent implements OnInit {
   getDurationStr = this.durationVisualizationService.getDurationStr;
 
   getDurationSumStr: () => string = () => { return ''; };
+
+  onLineClicked(line: ITimeEntryBase, rowIndex: number) {
+    this.selectedRowIndex = rowIndex;
+    this.lineClick.emit(line);
+  }
 }

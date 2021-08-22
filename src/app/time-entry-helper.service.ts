@@ -18,6 +18,17 @@ export class TimeEntryHelperService {
     return formattedCurrentTime;
   }
 
+  getTimeFormatted(dateToFormat: Date) {
+    if (!dateToFormat) {
+      return '';
+    }
+    let currentTime = dateToFormat.getTime();
+    currentTime+= Constants.MILLISECONDS_IN_MINUTE;
+
+    const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
+    return formattedCurrentTime;
+  }
+
   formatDate(date: Date) {
     return formatDate(date, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
   }
