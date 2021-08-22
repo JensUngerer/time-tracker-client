@@ -132,6 +132,14 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     return item.startTime.getTime();
   }
 
+  private refreshTable(){
+    if (this.table &&
+      typeof this.table.renderRows === 'function') {
+      this.table.renderRows();
+      console.log('rows have just been rendered');
+    }
+  }
+
   private initTable() {
     if (!this.dataSource) {
       return;
@@ -146,11 +154,8 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     // DEBUGGING
     console.log('dataSource length:' + this.dataSource.data.length);
 
-    if (this.table &&
-      typeof this.table.renderRows === 'function') {
-      this.table.renderRows();
-      console.log('rows have just been rendered');
-    }
+    this.refreshTable();
+
     // this.isVisible = true;
   }
 
@@ -186,6 +191,8 @@ export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDe
     // this.dataSource.sort.sort(<MatSortable>({ id: 'startTime', start: 'asc' }));
     // DEBUGGING:
     this.dataSource.sort.sort(<MatSortable>({ id: this.displayedColumns[0], start: 'desc' }));
+
+    this.refreshTable();
   }
 
   getDurationSumStr: () => string = () => { return ''; };
