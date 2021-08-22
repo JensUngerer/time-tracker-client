@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -19,14 +19,14 @@ import { QueryTimeBoundariesComponent } from '../query-time-boundaries/query-tim
   templateUrl: './dynamic-time-entries-table.component.html',
   styleUrls: ['./dynamic-time-entries-table.component.scss']
 })
-export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DynamicTimeEntriesTableComponent implements OnChanges, OnInit, OnDestroy, AfterViewInit {
   // @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Output()
   timeEntryChanged: EventEmitter<ITimeEntryBase> = new EventEmitter();
 
   // isVisible = false;
-  dataSource: MatTableDataSource<ITimeEntryBase>; // = new MatTableDataSource<ITimeEntryBase>([]);
+  dataSource: MatTableDataSource<ITimeEntryBase> = new MatTableDataSource<ITimeEntryBase>([]);
   displayedColumns = ['startTime', 'durationInMilliseconds', 'endTime', 'applyButton', 'deleteButton'];
   readonly START_TIME_CONTROL_PREFIX = 'cellStartTime';
   readonly END_TIME_CONTROL_PREFIX = 'cellEndTime';
@@ -57,8 +57,8 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
     // }
     // this.isVisible = false;
     this.internalTimeEntries = newValue;
-    this.initTable();
-    this.initForm();
+    // this.initTable();
+    // this.initForm();
     // this.triggerSorting();
   }
   private onDestroy$: Subject<boolean> = new Subject<boolean>();
@@ -66,9 +66,23 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private durationVisualizationService: DurationVisualizationService) { }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // throw new Error('Method not implemented.');
+    if (changes &&
+      changes.timeEntries) {
+      if (!this.dataSource) {
+        console.error('no data source in onChanges');
+        return;
+      }
+      this.initTable();
+      this.initForm();
+    }
+  }
+
   ngAfterViewInit(): void {
     if (!this.dataSource) {
-      this.initTheDataSource();
+      console.error('no dataSource in afterViewInit');
+      // this.initTheDataSource();
       // return;
     }
     // https://stackoverflow.com/questions/49603499/how-to-sorting-by-date-string-with-mat-sort-header
@@ -118,7 +132,8 @@ export class DynamicTimeEntriesTableComponent implements OnInit, OnDestroy, Afte
 
   private initTable() {
     if (!this.dataSource) {
-      this.initTheDataSource();
+      return;
+      // this.initTheDataSource();
       // return;
     }
     // this.isVisible = false;
