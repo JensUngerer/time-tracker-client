@@ -22,7 +22,7 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnCha
 
   selectedLine: ITimeEntryBase;
 
-  pauses: ITimeEntryBase[];
+  timeEntries: ITimeEntryBase[];
 
   @Input()
   currentDay: Date = new Date();
@@ -57,7 +57,7 @@ export class ExpandWorkingHoursComponent implements OnInit, AfterViewInit, OnCha
         console.error('no pauses received');
         return;
       }
-      this.pauses = pauses;
+      this.timeEntries = pauses;
     });
     pausesPromise.catch((err: any) => {
       console.error(err);

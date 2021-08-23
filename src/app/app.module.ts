@@ -63,6 +63,9 @@ import {
 } from './weekly-working-time-visualization/weekly-working-time-visualization.component';
 import { WorkingHoursComponent } from './working-hours/working-hours.component';
 import { WorkingTimeVisualizationComponent } from './working-time-visualization/working-time-visualization.component';
+import { TicketHoursComponent } from './ticket-hours/ticket-hours.component';
+import { ManipulateTicketHoursComponent } from './manipulate-ticket-hours/manipulate-ticket-hours.component';
+import { ExpandTicketHoursComponent } from './expand-ticket-hours/expand-ticket-hours.component';
 
 // https://stackoverflow.com/questions/51190415/angular-2-to-angular-5-upgrade-issue/51190624
 // https://stackoverflow.com/questions/66010145/missing-locale-data-for-the-locale-de-de
@@ -108,7 +111,10 @@ registerLocaleData(localeDe, 'de', localeDeExtra);
     DynamicTimeEntriesTableComponent,
     AddTimeEntryComponent,
     ExpandWorkingHoursComponent,
-    ManipulateWorkingHoursComponent
+    ManipulateWorkingHoursComponent,
+    TicketHoursComponent,
+    ManipulateTicketHoursComponent,
+    ExpandTicketHoursComponent
   ],
   exports: [
     IsCsvFileWrittenComponent

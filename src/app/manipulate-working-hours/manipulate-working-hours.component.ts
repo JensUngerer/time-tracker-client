@@ -14,7 +14,7 @@ export class ManipulateWorkingHoursComponent implements OnInit, OnChanges {
   @Input()
   currentDay = new Date();
 
-  parsedWorkingTimeDocs: ITimeEntryBase[] = [];
+  timeEntries: ITimeEntryBase[] = [];
 
   constructor(@Inject(LOCALE_ID) public currentLocale,
     private commitService: CommitService,
@@ -44,7 +44,7 @@ export class ManipulateWorkingHoursComponent implements OnInit, OnChanges {
         console.error('no parsed working-time-entries received');
         return;
       }
-      this.parsedWorkingTimeDocs = parsedWorkingTimeDocs;
+      this.timeEntries = parsedWorkingTimeDocs;
     });
     docsPromise.catch((httpGetErr: any) => {
       console.error(httpGetErr);

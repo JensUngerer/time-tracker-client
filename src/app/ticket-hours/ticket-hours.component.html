@@ -1,0 +1,28 @@
+<div fxLayout="column" fxFlexFill fxLayoutAlign="center center">
+  <div fxFlexFill fxFlex="1 1 100%">
+    <mtt-query-time-boundaries (queryTimeBoundaries)="onTimeBoundaries($event)"></mtt-query-time-boundaries>
+    <!-- <mtt-query-date (queryDateBoundaries)="onQueryDateBoundaries($event)"></mtt-query-date> -->
+  </div>
+  <div fxFlexFill fxFlex="1 1 100%">
+    <mat-tab-group mat-align-tabs="center">
+      <mat-tab label="Manipulate">
+        <mtt-manipulate-ticket-hours [interval]="currentInterval"></mtt-manipulate-ticket-hours>
+        <!-- Manipulate -->
+        <!-- <mtt-manipulate-working-hours [currentDay]="currentDay"></mtt-manipulate-working-hours> -->
+      </mat-tab>
+      <mat-tab label="Expand">
+        <!-- <mtt-expand-working-hours [currentDay]="currentDay"></mtt-expand-working-hours> -->
+        <!-- Expand -->
+        <mtt-expand-ticket-hours [interval]="currentInterval"></mtt-expand-ticket-hours>
+      </mat-tab>
+      <mat-tab label="Overview">
+        <!-- TODO adapt -->
+        <mtt-stats></mtt-stats>
+      </mat-tab>
+      <mat-tab label="Context">
+        <!-- TODO adapt -->
+        <mtt-context></mtt-context>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

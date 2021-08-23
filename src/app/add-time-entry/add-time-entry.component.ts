@@ -34,6 +34,9 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
     if (changes &&
       changes.timeInterval &&
       changes.timeInterval.currentValue) {
+      // ?
+      // this.isVisible = false;
+
       const currentTimeInterval = changes.timeInterval.currentValue;
       this.initFormGroup(currentTimeInterval.utcStartTime, currentTimeInterval.utcEndTime);
     }
@@ -54,7 +57,7 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
     if (!preSelectionStartTime) {
       startTime = this.timeEntryHelperService.getCurrentTime();
     } else {
-      startTime = this.timeEntryHelperService.getTimeFormatted(preSelectionStartTime);
+      startTime = this.timeEntryHelperService.getStartTimeFormatted(preSelectionStartTime);
     }
     startTimeControl = new FormControl(startTime);
 
@@ -63,7 +66,7 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
     if (!preSelectionEndTime) {
       endTime = this.timeEntryHelperService.getCurrentTime();
     } else {
-      endTime = this.timeEntryHelperService.getTimeFormatted(preSelectionEndTime);
+      endTime = this.timeEntryHelperService.getEndTimeFormatted(preSelectionEndTime);
     }
     endTimeControl = new FormControl(endTime);
 
@@ -74,6 +77,13 @@ export class AddTimeEntryComponent implements AfterViewInit, OnChanges {
     configObj[this.endTimeFormControlName] = endTimeControl;
 
     this.addTimeFormGroup = new FormGroup(configObj);
+
+    if (startTimeControl.invalid ||
+      endTimeControl.invalid) {
+      console.error('invalid start or end time');
+      return;
+    }
+    // ?
     this.isVisible = true;
   }
 

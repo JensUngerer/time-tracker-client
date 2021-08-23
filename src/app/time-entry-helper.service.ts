@@ -13,17 +13,28 @@ export class TimeEntryHelperService {
   getCurrentTime(): string {
     let currentTime = Date.now();
     // add one minute as time is measured < and not <=
-    currentTime+= Constants.MILLISECONDS_IN_MINUTE;
+    currentTime += Constants.MILLISECONDS_IN_MINUTE;
     const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
     return formattedCurrentTime;
   }
 
-  getTimeFormatted(dateToFormat: Date) {
+  getStartTimeFormatted(dateToFormat: Date) {
     if (!dateToFormat) {
       return '';
     }
     let currentTime = dateToFormat.getTime();
-    currentTime+= Constants.MILLISECONDS_IN_MINUTE;
+    currentTime += Constants.MILLISECONDS_IN_MINUTE;
+
+    const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
+    return formattedCurrentTime;
+  }
+
+  getEndTimeFormatted(dateToFormat: Date) {
+    if (!dateToFormat) {
+      return '';
+    }
+    let currentTime = dateToFormat.getTime();
+    currentTime -= Constants.MILLISECONDS_IN_MINUTE;
 
     const formattedCurrentTime = formatDate(currentTime, QueryTimeBoundariesComponent.requiredDateTimeFormat, this.currentLocale);
     return formattedCurrentTime;
