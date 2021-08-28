@@ -11,7 +11,7 @@ import { ProjectComponent } from './project/project.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { StatsComponent } from './stats/stats.component';
 import { TaskComponent } from './task/task.component';
-import { TicketHoursComponent } from './ticket-hours/ticket-hours.component.js';
+import { TicketHoursComponent } from './ticket-hours/ticket-hours.component';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
