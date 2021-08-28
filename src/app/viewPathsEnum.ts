@@ -9,5 +9,6 @@ export enum ViewPaths {
   statisticsVisualization = 'visualization',
   context = 'context',
   login = 'login',
-  workingHours = 'working-hours'
+  workingHours = 'working-hours',
+  ticketHours = 'ticket-hours'
 }

@@ -9,5 +9,6 @@ export enum ViewLabels {
   statisticsVisualization = 'Statistics-Visualization',
   context = 'Workflow-Context',
   login = 'Login',
-  workingHours = 'Working-Hours'
+  workingHours = 'Working-Hours',
+  ticketHours = 'Ticket-Hours'
 }

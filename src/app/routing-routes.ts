@@ -11,6 +11,7 @@ import { ProjectComponent } from './project/project.component';
 import { StatsVisualizationComponent } from './stats-visualization/stats-visualization.component';
 import { StatsComponent } from './stats/stats.component';
 import { TaskComponent } from './task/task.component';
+import { TicketHoursComponent } from './ticket-hours/ticket-hours.component.js';
 import { TimeTrackingComponent } from './time-tracking/time-tracking.component';
 import { ViewLabels } from './viewLabelsEnum';
 import { ViewPaths } from './viewPathsEnum';
@@ -58,6 +59,14 @@ export class RoutingRoutes {
       component: TimeTrackingComponent,
       data: {
         label: ViewLabels.timeTracking
+      },
+      canActivate: [AuthentificationService]
+    },
+    {
+      path: RoutingRoutes.viewsPrefix + ViewPaths.ticketHours,
+      component: TicketHoursComponent,
+      data: {
+        label: ViewLabels.ticketHours
       },
       canActivate: [AuthentificationService]
     },
