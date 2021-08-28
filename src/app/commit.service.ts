@@ -73,6 +73,16 @@ export class CommitService {
     return this.httpGet(url);
   }
 
+  getEmptyTimeEntries(timeInterval: ITimeInterval) {
+    const utcStartTime = timeInterval.utcStartTime;
+    const utcEndTime = timeInterval.utcEndTime;
+    const url = this.getTimeEntriesUrl() +
+      routes.emptyTimeEntriesSuffix + '?' +
+      routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+      routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
+    return this.httpGet(url);
+  }
+
   getNonCommittedDays(isBookingBased: boolean) {
     const url = this.getTimeEntriesUrl() +
       routes.nonCommittedDaysSuffix + '?' +
@@ -226,7 +236,7 @@ export class CommitService {
     });
   }
 
-  public postTimeEntries(timeEntry: ITimeEntry): Promise<any> {
+  public postTimeEntries(timeEntry: ITimeEntryBase): Promise<any> {
     const url = this.getTimeEntriesUrl();
 
     const propertyName = routes.timeEntriesBodyProperty;

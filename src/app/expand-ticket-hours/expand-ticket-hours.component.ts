@@ -31,25 +31,57 @@ export class ExpandTicketHoursComponent extends ManipulateTicketHoursComponent /
     sessionStorageSerializationService: SessionStorageSerializationService) {
     super(currentLocale, commitService, sessionStorageSerializationService);
   }
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if (changes &&
-  //     changes.interval &&
-  //     changes.interval.currentValue) {
-  //     const currentInterval = changes.interval.currentValue;
-  //     this.initData(currentInterval);
-  //   }
-  // }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes &&
+      changes.interval &&
+      changes.interval.currentValue) {
+      const currentInterval = changes.interval.currentValue;
+      this.initData(currentInterval);
+    }
+  }
 
-  // private initData(currentInterval: ITimeInterval) {
-  // }
+  protected initData(currentInterval: ITimeInterval) {
+    const pausesPromise = this.commitService.getEmptyTimeEntries(currentInterval);
+    if (!pausesPromise) {
+      console.error('no promise for empty time entries');
+      return;
+    }
+    pausesPromise.then((rawEmptyTimeEntries: string) => {
+      if (!rawEmptyTimeEntries) {
+        console.error('no raw empty time entries');
+        return;
+      }
+      const parsedEmptyTimeEntries: ITimeEntryBase[] = this.sessionStorageSerializationService.deSerialize(rawEmptyTimeEntries);
+      if (!parsedEmptyTimeEntries ||
+        !parsedEmptyTimeEntries.length) {
+        console.error('no parsed empty time entries');
+        return;
+      }
+      this.timeEntries = parsedEmptyTimeEntries;
+    });
+    pausesPromise.catch((err: any) => {
+      console.error(err);
+    });
+  }
 
-  // ngOnInit(): void {
-  // }
   onLineClicked(line: ITimeEntryBase) {
     this.selectedLine = line;
   }
 
   onTimeEntryAdded(line: ITimeEntryBase) {
-    console.error('TODO: implement sending of:' + JSON.stringify(line, null, 4));
+    // TODO: _taskId and _bookingDeclarationId are missing!!!
+
+    // if (line['_id']) {
+    //   delete line['_id'];
+    // }
+    // const postPromise = this.commitService.postTimeEntries(line);
+    // postPromise.then((postResult: string) => {
+    //   // DEBUGGING:
+    //   console.log(postResult);
+    // });
+    // postPromise.catch((postErr: any) => {
+    //   // DEBUGGING:
+    //   console.log(postErr);
+    // });
   }
 }

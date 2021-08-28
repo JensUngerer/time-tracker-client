@@ -16,8 +16,8 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
   timeEntries: ITimeEntryBase[] = [];
 
   constructor(@Inject(LOCALE_ID) public currentLocale,
-    private commitService: CommitService,
-    private sessionStorageSerializationService: SessionStorageSerializationService) { }
+    protected commitService: CommitService,
+    protected sessionStorageSerializationService: SessionStorageSerializationService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes &&
@@ -28,7 +28,7 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
     }
   }
 
-  private initData(currentInterval: ITimeInterval) {
+  protected initData(currentInterval: ITimeInterval) {
     const timeEntriesIntervalPromise = this.commitService.getTimeEntriesInInterval(currentInterval);
     if (!timeEntriesIntervalPromise) {
       console.error('no timeEntriesIntervalPromise');
