@@ -53,6 +53,9 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
   }
 
   onTimeEntryChanged(timeEntry: ITimeEntryBase) {
+    if (timeEntry['_id']) {
+      delete timeEntry['_id'];
+    }
     console.error('TODO implement sending of:' + JSON.stringify(timeEntry, null, 4));
   }
 
