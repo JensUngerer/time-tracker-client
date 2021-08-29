@@ -79,7 +79,7 @@ export class CommitService {
     const url = this.getTimeEntriesUrl() +
       routes.rawTimeEntriesSuffix + '?' +
       routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-      routes.endDateProperty + '=' + utcEndTime.getTime()
+      routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
     return this.httpGet(url);
   }
 
@@ -89,7 +89,7 @@ export class CommitService {
     const url = this.getTimeEntriesUrl() +
       routes.emptyTimeEntriesSuffix + '?' +
       routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-      routes.endDateProperty + '=' + utcEndTime.getTime()
+      routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
     return this.httpGet(url);
   }
 
