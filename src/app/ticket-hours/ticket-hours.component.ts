@@ -20,6 +20,13 @@ export class TicketHoursComponent implements OnInit {
   }
 
   onTimeBoundaries(interval: ITimeInterval) {
+    if (!interval) {
+      console.error(JSON.stringify(interval, null, 4));
+      return;
+    }
+    // DEBUGGING:
+    console.log('new startTime:' + interval.utcStartTime.getTime());
+    console.log('new endTime:' + interval.utcEndTime.getTime());
     this.currentInterval = interval;
   }
 }

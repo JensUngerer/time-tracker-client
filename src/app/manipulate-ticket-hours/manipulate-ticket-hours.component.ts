@@ -24,6 +24,10 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
       changes.interval &&
       changes.interval.currentValue) {
       const currentInterval = changes.interval.currentValue;
+
+      console.log(ManipulateTicketHoursComponent.name + ': new startTime:' + currentInterval.utcStartTime.getTime());
+      console.log(ManipulateTicketHoursComponent.name + ': new endTime:' + currentInterval.utcEndTime.getTime());
+
       this.initData(currentInterval);
     }
   }
