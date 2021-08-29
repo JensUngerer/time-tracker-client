@@ -73,13 +73,23 @@ export class CommitService {
     return this.httpGet(url);
   }
 
+  getRawTimeEntriesInInterval(timeInterval: ITimeInterval) {
+    const utcStartTime = timeInterval.utcStartTime;
+    const utcEndTime = timeInterval.utcEndTime;
+    const url = this.getTimeEntriesUrl() +
+      routes.rawTimeEntriesSuffix + '?' +
+      routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
+      routes.endDateProperty + '=' + utcEndTime.getTime()
+    return this.httpGet(url);
+  }
+
   getEmptyTimeEntries(timeInterval: ITimeInterval) {
     const utcStartTime = timeInterval.utcStartTime;
     const utcEndTime = timeInterval.utcEndTime;
     const url = this.getTimeEntriesUrl() +
       routes.emptyTimeEntriesSuffix + '?' +
       routes.startTimeProperty + '=' + utcStartTime.getTime() + '?' +
-      routes.endDateProperty + '=' + utcEndTime.getTime() + '?'
+      routes.endDateProperty + '=' + utcEndTime.getTime()
     return this.httpGet(url);
   }
 

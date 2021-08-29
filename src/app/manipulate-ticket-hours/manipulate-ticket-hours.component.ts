@@ -29,7 +29,7 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
   }
 
   protected initData(currentInterval: ITimeInterval) {
-    const timeEntriesIntervalPromise = this.commitService.getTimeEntriesInInterval(currentInterval);
+    const timeEntriesIntervalPromise = this.commitService.getRawTimeEntriesInInterval(currentInterval);
     if (!timeEntriesIntervalPromise) {
       console.error('no timeEntriesIntervalPromise');
       return;
@@ -42,7 +42,7 @@ export class ManipulateTicketHoursComponent implements OnInit, OnChanges {
       const parsedTimeEntries: ITimeEntryBase[] = this.sessionStorageSerializationService.deSerialize(rawTimeEntries);
       if (!parsedTimeEntries ||
         !parsedTimeEntries.length) {
-        console.error('');
+        console.error('no parsed time entries');
         return;
       }
       this.timeEntries = parsedTimeEntries;
